@@ -1,7 +1,7 @@
 # DataBookkeeping Service
-Data Bookkeeping service for OreCast
+Data Bookkeeping service
 
-### OreCast APIs
+### APIs
 
 #### public APIs
 - `/datasets` get all datasets
