@@ -15,11 +15,11 @@ import (
 	_ "expvar"         // to be used for monitoring, see https://github.com/divan/expvarmon
 	_ "net/http/pprof" // profiler, see https://golang.org/pkg/net/http/pprof/
 
-	oreConfig "github.com/CHESSComputing/common/config"
+	srvConfig "github.com/CHESSComputing/golib/config"
 )
 
 // srv configuration
-var _srvConfig *oreConfig.SrvConfig
+var _srvConfig *srvConfig.SrvConfig
 
 func info() string {
 	goVersion := runtime.Version()
@@ -37,7 +37,7 @@ func main() {
 		fmt.Println("server version:", info())
 		return
 	}
-	oConfig, err := oreConfig.ParseConfig(config)
+	oConfig, err := srvConfig.ParseConfig(config)
 	if err != nil {
 		log.Fatal("ERROR", err)
 	}

@@ -33,7 +33,7 @@ import (
 
 	"github.com/CHESSComputing/DataBookkeeping/dbs"
 	"github.com/CHESSComputing/DataBookkeeping/utils"
-	authz "github.com/CHESSComputing/common/authz"
+	authz "github.com/CHESSComputing/golib/authz"
 	"github.com/gin-gonic/gin"
 	validator "github.com/go-playground/validator/v10"
 
@@ -62,7 +62,7 @@ func setupRouter() *gin.Engine {
 
 	// all POST/PUT/DELET methods ahould be authorized
 	authorized := r.Group("/")
-	authorized.Use(authz.TokenMiddleware(_srvConfig.Authz.ClientId, _srvConfig.DataBookkeeping.WebServer.Verbose))
+	authorized.Use(authz.TokenMiddleware(_srvConfig.Authz.ClientID, _srvConfig.DataBookkeeping.WebServer.Verbose))
 	{
 		// POST routes
 		authorized.POST("/dataset", DatasetHandler)
