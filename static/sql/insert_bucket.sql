@@ -1,8 +1,8 @@
 INSERT INTO BUCKETS
     (bucket_id,bucket,meta_id,dataset_id,
-     creation_date,create_by,
-     last_modification_date,last_modified_by)
+     create_at,create_by,
+     modify_at,modify_by)
     VALUES
     (:bucket_id,:bucket,:meta_id,:dataset_id,
-     :creation_date,:create_by,
-     :last_modification_date,:last_modified_by)
+     :create_at,:create_by,
+     :modify_at,:modify_by)

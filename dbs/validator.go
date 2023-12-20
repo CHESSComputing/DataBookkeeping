@@ -33,7 +33,7 @@ var strParameters = []string{
 	"dataset_access_type",
 	"create_by",
 	"user",
-	"last_modified_by",
+	"modify_by",
 }
 
 // DBS integer parameters
@@ -223,7 +223,7 @@ func strType(key string, val interface{}) error {
 	mapKeys["block_name"] = "block_name"
 	mapKeys["logical_file_name"] = "logical_file_name"
 	mapKeys["create_by"] = "user"
-	mapKeys["last_modified_by"] = "user"
+	mapKeys["modify_by"] = "user"
 	mapKeys["primary_ds_name"] = "primary_dataset"
 	mapKeys["processed_ds_name"] = "processed_dataset"
 	mapKeys["processing_version"] = "processing_version"
@@ -385,7 +385,7 @@ func ValidatePostPayload(rec Record) error {
 					return Error(err, PatternErrorCode, "wrong data_tier_name pattern", "dbs.ValidaatePostPayload")
 				}
 			}
-		} else if key == "creation_date" || key == "last_modification_date" {
+		} else if key == "create_at" || key == "modify_at" {
 			v, err := utils.CastInt(val)
 			if err != nil {
 				return Error(err, PatternErrorCode, errMsg, "dbs.ValidaatePostPayload")

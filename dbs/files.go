@@ -15,15 +15,15 @@ import (
 
 // Files represents Files DBS DB table
 type Files struct {
-	FILE_ID                int64  `json:"file_id"`
-	LOGICAL_FILE_NAME      string `json:"logical_file_name" validate:"required"`
-	IS_FILE_VALID          int64  `json:"is_file_valid" validate:"number"`
-	DATASET_ID             int64  `json:"dataset_id" validate:"number,gt=0"`
-	META_ID                string `json:"meta_id" validate:"required"`
-	CREATION_DATE          int64  `json:"creation_date" validate:"required,number,gt=0"`
-	CREATE_BY              string `json:"create_by" validate:"required"`
-	LAST_MODIFICATION_DATE int64  `json:"last_modification_date" validate:"required,number,gt=0"`
-	LAST_MODIFIED_BY       string `json:"last_modified_by" validate:"required"`
+	FILE_ID           int64  `json:"file_id"`
+	LOGICAL_FILE_NAME string `json:"logical_file_name" validate:"required"`
+	IS_FILE_VALID     int64  `json:"is_file_valid" validate:"number"`
+	DATASET_ID        int64  `json:"dataset_id" validate:"number,gt=0"`
+	META_ID           string `json:"meta_id" validate:"required"`
+	CREATE_AT         int64  `json:"create_at" validate:"required,number,gt=0"`
+	CREATE_BY         string `json:"create_by" validate:"required"`
+	MODIFY_AT         int64  `json:"modify_at" validate:"required,number,gt=0"`
+	MODIFY_BY         string `json:"modify_by" validate:"required"`
 }
 
 // Files DBS API
@@ -113,10 +113,10 @@ func (r *Files) Insert(tx *sql.Tx) error {
 		r.IS_FILE_VALID,
 		r.DATASET_ID,
 		r.META_ID,
-		r.CREATION_DATE,
+		r.CREATE_AT,
 		r.CREATE_BY,
-		r.LAST_MODIFICATION_DATE,
-		r.LAST_MODIFIED_BY)
+		r.MODIFY_AT,
+		r.MODIFY_BY)
 	if err != nil {
 		if utils.VERBOSE > 0 {
 			log.Println("unable to insert files, error", err)
@@ -134,11 +134,11 @@ func (r *Files) Validate() error {
 	if err := CheckPattern("logical_file_name", r.LOGICAL_FILE_NAME); err != nil {
 		return Error(err, PatternErrorCode, "", "dbs.files.Validate")
 	}
-	if matched := unixTimePattern.MatchString(fmt.Sprintf("%d", r.CREATION_DATE)); !matched {
+	if matched := unixTimePattern.MatchString(fmt.Sprintf("%d", r.CREATE_AT)); !matched {
 		msg := "invalid pattern for creation date"
 		return Error(InvalidParamErr, PatternErrorCode, msg, "dbs.files.Validate")
 	}
-	if matched := unixTimePattern.MatchString(fmt.Sprintf("%d", r.LAST_MODIFICATION_DATE)); !matched {
+	if matched := unixTimePattern.MatchString(fmt.Sprintf("%d", r.MODIFY_AT)); !matched {
 		msg := "invalid pattern for last modification date"
 		return Error(InvalidParamErr, PatternErrorCode, msg, "dbs.files.Validate")
 	}
@@ -147,11 +147,11 @@ func (r *Files) Validate() error {
 
 // SetDefaults implements set defaults for Files
 func (r *Files) SetDefaults() {
-	if r.CREATION_DATE == 0 {
-		r.CREATION_DATE = Date()
+	if r.CREATE_AT == 0 {
+		r.CREATE_AT = Date()
 	}
-	if r.LAST_MODIFICATION_DATE == 0 {
-		r.LAST_MODIFICATION_DATE = Date()
+	if r.MODIFY_AT == 0 {
+		r.MODIFY_AT = Date()
 	}
 }
 

@@ -12,16 +12,16 @@ import (
 
 // Datasets represents Datasets DBS DB table
 type Datasets struct {
-	DATASET_ID             int64  `json:"dataset_id"`
-	DATASET                string `json:"dataset" validate:"required"`
-	META_ID                string `json:"meta_id" validate:"required"`
-	SITE_ID                int64  `json:"site_id" validate:"required"`
-	PROCESSING_ID          int64  `json:"processing_id" validate:"required"`
-	PARENT_ID              int64  `json:"parent_id" validate:"required"`
-	CREATION_DATE          int64  `json:"creation_date" validate:"required,number"`
-	CREATE_BY              string `json:"create_by" validate:"required"`
-	LAST_MODIFICATION_DATE int64  `json:"last_modification_date" validate:"required,number"`
-	LAST_MODIFIED_BY       string `json:"last_modified_by" validate:"required"`
+	DATASET_ID    int64  `json:"dataset_id"`
+	DATASET       string `json:"dataset" validate:"required"`
+	META_ID       string `json:"meta_id" validate:"required"`
+	SITE_ID       int64  `json:"site_id" validate:"required"`
+	PROCESSING_ID int64  `json:"processing_id" validate:"required"`
+	PARENT_ID     int64  `json:"parent_id" validate:"required"`
+	CREATE_AT     int64  `json:"create_at" validate:"required,number"`
+	CREATE_BY     string `json:"create_by" validate:"required"`
+	MODIFY_AT     int64  `json:"modify_at" validate:"required,number"`
+	MODIFY_BY     string `json:"modify_by" validate:"required"`
 }
 
 // DatasetRecord represents input dataset record from HTTP request
@@ -68,9 +68,9 @@ func (a *API) GetDataset() error {
 		"processing",
 		"parent",
 		"create_by",
-		"creation_date",
-		"last_modified_by",
-		"last_modification_date",
+		"create_at",
+		"modify_by",
+		"modify_at",
 	}
 	vals := []interface{}{
 		new(sql.NullString),  // dataset
@@ -79,9 +79,9 @@ func (a *API) GetDataset() error {
 		new(sql.NullString),  // processing
 		new(sql.NullString),  // parent
 		new(sql.NullString),  // create_by
-		new(sql.NullFloat64), // creation_date
-		new(sql.NullString),  // last_modified_by
-		new(sql.NullFloat64), // last_modification_date
+		new(sql.NullFloat64), // create_at
+		new(sql.NullString),  // modify_by
+		new(sql.NullFloat64), // modify_at
 	}
 	stm = WhereClause(stm, conds)
 
@@ -121,10 +121,10 @@ func (a *API) InsertDataset() error {
 	// parse incoming DatasetRequest and insert relationships, e.g.
 	// site, bucket, parent, processing, files
 	record := Datasets{
-		DATASET:          rec.Dataset,
-		META_ID:          rec.MetaId,
-		CREATE_BY:        a.CreateBy,
-		LAST_MODIFIED_BY: a.CreateBy,
+		DATASET:   rec.Dataset,
+		META_ID:   rec.MetaId,
+		CREATE_BY: a.CreateBy,
+		MODIFY_BY: a.CreateBy,
 	}
 	err = insertParts(&rec, &record)
 	if err != nil {
@@ -221,7 +221,7 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 			DATASET_ID:        datasetId,
 			META_ID:           rec.MetaId,
 			CREATE_BY:         record.CREATE_BY,
-			LAST_MODIFIED_BY:  record.CREATE_BY,
+			MODIFY_BY:         record.CREATE_BY,
 		}
 		if err = file.Insert(tx); err != nil {
 			log.Printf("File %+v already exist", file)
@@ -277,10 +277,10 @@ func (r *Datasets) Insert(tx *sql.Tx) error {
 		r.SITE_ID,
 		r.PROCESSING_ID,
 		r.PARENT_ID,
-		r.CREATION_DATE,
+		r.CREATE_AT,
 		r.CREATE_BY,
-		r.LAST_MODIFICATION_DATE,
-		r.LAST_MODIFIED_BY)
+		r.MODIFY_AT,
+		r.MODIFY_BY)
 	if err != nil {
 		if utils.VERBOSE > 0 {
 			log.Printf("unable to insert Datasets %+v", err)
@@ -297,24 +297,24 @@ func (r *Datasets) Validate() error {
 	if err := CheckPattern("dataset", r.DATASET); err != nil {
 		return Error(err, PatternErrorCode, "", "dbs.datasets.Validate")
 	}
-	if matched := unixTimePattern.MatchString(fmt.Sprintf("%d", r.CREATION_DATE)); !matched {
+	if matched := unixTimePattern.MatchString(fmt.Sprintf("%d", r.CREATE_AT)); !matched {
 		msg := "invalid pattern for creation date"
 		return Error(InvalidParamErr, PatternErrorCode, msg, "dbs.datasets.Validate")
 	}
-	if r.CREATION_DATE == 0 {
-		msg := "missing creation_date"
+	if r.CREATE_AT == 0 {
+		msg := "missing create_at"
 		return Error(InvalidParamErr, ParametersErrorCode, msg, "dbs.datasets.Validate")
 	}
 	if r.CREATE_BY == "" {
 		msg := "missing create_by"
 		return Error(InvalidParamErr, ParametersErrorCode, msg, "dbs.datasets.Validate")
 	}
-	if r.LAST_MODIFICATION_DATE == 0 {
-		msg := "missing last_modification_date"
+	if r.MODIFY_AT == 0 {
+		msg := "missing modify_at"
 		return Error(InvalidParamErr, ParametersErrorCode, msg, "dbs.datasets.Validate")
 	}
-	if r.LAST_MODIFIED_BY == "" {
-		msg := "missing last_modified_by"
+	if r.MODIFY_BY == "" {
+		msg := "missing modify_by"
 		return Error(InvalidParamErr, ParametersErrorCode, msg, "dbs.datasets.Validate")
 	}
 	return nil
@@ -322,11 +322,11 @@ func (r *Datasets) Validate() error {
 
 // SetDefaults implements set defaults for Datasets
 func (r *Datasets) SetDefaults() {
-	if r.CREATION_DATE == 0 {
-		r.CREATION_DATE = Date()
+	if r.CREATE_AT == 0 {
+		r.CREATE_AT = Date()
 	}
-	if r.LAST_MODIFICATION_DATE == 0 {
-		r.LAST_MODIFICATION_DATE = Date()
+	if r.MODIFY_AT == 0 {
+		r.MODIFY_AT = Date()
 	}
 }
 

@@ -14,14 +14,14 @@ import (
 
 // Buckets represents Buckets DBS DB table
 type Buckets struct {
-	BUCKET_ID              int64  `json:"bucket_id"`
-	BUCKET                 string `json:"bucket" validate:"required"`
-	META_ID                string `json:"meta_id" validate:"required"`
-	DATASET_ID             int64  `json:"dataset_id" validate:"required"`
-	CREATION_DATE          int64  `json:"creation_date"`
-	CREATE_BY              string `json:"create_by"`
-	LAST_MODIFICATION_DATE int64  `json:"last_modification_date"`
-	LAST_MODIFIED_BY       string `json:"last_modified_by"`
+	BUCKET_ID  int64  `json:"bucket_id"`
+	BUCKET     string `json:"bucket" validate:"required"`
+	META_ID    string `json:"meta_id" validate:"required"`
+	DATASET_ID int64  `json:"dataset_id" validate:"required"`
+	CREATE_AT  int64  `json:"create_at"`
+	CREATE_BY  string `json:"create_by"`
+	MODIFY_AT  int64  `json:"modify_at"`
+	MODIFY_BY  string `json:"modify_by"`
 }
 
 // Buckets DBS API
@@ -97,10 +97,10 @@ func (r *Buckets) Insert(tx *sql.Tx) error {
 		r.BUCKET,
 		r.META_ID,
 		r.DATASET_ID,
-		r.CREATION_DATE,
+		r.CREATE_AT,
 		r.CREATE_BY,
-		r.LAST_MODIFICATION_DATE,
-		r.LAST_MODIFIED_BY)
+		r.MODIFY_AT,
+		r.MODIFY_BY)
 	if err != nil {
 		if utils.VERBOSE > 0 {
 			log.Println("unable to insert buckets, error", err)
@@ -115,11 +115,11 @@ func (r *Buckets) Validate() error {
 	if err := RecordValidator.Struct(*r); err != nil {
 		return DecodeValidatorError(r, err)
 	}
-	if matched := unixTimePattern.MatchString(fmt.Sprintf("%d", r.CREATION_DATE)); !matched {
+	if matched := unixTimePattern.MatchString(fmt.Sprintf("%d", r.CREATE_AT)); !matched {
 		msg := "invalid pattern for creation date"
 		return Error(InvalidParamErr, PatternErrorCode, msg, "dbs.buckets.Validate")
 	}
-	if matched := unixTimePattern.MatchString(fmt.Sprintf("%d", r.LAST_MODIFICATION_DATE)); !matched {
+	if matched := unixTimePattern.MatchString(fmt.Sprintf("%d", r.MODIFY_AT)); !matched {
 		msg := "invalid pattern for last modification date"
 		return Error(InvalidParamErr, PatternErrorCode, msg, "dbs.buckets.Validate")
 	}
@@ -131,14 +131,14 @@ func (r *Buckets) SetDefaults() {
 	if r.CREATE_BY == "" {
 		r.CREATE_BY = "Server"
 	}
-	if r.CREATION_DATE == 0 {
-		r.CREATION_DATE = Date()
+	if r.CREATE_AT == 0 {
+		r.CREATE_AT = Date()
 	}
-	if r.LAST_MODIFIED_BY == "" {
-		r.LAST_MODIFIED_BY = "Server"
+	if r.MODIFY_BY == "" {
+		r.MODIFY_BY = "Server"
 	}
-	if r.LAST_MODIFICATION_DATE == 0 {
-		r.LAST_MODIFICATION_DATE = Date()
+	if r.MODIFY_AT == 0 {
+		r.MODIFY_AT = Date()
 	}
 }
 
