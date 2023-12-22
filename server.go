@@ -45,12 +45,15 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+var _routes gin.RoutesInfo
+
 func setupRouter() *gin.Engine {
 	// Disable Console Color
 	// gin.DisableConsoleColor()
 	r := gin.Default()
 
 	// GET routes
+	r.GET("/apis", ApisHandler)
 	r.GET("/datasets", DatasetHandler)
 	r.GET("/files", FileHandler)
 
@@ -76,6 +79,7 @@ func setupRouter() *gin.Engine {
 		authorized.DELETE("/dataset/*name", DatasetHandler)
 		authorized.DELETE("/file/*name", FileHandler)
 	}
+	_routes = r.Routes()
 
 	return r
 }

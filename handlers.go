@@ -13,11 +13,17 @@ import (
 
 	"github.com/CHESSComputing/DataBookkeeping/dbs"
 	"github.com/CHESSComputing/DataBookkeeping/utils"
+	server "github.com/CHESSComputing/golib/server"
 	"github.com/gin-gonic/gin"
 )
 
 type NameRequest struct {
 	Name string `uri:"name" json:"name"`
+}
+
+// ApisHandler provides all server routes
+func ApisHandler(c *gin.Context) {
+	server.ApisHandler(c, _routes)
 }
 
 // FileHandler provides access to /files and /file/:name end-point
