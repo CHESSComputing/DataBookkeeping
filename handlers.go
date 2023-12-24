@@ -147,7 +147,7 @@ func getApi(c *gin.Context, a string) (*dbs.API, error) {
 		if a == "dataset" && rest.Name != "" {
 			api.Params["dataset"] = rest.Name
 		} else if a == "file" && rest.Name != "" {
-			api.Params["logical_file_name"] = rest.Name
+			api.Params["file"] = rest.Name
 		}
 	}
 

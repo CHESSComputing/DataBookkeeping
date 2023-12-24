@@ -83,8 +83,8 @@ func dbInit(dbtype, dburi string) (*sql.DB, error) {
 		log.Println("DB ping error", dberr)
 		return nil, dberr
 	}
-	db.SetMaxOpenConns(_srvConfig.DataBookkeeping.MaxDBConnections)
-	db.SetMaxIdleConns(_srvConfig.DataBookkeeping.MaxIdleConnections)
+	db.SetMaxOpenConns(srvConfig.Config.DataBookkeeping.MaxDBConnections)
+	db.SetMaxIdleConns(srvConfig.Config.DataBookkeeping.MaxIdleConnections)
 	// Disables connection pool for sqlite3. This enables some concurrency with sqlite3 databases
 	// See https://stackoverflow.com/questions/57683132/turning-off-connection-pool-for-go-http-client
 	// and https://sqlite.org/wal.html
@@ -104,16 +104,16 @@ func Server() {
 	dbs.RecordValidator = validator.New()
 
 	// set database connection once
-	log.Println("parse Config.DBFile:", _srvConfig.DataBookkeeping.DBFile)
-	dbtype, dburi, dbowner := dbs.ParseDBFile(_srvConfig.DataBookkeeping.DBFile)
+	log.Println("parse Config.DBFile:", srvConfig.Config.DataBookkeeping.DBFile)
+	dbtype, dburi, dbowner := dbs.ParseDBFile(srvConfig.Config.DataBookkeeping.DBFile)
 	// for oci driver we know it is oracle backend
 	if strings.HasPrefix(dbtype, "oci") {
 		utils.ORACLE = true
 	}
 	log.Println("DBOWNER", dbowner)
 	// set static dir
-	utils.STATICDIR = _srvConfig.DataBookkeeping.WebServer.StaticDir
-	utils.VERBOSE = _srvConfig.DataBookkeeping.WebServer.Verbose
+	utils.STATICDIR = srvConfig.Config.DataBookkeeping.WebServer.StaticDir
+	utils.VERBOSE = srvConfig.Config.DataBookkeeping.WebServer.Verbose
 
 	// setup DBS
 	db, dberr := dbInit(dbtype, dburi)
@@ -128,7 +128,7 @@ func Server() {
 	defer dbs.DB.Close()
 
 	r := setupRouter()
-	sport := fmt.Sprintf(":%d", _srvConfig.DataBookkeeping.WebServer.Port)
+	sport := fmt.Sprintf(":%d", srvConfig.Config.DataBookkeeping.WebServer.Port)
 	log.Printf("Start HTTP server %s", sport)
 	r.Run(sport)
 }

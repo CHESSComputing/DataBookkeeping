@@ -25,7 +25,7 @@ var strParameters = []string{
 	"processing_version",
 	"acquisition_era_name",
 	"physics_group_name",
-	"logical_file_name",
+	"file",
 	"primary_ds_name",
 	"primary_ds_type",
 	"processed_ds_name",
@@ -151,7 +151,7 @@ func (o StrPattern) Check(key string, val interface{}) error {
 			log.Println("lexicon str pattern", o)
 		}
 		// check for list of LFNs
-		if key == "logical_file_name" {
+		if key == "file" {
 			for _, lfn := range lfnList(v) {
 				if len(lfn) > o.Len {
 					msg := fmt.Sprintf("length of LFN %s exceed %d characters", lfn, o.Len)
@@ -163,7 +163,7 @@ func (o StrPattern) Check(key string, val interface{}) error {
 			return Error(InvalidParamErr, PatternErrorCode, msg, "dbs.validator.Check")
 		}
 	}
-	if key == "logical_file_name" {
+	if key == "file" {
 		for _, vvv := range lfnList(v) {
 			msg := fmt.Sprintf("unable to match '%s' value '%s' from LFN list", key, vvv)
 			var pass bool
@@ -221,7 +221,7 @@ func strType(key string, val interface{}) error {
 	mapKeys := make(map[string]string)
 	mapKeys["dataset"] = "dataset"
 	mapKeys["block_name"] = "block_name"
-	mapKeys["logical_file_name"] = "logical_file_name"
+	mapKeys["file"] = "file"
 	mapKeys["create_by"] = "user"
 	mapKeys["modify_by"] = "user"
 	mapKeys["primary_ds_name"] = "primary_dataset"
@@ -255,7 +255,7 @@ func strType(key string, val interface{}) error {
 				length = p.Lexicon.Length
 			}
 		}
-		if key == "logical_file_name" {
+		if key == "file" {
 			if strings.Contains(v, "[") {
 				if strings.Contains(v, "'") { // Python bad json, e.g. ['bla']
 					v = strings.Replace(v, "'", "\"", -1)

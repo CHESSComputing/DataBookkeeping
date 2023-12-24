@@ -15,15 +15,15 @@ import (
 
 // Files represents Files DBS DB table
 type Files struct {
-	FILE_ID           int64  `json:"file_id"`
-	LOGICAL_FILE_NAME string `json:"logical_file_name" validate:"required"`
-	IS_FILE_VALID     int64  `json:"is_file_valid" validate:"number"`
-	DATASET_ID        int64  `json:"dataset_id" validate:"number,gt=0"`
-	META_ID           string `json:"meta_id" validate:"required"`
-	CREATE_AT         int64  `json:"create_at" validate:"required,number,gt=0"`
-	CREATE_BY         string `json:"create_by" validate:"required"`
-	MODIFY_AT         int64  `json:"modify_at" validate:"required,number,gt=0"`
-	MODIFY_BY         string `json:"modify_by" validate:"required"`
+	FILE_ID       int64  `json:"file_id"`
+	FILE          string `json:"file" validate:"required"`
+	IS_FILE_VALID int64  `json:"is_file_valid" validate:"number"`
+	DATASET_ID    int64  `json:"dataset_id" validate:"number,gt=0"`
+	META_ID       string `json:"meta_id" validate:"required"`
+	CREATE_AT     int64  `json:"create_at" validate:"required,number,gt=0"`
+	CREATE_BY     string `json:"create_by" validate:"required"`
+	MODIFY_AT     int64  `json:"modify_at" validate:"required,number,gt=0"`
+	MODIFY_BY     string `json:"modify_by" validate:"required"`
 }
 
 // Files DBS API
@@ -38,9 +38,9 @@ func (a *API) GetFile() error {
 		msg := "Files API with empty parameter map"
 		return Error(InvalidParamErr, ParametersErrorCode, msg, "dbs.files.Files")
 	}
-	if val, ok := a.Params["logical_file_name"]; ok {
+	if val, ok := a.Params["file"]; ok {
 		if val != "" {
-			conds, args = AddParam("logical_file_name", "F.FILE", a.Params, conds, args)
+			conds, args = AddParam("file", "F.FILE", a.Params, conds, args)
 		}
 	}
 	if val, ok := a.Params["dataset"]; ok {
@@ -108,14 +108,14 @@ func (r *Files) Insert(tx *sql.Tx) error {
 	// get SQL statement from static area
 	stm := getSQL("insert_file")
 	if utils.VERBOSE > 0 {
-		log.Printf("Insert Files file_id=%d lfn=%s", r.FILE_ID, r.LOGICAL_FILE_NAME)
+		log.Printf("Insert Files file_id=%d lfn=%s", r.FILE_ID, r.FILE)
 	} else if utils.VERBOSE > 1 {
 		log.Printf("Insert Files\n%s\n%+v", stm, r)
 	}
 	_, err = tx.Exec(
 		stm,
 		r.FILE_ID,
-		r.LOGICAL_FILE_NAME,
+		r.FILE,
 		r.IS_FILE_VALID,
 		r.DATASET_ID,
 		r.META_ID,
@@ -137,7 +137,7 @@ func (r *Files) Validate() error {
 	if err := RecordValidator.Struct(*r); err != nil {
 		return DecodeValidatorError(r, err)
 	}
-	if err := CheckPattern("logical_file_name", r.LOGICAL_FILE_NAME); err != nil {
+	if err := CheckPattern("file", r.FILE); err != nil {
 		return Error(err, PatternErrorCode, "", "dbs.files.Validate")
 	}
 	if matched := unixTimePattern.MatchString(fmt.Sprintf("%d", r.CREATE_AT)); !matched {

@@ -6,9 +6,7 @@ package main
 //
 
 import (
-	"flag"
 	"fmt"
-	"log"
 	"runtime"
 	"time"
 
@@ -18,9 +16,6 @@ import (
 	srvConfig "github.com/CHESSComputing/golib/config"
 )
 
-// srv configuration
-var _srvConfig *srvConfig.SrvConfig
-
 func info() string {
 	goVersion := runtime.Version()
 	tstamp := time.Now()
@@ -28,19 +23,6 @@ func info() string {
 }
 
 func main() {
-	var version bool
-	flag.BoolVar(&version, "version", false, "Show version")
-	var config string
-	flag.StringVar(&config, "config", "", "server config JSON file")
-	flag.Parse()
-	if version {
-		fmt.Println("server version:", info())
-		return
-	}
-	oConfig, err := srvConfig.ParseConfig(config)
-	if err != nil {
-		log.Fatal("ERROR", err)
-	}
-	_srvConfig = &oConfig
+	srvConfig.Init()
 	Server()
 }
