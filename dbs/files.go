@@ -48,6 +48,11 @@ func (a *API) GetFile() error {
 			conds, args = AddParam("dataset", "D.DATASET", a.Params, conds, args)
 		}
 	}
+	if val, ok := a.Params["did"]; ok {
+		if val != "" {
+			conds, args = AddParam("did", "F.META_ID", a.Params, conds, args)
+		}
+	}
 	if utils.VERBOSE > 0 {
 		log.Println("### /file params", a.Params, conds, args)
 	}
@@ -60,6 +65,7 @@ func (a *API) GetFile() error {
 	}
 
 	stm = WhereClause(stm, conds)
+	log.Println("QUERY:", stm, conds)
 
 	// use generic query API to fetch the results from DB
 	err = executeAll(a.Writer, a.Separator, stm, args...)

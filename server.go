@@ -33,7 +33,8 @@ import (
 
 	"github.com/CHESSComputing/DataBookkeeping/dbs"
 	"github.com/CHESSComputing/DataBookkeeping/utils"
-	authz "github.com/CHESSComputing/golib/authz"
+	srvConfig "github.com/CHESSComputing/golib/config"
+	server "github.com/CHESSComputing/golib/server"
 	"github.com/gin-gonic/gin"
 	validator "github.com/go-playground/validator/v10"
 
@@ -45,42 +46,28 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-var _routes gin.RoutesInfo
-
+// helper function to setup our router
 func setupRouter() *gin.Engine {
-	// Disable Console Color
-	// gin.DisableConsoleColor()
-	r := gin.Default()
-
-	// GET routes
-	r.GET("/apis", ApisHandler)
-	r.GET("/datasets", DatasetHandler)
-	r.GET("/files", FileHandler)
-
-	// individual routes
-	r.GET("/dataset", DatasetHandler)
-	r.GET("/dataset/*name", DatasetHandler)
-	r.GET("/file", FileHandler)
-	r.GET("/file/*name", FileHandler)
-
-	// all POST/PUT/DELET methods ahould be authorized
-	authorized := r.Group("/")
-	authorized.Use(authz.TokenMiddleware(_srvConfig.Authz.ClientID, _srvConfig.DataBookkeeping.WebServer.Verbose))
-	{
-		// POST routes
-		authorized.POST("/dataset", DatasetHandler)
-		authorized.POST("/file", FileHandler)
-
-		// PUT routes
-		authorized.PUT("/dataset/*name", DatasetHandler)
-		authorized.PUT("/file/*name", FileHandler)
-
-		// DELETE routes
-		authorized.DELETE("/dataset/*name", DatasetHandler)
-		authorized.DELETE("/file/*name", FileHandler)
+	routes := []server.Route{
+		// routes without authorization
+		server.Route{Method: "GET", Path: "/datasets", Handler: DatasetHandler, Authorized: false},
+		server.Route{Method: "GET", Path: "/dataset", Handler: DatasetHandler, Authorized: false},
+		server.Route{Method: "GET", Path: "/dataset/*name", Handler: DatasetHandler, Authorized: false},
+		server.Route{Method: "GET", Path: "/files", Handler: FileHandler, Authorized: false},
+		server.Route{Method: "GET", Path: "/file", Handler: FileHandler, Authorized: false},
+		server.Route{Method: "GET", Path: "/file/*name", Handler: FileHandler, Authorized: false},
+		// authorized routes
+		server.Route{Method: "POST", Path: "/dataset", Handler: DatasetHandler, Authorized: true},
+		server.Route{Method: "POST", Path: "/file", Handler: FileHandler, Authorized: true},
+		server.Route{Method: "PUT", Path: "/dataset/*name", Handler: DatasetHandler, Authorized: true},
+		server.Route{Method: "PUT", Path: "/file/*name", Handler: FileHandler, Authorized: true},
+		server.Route{Method: "DELETE", Path: "/dataset/*name", Handler: DatasetHandler, Authorized: true},
+		server.Route{Method: "DELETE", Path: "/file/*name", Handler: FileHandler, Authorized: true},
 	}
-	_routes = r.Routes()
-
+	r := server.Router(routes, nil, "static",
+		srvConfig.Config.DataBookkeeping.WebServer.Base,
+		srvConfig.Config.DataBookkeeping.WebServer.Verbose,
+	)
 	return r
 }
 
@@ -108,6 +95,7 @@ func dbInit(dbtype, dburi string) (*sql.DB, error) {
 	return db, nil
 }
 
+// Server defines our HTTP server
 func Server() {
 	// be verbose
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
