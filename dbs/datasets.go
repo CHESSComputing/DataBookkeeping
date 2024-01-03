@@ -52,6 +52,11 @@ func (a *API) GetDataset() error {
 			conds, args = AddParam("dataset", "D.DATASET", a.Params, conds, args)
 		}
 	}
+	if val, ok := a.Params["did"]; ok {
+		if val != "" {
+			conds, args = AddParam("did", "D.META_ID", a.Params, conds, args)
+		}
+	}
 	if utils.VERBOSE > 0 {
 		log.Println("### /dataset params", a.Params, conds, args)
 	}
