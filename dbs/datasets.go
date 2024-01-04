@@ -222,11 +222,12 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 	// insert all files
 	for _, f := range rec.Files {
 		file := Files{
-			FILE:       f,
-			DATASET_ID: datasetId,
-			META_ID:    rec.MetaId,
-			CREATE_BY:  record.CREATE_BY,
-			MODIFY_BY:  record.CREATE_BY,
+			FILE:          f,
+			IS_FILE_VALID: 1, // by default all files are valid
+			DATASET_ID:    datasetId,
+			META_ID:       rec.MetaId,
+			CREATE_BY:     record.CREATE_BY,
+			MODIFY_BY:     record.CREATE_BY,
 		}
 		if err = file.Insert(tx); err != nil {
 			log.Printf("File %+v already exist", file)
