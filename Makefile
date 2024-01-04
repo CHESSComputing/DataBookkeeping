@@ -93,12 +93,12 @@ ifndef MONGO
 endif
 
 testdb:
-	/bin/rm -f /tmp/files.db && \
-	sqlite3 /tmp/files.db < ./schemas/sqlite.sql && \
+	/bin/rm -f /tmp/dbs.db && \
+	sqlite3 /tmp/dbs.db < ./static/schema/sqlite.sql && \
 	mkdir -p /tmp/${USER} && \
 	echo "test" > /tmp/${USER}/test.txt
 
-test : mongo testdb test_code
+test : testdb test_code
 
 test_code:
 	go test -test.v .
@@ -112,7 +112,7 @@ test-errors:
 	cd test && LD_LIBRARY_PATH=${odir} DYLD_LIBRARY_PATH=${odir} go test -v -run TestDBSError
 test-dbs:
 	cd test && rm -f /tmp/dbs-test.db && \
-	sqlite3 /tmp/dbs-test.db < ../static/schema/sqlite-schema.sql && \
+	sqlite3 /tmp/dbs-test.db < ../static/schema/sqlite.sql && \
 	LD_LIBRARY_PATH=${odir} DYLD_LIBRARY_PATH=${odir} \
 	DBS_DB_FILE=/tmp/dbs-test.db \
 	DBS_API_PARAMETERS_FILE=../static/parameters.json \
