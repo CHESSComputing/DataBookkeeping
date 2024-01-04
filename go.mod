@@ -8,7 +8,7 @@ require (
 	github.com/go-playground/validator/v10 v10.16.0
 	github.com/mattn/go-sqlite3 v1.14.19
 	github.com/prometheus/procfs v0.12.0
-	golang.org/x/exp v0.0.0-20231219180239-dc181d75b848
+	golang.org/x/exp v0.0.0-20240103183307-be819d1f06fc
 )
 
 require (
