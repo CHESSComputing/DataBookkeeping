@@ -64,10 +64,7 @@ func setupRouter() *gin.Engine {
 		server.Route{Method: "DELETE", Path: "/dataset/*name", Handler: DatasetHandler, Authorized: true},
 		server.Route{Method: "DELETE", Path: "/file/*name", Handler: FileHandler, Authorized: true},
 	}
-	r := server.Router(routes, nil, "static",
-		srvConfig.Config.DataBookkeeping.WebServer.Base,
-		srvConfig.Config.DataBookkeeping.WebServer.Verbose,
-	)
+	r := server.Router(routes, nil, "static", srvConfig.Config.DataBookkeeping.WebServer)
 	return r
 }
 
