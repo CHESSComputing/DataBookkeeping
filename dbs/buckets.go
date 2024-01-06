@@ -1,5 +1,8 @@
 package dbs
 
+// DBS buckets module
+// Copyright (c) 2023 - Valentin Kuznetsov <vkuznet@gmail.com>
+//
 // nolint: gocyclo
 
 import (
@@ -32,7 +35,7 @@ func (a *API) GetBucket() error {
 	var conds []string
 	var err error
 
-	tmpl := make(Record)
+	tmpl := make(map[string]any)
 	tmpl["Owner"] = DBOWNER
 	stm, err := LoadTemplateSQL("select_bucket", tmpl)
 	if err != nil {

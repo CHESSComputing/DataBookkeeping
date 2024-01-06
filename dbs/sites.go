@@ -1,5 +1,8 @@
 package dbs
 
+// DBS sites module
+// Copyright (c) 2023 - Valentin Kuznetsov <vkuznet@gmail.com>
+//
 // nolint: gocyclo
 
 import (
@@ -30,7 +33,7 @@ func (a *API) GetSite() error {
 	var conds []string
 	var err error
 
-	tmpl := make(Record)
+	tmpl := make(map[string]any)
 	tmpl["Owner"] = DBOWNER
 	stm, err := LoadTemplateSQL("select_site", tmpl)
 	if err != nil {

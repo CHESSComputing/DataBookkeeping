@@ -1,5 +1,8 @@
 package main
 
+// DBS HTTP handlers
+// Copyright (c) 2023 - Valentin Kuznetsov <vkuznet@gmail.com>
+//
 import (
 	"bytes"
 	"compress/gzip"
@@ -48,10 +51,10 @@ func ApiHandler(c *gin.Context, api string) {
 func getApi(c *gin.Context, a string) (*dbs.API, error) {
 	r := c.Request
 	w := c.Writer
-	// all outputs will be added to output list
+	// define default separate as comma (used in JSON records)
 	sep := ","
 	if r.Header.Get("Accept") == "application/ndjson" {
-		sep = ""
+		sep = "" // no separator will be used to yield NDJSON
 	}
 	if sep != "" {
 		w.Header().Add("Content-Type", "application/json")
@@ -60,7 +63,7 @@ func getApi(c *gin.Context, a string) (*dbs.API, error) {
 	}
 
 	var api *dbs.API
-	params := make(dbs.Record)
+	params := make(map[string]any)
 	if r.Method == "GET" {
 		// for example /file?dataset=/x/y/z we'll parse URL query
 		// r.URL.Query() returns map[string][]string

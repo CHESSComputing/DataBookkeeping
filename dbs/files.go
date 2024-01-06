@@ -1,5 +1,8 @@
 package dbs
 
+// DBS files module
+// Copyright (c) 2023 - Valentin Kuznetsov <vkuznet@gmail.com>
+//
 // nolint: gocyclo
 
 import (
@@ -57,7 +60,7 @@ func (a *API) GetFile() error {
 		log.Println("### /file params", a.Params, conds, args)
 	}
 
-	tmpl := make(Record)
+	tmpl := make(map[string]any)
 	tmpl["Owner"] = DBOWNER
 	stm, err := LoadTemplateSQL("select_file", tmpl)
 	if err != nil {

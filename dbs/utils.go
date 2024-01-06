@@ -1,5 +1,8 @@
 package dbs
 
+// DBS utils module
+// Copyright (c) 2023 - Valentin Kuznetsov <vkuznet@gmail.com>
+//
 import (
 	"net/http"
 	"time"

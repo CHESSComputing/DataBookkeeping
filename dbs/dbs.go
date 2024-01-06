@@ -1,10 +1,10 @@
+package dbs
+
 // DBS APIs
-// Copyright (c) 2015 - Valentin Kuznetsov <vkuznet@gmail.com>
+// Copyright (c) 2015-2024 - Valentin Kuznetsov <vkuznet@gmail.com>
 // some docs:
 // goland SQL: https://golang.org/pkg/database/sql/
 // golang SQL transactions: https://www.sohamkamani.com/golang/sql-transactions/
-
-package dbs
 
 import (
 	"context"
@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"github.com/CHESSComputing/DataBookkeeping/utils"
+	services "github.com/CHESSComputing/golib/services"
 	validator "github.com/go-playground/validator/v10"
 )
 
@@ -33,7 +34,7 @@ type API struct {
 	Writer      http.ResponseWriter // writer to write results back to client
 	Context     context.Context     // HTTP context
 	ContentType string              // HTTP content-type
-	Params      Record              // HTTP parameters, i.e. map of any data type
+	Params      map[string]any      // HTTP parameters, i.e. map of any data type
 	Separator   string              // string separator for ndjson format
 	CreateBy    string              // create by value from run-time
 	Api         string              // api name
@@ -49,9 +50,6 @@ func (a *API) String() string {
 // RecordValidator pointer to validator Validate method
 var RecordValidator *validator.Validate
 
-// Record represents DBS record
-type Record map[string]interface{}
-
 // DB represents sql DB pointer
 var DB *sql.DB
 
@@ -59,7 +57,7 @@ var DB *sql.DB
 var DBTYPE string
 
 // DBSQL represents DBS SQL record
-var DBSQL Record
+var DBSQL map[string]any
 
 // DBOWNER represents DBS DB owner
 var DBOWNER string
@@ -158,7 +156,7 @@ func insertRecord(rec DBRecord, r io.Reader) error {
 }
 
 // LoadTemplateSQL function loads DBS SQL templated statements
-func LoadTemplateSQL(tmpl string, tmplData Record) (string, error) {
+func LoadTemplateSQL(tmpl string, tmplData map[string]any) (string, error) {
 	sdir := fmt.Sprintf("%s/sql", utils.STATICDIR)
 	if !strings.HasSuffix(tmpl, ".sql") {
 		tmpl += ".sql"
@@ -180,14 +178,14 @@ func LoadTemplateSQL(tmpl string, tmplData Record) (string, error) {
 }
 
 // LoadSQL function loads DBS SQL statements with Owner
-func LoadSQL(owner string) Record {
-	tmplData := make(Record)
+func LoadSQL(owner string) map[string]any {
+	tmplData := make(map[string]any)
 	tmplData["Owner"] = owner
 	sdir := fmt.Sprintf("%s/sql", utils.STATICDIR)
 	if utils.VERBOSE > 1 {
 		log.Println("sql area", sdir)
 	}
-	dbsql := make(Record)
+	dbsql := make(map[string]any)
 	for _, f := range utils.ListFiles(sdir) {
 		k := strings.Split(f, ".")[0]
 		stm, err := utils.ParseTmpl(sdir, f, tmplData)
@@ -206,7 +204,7 @@ func LoadSQL(owner string) Record {
 // So far we can ask for a data tier id of specific tier since this table
 // is very small and query execution will be really fast.
 func GetTestData() error {
-	tmpl := make(Record)
+	tmpl := make(map[string]any)
 	tmpl["Owner"] = DBOWNER
 	var args []interface{}
 	args = append(args, "VALID")
@@ -255,7 +253,7 @@ func getSQL(key string) string {
 }
 
 // helper function to get value from record
-func getValues(params Record, key string) []string {
+func getValues(params map[string]any, key string) []string {
 	var out []string
 	val, ok := params[key]
 	if ok {
@@ -277,7 +275,7 @@ func getValues(params Record, key string) []string {
 }
 
 // helper function to get single value from a record
-func getSingleValue(params Record, key string) (string, error) {
+func getSingleValue(params map[string]any, key string) (string, error) {
 	values := getValues(params, key)
 	if len(values) > 0 {
 		return values[0], nil
@@ -321,9 +319,9 @@ func placeholder(pholder string) string {
 }
 
 // helper function to generate error record
-func errorRecord(msg string) []Record {
-	var out []Record
-	erec := make(Record)
+func errorRecord(msg string) []map[string]any {
+	var out []map[string]any
+	erec := make(map[string]any)
 	erec["error"] = msg
 	out = append(out, erec)
 	return out
@@ -343,6 +341,110 @@ func CleanStatement(stm string) string {
 	return stm
 }
 
+//gocyclo:ignore
+func executeAll(w io.Writer, sep, stm string, args ...interface{}) error {
+	if sep == "," {
+		// with comma separate we will yield JSON
+		return executeAllJson(w, stm, args...)
+	}
+	// otherwise we will stream data as NDJSON
+	return executeAllJsonStream(w, sep, stm, args...)
+}
+func executeAllJson(w io.Writer, stm string, args ...interface{}) error {
+	stm = CleanStatement(stm)
+	if DRYRUN {
+		utils.PrintSQL(stm, args, "")
+		return nil
+	}
+	if utils.VERBOSE > 1 {
+		utils.PrintSQL(stm, args, "execute")
+	}
+	// execute transaction
+	tx, err := DB.Begin()
+	if err != nil {
+		return Error(err, TransactionErrorCode, "", "dbs.executeAll")
+	}
+	defer tx.Rollback()
+	rows, err := tx.Query(stm, args...)
+	if err != nil {
+		msg := fmt.Sprintf("unable to query statement: %v", stm)
+		log.Println(msg)
+		return Error(err, QueryErrorCode, "", "dbs.executeAll")
+	}
+	defer rows.Close()
+
+	// extract columns from Rows object and create values & valuesPtrs to retrieve results
+	columns, _ := rows.Columns()
+	var cols []string
+	count := len(columns)
+	values := make([]interface{}, count)
+	valuePtrs := make([]interface{}, count)
+	rowCount := 0
+	var records []map[string]any
+	for rows.Next() {
+		if rowCount == 0 {
+			// initialize value pointers
+			for i := range columns {
+				valuePtrs[i] = &values[i]
+			}
+		}
+		err := rows.Scan(valuePtrs...)
+		if err != nil {
+			return Error(err, RowsScanErrorCode, "", "dbs.executeAll")
+		}
+		// store results into generic record (a dict)
+		rec := make(map[string]any)
+		for i, col := range columns {
+			if len(cols) != len(columns) {
+				cols = append(cols, strings.ToLower(col))
+			}
+			vvv := values[i]
+			switch val := vvv.(type) {
+			case *sql.NullString:
+				v, e := val.Value()
+				if e == nil {
+					rec[cols[i]] = v
+				}
+			case *sql.NullInt64:
+				v, e := val.Value()
+				if e == nil {
+					rec[cols[i]] = v
+				}
+			case *sql.NullFloat64:
+				v, e := val.Value()
+				if e == nil {
+					rec[cols[i]] = v
+				}
+			case *sql.NullBool:
+				v, e := val.Value()
+				if e == nil {
+					rec[cols[i]] = v
+				}
+			default:
+				rec[cols[i]] = val
+			}
+		}
+		records = append(records, rec)
+		rowCount += 1
+	}
+	if err = rows.Err(); err != nil {
+		return Error(err, RowsScanErrorCode, "", "dbs.executeAll")
+	}
+
+	// make sure we write proper response if no result written
+	response := services.ServiceResponse{
+		Service:      "dbs",
+		HttpCode:     http.StatusOK,
+		SrvCode:      0,
+		Status:       "ok",
+		Results:      services.ServiceResults{NRecords: rowCount, Records: records},
+		ServiceQuery: services.ServiceQuery{SQL: stm},
+		Timestamp:    time.Now().String()}
+	data := response.JsonBytes()
+	w.Write(data)
+	return nil
+}
+
 // generic API to execute given statement
 // ideas are taken from
 // http://stackoverflow.com/questions/17845619/how-to-call-the-scan-variadic-function-in-golang-using-reflection
@@ -351,7 +453,7 @@ func CleanStatement(stm string) string {
 // to writer)
 //
 //gocyclo:ignore
-func executeAll(w io.Writer, sep, stm string, args ...interface{}) error {
+func executeAllJsonStream(w io.Writer, sep, stm string, args ...interface{}) error {
 	stm = CleanStatement(stm)
 	if DRYRUN {
 		utils.PrintSQL(stm, args, "")
@@ -403,7 +505,7 @@ func executeAll(w io.Writer, sep, stm string, args ...interface{}) error {
 			w.Write([]byte(sep))
 		}
 		// store results into generic record (a dict)
-		rec := make(Record)
+		rec := make(map[string]any)
 		for i, col := range columns {
 			if len(cols) != len(columns) {
 				cols = append(cols, strings.ToLower(col))
@@ -455,126 +557,6 @@ func executeAll(w io.Writer, sep, stm string, args ...interface{}) error {
 	// make sure we write proper response if no result written
 	if sep != "" && !writtenResults {
 		w.Write([]byte("[]"))
-	}
-	return nil
-}
-
-// similar to executeAll function but it takes explicit set of columns and values
-//
-//gocyclo:ignore
-func execute(
-	w io.Writer,
-	sep, stm string,
-	cols []string,
-	vals []interface{}, args ...interface{}) error {
-
-	stm = CleanStatement(stm)
-	if DRYRUN {
-		utils.PrintSQL(stm, args, "")
-		return nil
-	}
-	if utils.VERBOSE > 1 {
-		utils.PrintSQL(stm, args, "execute")
-	}
-	var enc *json.Encoder
-	if w != nil {
-		enc = json.NewEncoder(w)
-	}
-
-	// execute transaction
-	tx, err := DB.Begin()
-	if err != nil {
-		return Error(err, TransactionErrorCode, "", "dbs.execute")
-	}
-	defer tx.Rollback()
-	rows, err := tx.Query(stm, args...)
-	if err != nil {
-		msg := fmt.Sprintf("DB.Query, query='%s' args='%v'", stm, args)
-		log.Println(msg)
-		return Error(err, QueryErrorCode, "", "dbs.execute")
-	}
-	defer rows.Close()
-
-	// loop over rows
-	rowCount := 0
-	writtenResults := false
-	for rows.Next() {
-		err := rows.Scan(vals...)
-		if err != nil {
-			msg := fmt.Sprintf("rows.Scan, vals='%v'", vals)
-			log.Println(msg)
-			return Error(err, RowsScanErrorCode, "", "dbs.execute")
-		}
-		if rowCount != 0 && w != nil {
-			// add separator line to our output
-			w.Write([]byte(sep))
-		}
-		rec := make(Record)
-		for i := range cols {
-			vvv := vals[i]
-			switch val := vvv.(type) {
-			case *sql.NullString:
-				v, e := val.Value()
-				if e == nil {
-					rec[cols[i]] = v
-				}
-			case *sql.NullInt64:
-				v, e := val.Value()
-				if e == nil {
-					rec[cols[i]] = v
-				}
-			case *sql.NullFloat64:
-				v, e := val.Value()
-				if e == nil {
-					rec[cols[i]] = v
-				}
-			case *sql.NullBool:
-				v, e := val.Value()
-				if e == nil {
-					rec[cols[i]] = v
-				}
-			default:
-				rec[cols[i]] = val
-			}
-		}
-		if w != nil {
-			if rowCount == 0 {
-				if sep != "" {
-					writtenResults = true
-					w.Write([]byte("[\n"))
-					defer w.Write([]byte("]\n"))
-				}
-			}
-			err = enc.Encode(rec)
-			if err != nil {
-				return Error(err, EncodeErrorCode, "", "dbs.execute")
-			}
-		}
-		rowCount += 1
-	}
-	if err = rows.Err(); err != nil {
-		return Error(err, RowsScanErrorCode, "", "dbs.execute")
-	}
-	// make sure we write proper response if no result written
-	if sep != "" && !writtenResults {
-		w.Write([]byte("[]"))
-	}
-	return nil
-}
-
-// helper function to execute sessions
-func executeSessions(tx *sql.Tx, sessions []string) error {
-	// sessions should be executed only for ORACLE backend
-	if !utils.ORACLE {
-		return nil
-	}
-	for _, s := range sessions {
-		_, err := tx.Exec(s)
-		if err != nil {
-			msg := fmt.Sprintf("DB session statement")
-			log.Println(msg, "\n###", s)
-			return Error(err, SessionErrorCode, "", "dbs.executeSession")
-		}
 	}
 	return nil
 }
@@ -884,7 +866,7 @@ func runsClause(table string, runs []string) (string, string, []string) {
 // AddParam adds single parameter to SQL statement
 func AddParam(
 	name, sqlName string,
-	params Record,
+	params map[string]any,
 	conds []string,
 	args []interface{}) ([]string, []interface{}) {
 
@@ -1001,7 +983,7 @@ func RunsConditions(runs []string, table string) (string, []string, []interface{
 }
 
 // helper function to extract from dbs record string attribute value
-func getString(record Record, attr string) string {
+func getString(record map[string]any, attr string) string {
 	if val, ok := record[attr]; ok {
 		if utils.VERBOSE > 1 {
 			log.Printf("getString %+v attribute %s value type %T", record, attr, val)
@@ -1019,7 +1001,7 @@ func getString(record Record, attr string) string {
 }
 
 // helper function to extract from dbs record int64 attribute value
-func getInt64(record Record, attr string) int64 {
+func getInt64(record map[string]any, attr string) int64 {
 	if val, ok := record[attr]; ok {
 		if utils.VERBOSE > 1 {
 			log.Printf("getInt64 %+v attribute %s value type %T", record, attr, val)

@@ -1,5 +1,8 @@
 package dbs
 
+// DBS dataset module
+// Copyright (c) 2023 - Valentin Kuznetsov <vkuznet@gmail.com>
+//
 import (
 	"database/sql"
 	"encoding/json"
@@ -44,7 +47,7 @@ func (a *API) GetDataset() error {
 	}
 	var args []interface{}
 	var conds []string
-	tmpl := make(Record)
+	tmpl := make(map[string]any)
 	tmpl["Owner"] = DBOWNER
 
 	if val, ok := a.Params["dataset"]; ok {
@@ -66,32 +69,10 @@ func (a *API) GetDataset() error {
 	if err != nil {
 		return Error(err, LoadErrorCode, "", "dbs.datasets.Datasets")
 	}
-	cols := []string{
-		"dataset",
-		"meta_id",
-		"site",
-		"processing",
-		"parent",
-		"create_by",
-		"create_at",
-		"modify_by",
-		"modify_at",
-	}
-	vals := []interface{}{
-		new(sql.NullString),  // dataset
-		new(sql.NullString),  // meta_id
-		new(sql.NullString),  // site
-		new(sql.NullString),  // processing
-		new(sql.NullString),  // parent
-		new(sql.NullString),  // create_by
-		new(sql.NullFloat64), // create_at
-		new(sql.NullString),  // modify_by
-		new(sql.NullFloat64), // modify_at
-	}
 	stm = WhereClause(stm, conds)
 
 	// use generic query API to fetch the results from DB
-	err = execute(a.Writer, a.Separator, stm, cols, vals, args...)
+	err = executeAll(a.Writer, a.Separator, stm, args...)
 	if err != nil {
 		return Error(err, QueryErrorCode, "", "dbs.datasets.Datasets")
 	}

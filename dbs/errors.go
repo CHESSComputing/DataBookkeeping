@@ -1,5 +1,8 @@
 package dbs
 
+// DBS errors module
+// Copyright (c) 2023 - Valentin Kuznetsov <vkuznet@gmail.com>
+//
 import (
 	"errors"
 	"fmt"

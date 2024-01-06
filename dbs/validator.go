@@ -1,5 +1,8 @@
 package dbs
 
+// DBS validator module
+// Copyright (c) 2023 - Valentin Kuznetsov <vkuznet@gmail.com>
+//
 import (
 	"encoding/json"
 	"fmt"
@@ -376,7 +379,7 @@ func CheckPattern(key, value string) error {
 }
 
 // ValidatePostPayload function to validate POST request
-func ValidatePostPayload(rec Record) error {
+func ValidatePostPayload(rec map[string]any) error {
 	for key, val := range rec {
 		errMsg := fmt.Sprintf("unable to match '%s' value '%+v'", key, val)
 		if key == "data_tier_name" {

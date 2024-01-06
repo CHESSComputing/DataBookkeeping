@@ -65,6 +65,7 @@ func setupRouter() *gin.Engine {
 		server.Route{Method: "DELETE", Path: "/file/*name", Handler: FileHandler, Authorized: true, Scope: "write"},
 	}
 	r := server.Router(routes, nil, "static", srvConfig.Config.DataBookkeeping.WebServer)
+	r.Use(server.CounterMiddleware())
 	return r
 }
 

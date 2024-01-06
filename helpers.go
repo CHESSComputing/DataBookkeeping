@@ -1,5 +1,8 @@
 package main
 
+// DBS helpers module
+// Copyright (c) 2023 - Valentin Kuznetsov <vkuznet@gmail.com>
+//
 import (
 	"encoding/json"
 	"errors"
@@ -89,10 +92,10 @@ func responseMsg(w http.ResponseWriter, r *http.Request, err error, code int) in
 }
 
 // helper function to parse POST HTTP request payload
-func parsePayload(r *http.Request) (dbs.Record, error) {
+func parsePayload(r *http.Request) (map[string]any, error) {
 	defer r.Body.Close()
 	decoder := json.NewDecoder(r.Body)
-	params := make(dbs.Record)
+	params := make(map[string]any)
 	err := decoder.Decode(&params)
 	if err != nil {
 		return nil, dbs.Error(err, dbs.DecodeErrorCode, "unable to decode HTTP post payload", "web.parsePayload")
