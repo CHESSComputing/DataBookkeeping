@@ -21,7 +21,6 @@ import (
 	"time"
 
 	"github.com/CHESSComputing/DataBookkeeping/utils"
-	services "github.com/CHESSComputing/golib/services"
 	validator "github.com/go-playground/validator/v10"
 )
 
@@ -341,110 +340,6 @@ func CleanStatement(stm string) string {
 	return stm
 }
 
-//gocyclo:ignore
-func executeAll(w io.Writer, sep, stm string, args ...interface{}) error {
-	if sep == "," {
-		// with comma separate we will yield JSON
-		return executeAllJson(w, stm, args...)
-	}
-	// otherwise we will stream data as NDJSON
-	return executeAllJsonStream(w, sep, stm, args...)
-}
-func executeAllJson(w io.Writer, stm string, args ...interface{}) error {
-	stm = CleanStatement(stm)
-	if DRYRUN {
-		utils.PrintSQL(stm, args, "")
-		return nil
-	}
-	if utils.VERBOSE > 1 {
-		utils.PrintSQL(stm, args, "execute")
-	}
-	// execute transaction
-	tx, err := DB.Begin()
-	if err != nil {
-		return Error(err, TransactionErrorCode, "", "dbs.executeAll")
-	}
-	defer tx.Rollback()
-	rows, err := tx.Query(stm, args...)
-	if err != nil {
-		msg := fmt.Sprintf("unable to query statement: %v", stm)
-		log.Println(msg)
-		return Error(err, QueryErrorCode, "", "dbs.executeAll")
-	}
-	defer rows.Close()
-
-	// extract columns from Rows object and create values & valuesPtrs to retrieve results
-	columns, _ := rows.Columns()
-	var cols []string
-	count := len(columns)
-	values := make([]interface{}, count)
-	valuePtrs := make([]interface{}, count)
-	rowCount := 0
-	var records []map[string]any
-	for rows.Next() {
-		if rowCount == 0 {
-			// initialize value pointers
-			for i := range columns {
-				valuePtrs[i] = &values[i]
-			}
-		}
-		err := rows.Scan(valuePtrs...)
-		if err != nil {
-			return Error(err, RowsScanErrorCode, "", "dbs.executeAll")
-		}
-		// store results into generic record (a dict)
-		rec := make(map[string]any)
-		for i, col := range columns {
-			if len(cols) != len(columns) {
-				cols = append(cols, strings.ToLower(col))
-			}
-			vvv := values[i]
-			switch val := vvv.(type) {
-			case *sql.NullString:
-				v, e := val.Value()
-				if e == nil {
-					rec[cols[i]] = v
-				}
-			case *sql.NullInt64:
-				v, e := val.Value()
-				if e == nil {
-					rec[cols[i]] = v
-				}
-			case *sql.NullFloat64:
-				v, e := val.Value()
-				if e == nil {
-					rec[cols[i]] = v
-				}
-			case *sql.NullBool:
-				v, e := val.Value()
-				if e == nil {
-					rec[cols[i]] = v
-				}
-			default:
-				rec[cols[i]] = val
-			}
-		}
-		records = append(records, rec)
-		rowCount += 1
-	}
-	if err = rows.Err(); err != nil {
-		return Error(err, RowsScanErrorCode, "", "dbs.executeAll")
-	}
-
-	// make sure we write proper response if no result written
-	response := services.ServiceResponse{
-		Service:      "dbs",
-		HttpCode:     http.StatusOK,
-		SrvCode:      0,
-		Status:       "ok",
-		Results:      services.ServiceResults{NRecords: rowCount, Records: records},
-		ServiceQuery: services.ServiceQuery{SQL: stm},
-		Timestamp:    time.Now().String()}
-	data := response.JsonBytes()
-	w.Write(data)
-	return nil
-}
-
 // generic API to execute given statement
 // ideas are taken from
 // http://stackoverflow.com/questions/17845619/how-to-call-the-scan-variadic-function-in-golang-using-reflection
@@ -453,7 +348,7 @@ func executeAllJson(w io.Writer, stm string, args ...interface{}) error {
 // to writer)
 //
 //gocyclo:ignore
-func executeAllJsonStream(w io.Writer, sep, stm string, args ...interface{}) error {
+func executeAll(w io.Writer, sep, stm string, args ...interface{}) error {
 	stm = CleanStatement(stm)
 	if DRYRUN {
 		utils.PrintSQL(stm, args, "")
