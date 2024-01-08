@@ -41,7 +41,7 @@ Here is an example of HTTP POST request
 # record.json
 {
   "buckets": [
-    "minerals"
+    "bucketABC"
   ],
   "dataset": "/a/b/c",
   "files": [
