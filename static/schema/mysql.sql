@@ -14,7 +14,7 @@ CREATE TABLE parents (
     modify_at INTEGER,
     modify_by VARCHAR(255)
 );
-CREATE TABLE site (
+CREATE TABLE sites (
     site_id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
     site VARCHAR(255) NOT NULL UNIQUE,
     create_at INTEGER,
