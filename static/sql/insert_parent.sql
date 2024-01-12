@@ -1,4 +1,4 @@
-INSERT INTO PARENTS
+INSERT INTO parents
     (parent_id,parent,
      create_at,create_by,
      modify_at,modify_by)

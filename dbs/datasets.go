@@ -52,12 +52,12 @@ func (a *API) GetDataset() error {
 
 	if val, ok := a.Params["dataset"]; ok {
 		if val != "" {
-			conds, args = AddParam("dataset", "D.DATASET", a.Params, conds, args)
+			conds, args = AddParam("dataset", "D.dataset", a.Params, conds, args)
 		}
 	}
 	if val, ok := a.Params["did"]; ok {
 		if val != "" {
-			conds, args = AddParam("did", "D.META_ID", a.Params, conds, args)
+			conds, args = AddParam("did", "D.meta_id", a.Params, conds, args)
 		}
 	}
 	if utils.VERBOSE > 0 {
@@ -130,13 +130,13 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 	var siteId, processingId, parentId, datasetId int64
 
 	// insert site info
-	siteId, err = GetID(tx, "SITES", "SITE_ID", "site", rec.Site)
+	siteId, err = GetID(tx, "sites", "site_id", "site", rec.Site)
 	if err != nil {
 		site := Sites{SITE: rec.Site}
 		if err = site.Insert(tx); err != nil {
 			return err
 		}
-		siteId, err = GetID(tx, "SITES", "SITE_ID", "site", rec.Site)
+		siteId, err = GetID(tx, "sites", "site_id", "site", rec.Site)
 		if err != nil {
 			return err
 		}
@@ -144,13 +144,13 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 	record.SITE_ID = siteId
 
 	// insert processing info
-	processingId, err = GetID(tx, "PROCESSING", "PROCESSING_ID", "processing", rec.Processing)
+	processingId, err = GetID(tx, "processing", "processing_id", "processing", rec.Processing)
 	if err != nil {
 		processing := Processing{PROCESSING: rec.Processing}
 		if err = processing.Insert(tx); err != nil {
 			return err
 		}
-		processingId, err = GetID(tx, "PROCESSING", "PROCESSING_ID", "processing", rec.Processing)
+		processingId, err = GetID(tx, "processing", "processing_id", "processing", rec.Processing)
 		if err != nil {
 			return err
 		}
@@ -158,14 +158,14 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 	record.PROCESSING_ID = processingId
 
 	// insert parent info
-	parentId, err = GetID(tx, "PARENTS", "PARENT_ID", "parent", rec.Parent)
+	parentId, err = GetID(tx, "parents", "parent_id", "parent", rec.Parent)
 	if err != nil {
 		if rec.Parent != "" {
 			parent := Parents{PARENT: rec.Parent}
 			if err = parent.Insert(tx); err != nil {
 				return err
 			}
-			parentId, err = GetID(tx, "PARENTS", "PARENT_ID", "parent", rec.Parent)
+			parentId, err = GetID(tx, "parents", "parent_id", "parent", rec.Parent)
 			if err != nil {
 				return err
 			}
@@ -174,7 +174,7 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 	record.PARENT_ID = parentId
 
 	// insert dataset info
-	datasetId, err = GetID(tx, "DATASETS", "DATASET_ID", "dataset", rec.Dataset)
+	datasetId, err = GetID(tx, "datasets", "dataset_id", "dataset", rec.Dataset)
 	if err != nil {
 		record.SITE_ID = siteId
 		record.PARENT_ID = parentId
@@ -182,7 +182,7 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 		if err = record.Insert(tx); err != nil {
 			return err
 		}
-		datasetId, err = GetID(tx, "DATASETS", "DATASET_ID", "dataset", rec.Dataset)
+		datasetId, err = GetID(tx, "datasets", "dataset_id", "dataset", rec.Dataset)
 		if err != nil {
 			return err
 		}
@@ -233,7 +233,7 @@ func (r *Datasets) Insert(tx *sql.Tx) error {
 	var err error
 	if r.DATASET_ID == 0 {
 		if DBOWNER == "sqlite" {
-			tid, err = LastInsertID(tx, "DATASETS", "dataset_id")
+			tid, err = LastInsertID(tx, "datasets", "dataset_id")
 			r.DATASET_ID = tid + 1
 		} else {
 			tid, err = IncrementSequence(tx, "SEQ_DS")

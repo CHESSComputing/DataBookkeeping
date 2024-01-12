@@ -73,7 +73,7 @@ func (a *API) DeleteBucket() error {
 func (r *Buckets) Insert(tx *sql.Tx) error {
 	var err error
 	if r.BUCKET_ID == 0 {
-		bucketID, err := getNextId(tx, "BUCKETS", "BUCKET_ID")
+		bucketID, err := getNextId(tx, "buckets", "bucket_id")
 		if err != nil {
 			log.Println("unable to get bucketID", err)
 			return Error(err, ParametersErrorCode, "", "dbs.buckets.Insert")

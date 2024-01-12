@@ -71,7 +71,7 @@ func (a *API) DeleteParent() error {
 func (r *Parents) Insert(tx *sql.Tx) error {
 	var err error
 	if r.PARENT_ID == 0 {
-		parentID, err := getNextId(tx, "PARENTS", "PARENT_ID")
+		parentID, err := getNextId(tx, "parents", "parent_id")
 		if err != nil {
 			log.Println("unable to get parentID", err)
 			return Error(err, ParametersErrorCode, "", "dbs.parents.Insert")

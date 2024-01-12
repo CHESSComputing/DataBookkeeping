@@ -1,4 +1,4 @@
-INSERT INTO SITES
+INSERT INTO sites
     (site_id,site,
      create_at,create_by,
      modify_at,modify_by)

@@ -1,4 +1,4 @@
-INSERT INTO FILES
+INSERT INTO files
     (file_id,file,is_file_valid,
      dataset_id,meta_id,
      create_at,create_by,

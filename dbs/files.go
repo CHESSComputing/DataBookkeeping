@@ -43,17 +43,17 @@ func (a *API) GetFile() error {
 	}
 	if val, ok := a.Params["file"]; ok {
 		if val != "" {
-			conds, args = AddParam("file", "F.FILE", a.Params, conds, args)
+			conds, args = AddParam("file", "F.file", a.Params, conds, args)
 		}
 	}
 	if val, ok := a.Params["dataset"]; ok {
 		if val != "" {
-			conds, args = AddParam("dataset", "D.DATASET", a.Params, conds, args)
+			conds, args = AddParam("dataset", "D.dataset", a.Params, conds, args)
 		}
 	}
 	if val, ok := a.Params["did"]; ok {
 		if val != "" {
-			conds, args = AddParam("did", "F.META_ID", a.Params, conds, args)
+			conds, args = AddParam("did", "F.meta_id", a.Params, conds, args)
 		}
 	}
 	if utils.VERBOSE > 0 {
@@ -94,7 +94,7 @@ func (a *API) DeleteFile() error {
 func (r *Files) Insert(tx *sql.Tx) error {
 	var err error
 	if r.FILE_ID == 0 {
-		fileID, err := getNextId(tx, "FILES", "FILE_ID")
+		fileID, err := getNextId(tx, "files", "file_id")
 		if err != nil {
 			log.Println("unable to get fileID", err)
 			return Error(err, ParametersErrorCode, "", "dbs.files.Insert")

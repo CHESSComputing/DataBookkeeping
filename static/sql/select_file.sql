@@ -1,2 +1,2 @@
-SELECT * FROM FILES F
-JOIN DATASETS D on D.DATASET_ID = F.DATASET_ID
+SELECT * FROM files F
+JOIN datasets D on D.dataset_id = F.dataset_id

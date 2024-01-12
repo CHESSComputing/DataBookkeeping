@@ -1,4 +1,4 @@
-INSERT INTO BUCKETS
+INSERT INTO buckets
     (bucket_id,bucket,meta_id,dataset_id,
      create_at,create_by,
      modify_at,modify_by)

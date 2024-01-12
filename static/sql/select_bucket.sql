@@ -1,1 +1,1 @@
-SELECT * FROM BUCKETS B;
+SELECT * FROM buckets B;

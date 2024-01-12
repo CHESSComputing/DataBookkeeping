@@ -1,14 +1,14 @@
 SELECT
-    D.DATASET,
-    D.META_ID,
-    S.SITE,
-    PR.PROCESSING,
-    P.PARENT,
-    D.CREATE_BY,
-    D.CREATE_AT,
-    D.MODIFY_BY,
-    D.MODIFY_AT
-FROM DATASETS D
-JOIN SITES S on S.SITE_ID=D.SITE_ID
-JOIN PROCESSING PR on PR.PROCESSING_ID=D.PROCESSING_ID
-LEFT OUTER JOIN PARENTS P on P.PARENT_ID=D.PARENT_ID
+    D.dataset,
+    D.meta_id,
+    S.site,
+    PR.processing,
+    P.parent,
+    D.create_by,
+    D.create_at,
+    D.modify_by,
+    D.modify_at
+FROM datasets D
+JOIN sites S on S.site_id=D.site_id
+JOIN processing PR on PR.processing_id=D.processing_id
+LEFT OUTER JOIN parents P on P.parent_id=D.parent_id

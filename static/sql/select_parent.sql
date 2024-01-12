@@ -1,1 +1,1 @@
-SELECT * FROM PARENT PR;
+SELECT * FROM parent PR;
