@@ -74,7 +74,7 @@ func setupRouter() *gin.Engine {
 func dbInit(dbtype, dburi string) (*sql.DB, error) {
 	db, dberr := sql.Open(dbtype, dburi)
 	if dberr != nil {
-		log.Printf("unable to open %s, error %v", dbtype, dburi)
+		log.Printf("unable to open dbtype=%s dburi=%s, error %v", dbtype, dburi, dberr)
 		return nil, dberr
 	}
 	dberr = db.Ping()
