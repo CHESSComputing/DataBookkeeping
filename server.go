@@ -44,6 +44,8 @@ import (
 	// imports for supported DB drivers
 	// go-sqlite driver
 	_ "github.com/mattn/go-sqlite3"
+	// mysql driver
+	_ "github.com/go-sql-driver/mysql"
 )
 
 // helper function to setup our router
