@@ -427,6 +427,12 @@ func executeAll(w io.Writer, sep, stm string, args ...interface{}) error {
 				if e == nil {
 					rec[cols[i]] = v
 				}
+			case []uint8: // somehow in MySQL all strings are represented as uint8
+				if DBOWNER == "mysql" {
+					rec[cols[i]] = string(val)
+				} else {
+					rec[cols[i]] = val
+				}
 			default:
 				rec[cols[i]] = val
 			}
