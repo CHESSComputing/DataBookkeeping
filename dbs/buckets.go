@@ -19,7 +19,7 @@ import (
 type Buckets struct {
 	BUCKET_ID  int64  `json:"bucket_id"`
 	BUCKET     string `json:"bucket" validate:"required"`
-	META_ID    string `json:"meta_id" validate:"required"`
+	META_ID    int64  `json:"meta_id" validate:"required"`
 	DATASET_ID int64  `json:"dataset_id" validate:"required"`
 	CREATE_AT  int64  `json:"create_at"`
 	CREATE_BY  string `json:"create_by"`

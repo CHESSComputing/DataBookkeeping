@@ -17,7 +17,7 @@ import (
 type Datasets struct {
 	DATASET_ID    int64  `json:"dataset_id"`
 	DATASET       string `json:"dataset" validate:"required"`
-	META_ID       string `json:"meta_id" validate:"required"`
+	META_ID       int64  `json:"meta_id" validate:"required"`
 	SITE_ID       int64  `json:"site_id" validate:"required"`
 	PROCESSING_ID int64  `json:"processing_id" validate:"required"`
 	PARENT_ID     int64  `json:"parent_id" validate:"required"`
@@ -57,7 +57,7 @@ func (a *API) GetDataset() error {
 	}
 	if val, ok := a.Params["did"]; ok {
 		if val != "" {
-			conds, args = AddParam("did", "D.meta_id", a.Params, conds, args)
+			conds, args = AddParam("did", "M.did", a.Params, conds, args)
 		}
 	}
 	if utils.VERBOSE > 0 {
@@ -108,7 +108,6 @@ func (a *API) InsertDataset() error {
 	// site, bucket, parent, processing, files
 	record := Datasets{
 		DATASET:   rec.Dataset,
-		META_ID:   rec.MetaId,
 		CREATE_BY: a.CreateBy,
 		MODIFY_BY: a.CreateBy,
 	}
@@ -127,7 +126,7 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 		return Error(err, TransactionErrorCode, "", "dbs.insertRecord")
 	}
 	defer tx.Rollback()
-	var siteId, processingId, parentId, datasetId int64
+	var siteId, processingId, parentId, datasetId, metaId int64
 
 	// insert site info
 	siteId, err = GetID(tx, "sites", "site_id", "site", rec.Site)
@@ -142,6 +141,20 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 		}
 	}
 	record.SITE_ID = siteId
+
+	// insert meta info
+	metaId, err = GetID(tx, "metadata", "meta_id", "did", rec.MetaId)
+	if err != nil {
+		meta := Metadata{DID: rec.MetaId}
+		if err = meta.Insert(tx); err != nil {
+			return err
+		}
+		metaId, err = GetID(tx, "metadata", "meta_id", "did", rec.MetaId)
+		if err != nil {
+			return err
+		}
+	}
+	record.META_ID = metaId
 
 	// insert processing info
 	processingId, err = GetID(tx, "processing", "processing_id", "processing", rec.Processing)
@@ -193,7 +206,7 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 		bucket := Buckets{
 			BUCKET:     b,
 			DATASET_ID: datasetId,
-			META_ID:    rec.MetaId,
+			META_ID:    metaId,
 		}
 		if err = bucket.Insert(tx); err != nil {
 			log.Printf("Bucket %+v already exist", bucket)
@@ -206,7 +219,7 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 			FILE:          f,
 			IS_FILE_VALID: 1, // by default all files are valid
 			DATASET_ID:    datasetId,
-			META_ID:       rec.MetaId,
+			META_ID:       metaId,
 			CREATE_BY:     record.CREATE_BY,
 			MODIFY_BY:     record.CREATE_BY,
 		}

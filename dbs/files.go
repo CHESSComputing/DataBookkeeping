@@ -22,7 +22,7 @@ type Files struct {
 	FILE          string `json:"file" validate:"required"`
 	IS_FILE_VALID int64  `json:"is_file_valid" validate:"number"`
 	DATASET_ID    int64  `json:"dataset_id" validate:"number,gt=0"`
-	META_ID       string `json:"meta_id" validate:"required"`
+	META_ID       int64  `json:"meta_id" validate:"required"`
 	CREATE_AT     int64  `json:"create_at" validate:"required,number,gt=0"`
 	CREATE_BY     string `json:"create_by" validate:"required"`
 	MODIFY_AT     int64  `json:"modify_at" validate:"required,number,gt=0"`
@@ -53,7 +53,7 @@ func (a *API) GetFile() error {
 	}
 	if val, ok := a.Params["did"]; ok {
 		if val != "" {
-			conds, args = AddParam("did", "F.meta_id", a.Params, conds, args)
+			conds, args = AddParam("did", "M.did", a.Params, conds, args)
 		}
 	}
 	if utils.VERBOSE > 0 {
