@@ -170,7 +170,7 @@ func LoadTemplateSQL(tmpl string, tmplData map[string]any) (string, error) {
 	if owner, ok := tmplData["Owner"]; ok && owner == "sqlite" {
 		stm = strings.Replace(stm, "sqlite.", "", -1)
 	}
-	if DBOWNER == "sqlite" {
+	if DBOWNER == "sqlite" || DBOWNER == "mysql" {
 		stm = utils.ReplaceBinds(stm)
 	}
 	return stm, nil
@@ -245,7 +245,7 @@ func getSQL(key string) string {
 		log.Fatal(msg)
 	}
 	stm := val.(string)
-	if DBOWNER == "sqlite" {
+	if DBOWNER == "sqlite" || DBOWNER == "mysql" {
 		stm = utils.ReplaceBinds(stm)
 	}
 	return stm
@@ -459,7 +459,7 @@ func executeAll(w io.Writer, sep, stm string, args ...interface{}) error {
 // QueryRow function fetches results from given table
 func QueryRow(table, id, attr string, val interface{}) (int64, error) {
 	var stm string
-	if DBOWNER == "sqlite" {
+	if DBOWNER == "sqlite" || DBOWNER == "mysql" {
 		stm = fmt.Sprintf("SELECT %s FROM %s WHERE %s = ?", id, table, attr)
 	} else {
 		stm = fmt.Sprintf("SELECT T.%s FROM %s.%s T WHERE T.%s = :%s", id, DBOWNER, table, attr, attr)
@@ -482,7 +482,7 @@ func QueryRow(table, id, attr string, val interface{}) (int64, error) {
 // GetID function fetches table primary id for a given value
 func GetID(tx *sql.Tx, table, id, attr string, val ...interface{}) (int64, error) {
 	var stm string
-	if DBOWNER == "sqlite" {
+	if DBOWNER == "sqlite" || DBOWNER == "mysql" {
 		stm = fmt.Sprintf("SELECT %s FROM %s WHERE %s = ?", id, table, attr)
 	} else {
 		stm = fmt.Sprintf("SELECT T.%s FROM %s.%s T WHERE T.%s = :%s", id, DBOWNER, table, attr, attr)
@@ -535,7 +535,7 @@ func GetRecID(tx *sql.Tx, rec DBRecord, table, id, attr string, val ...interface
 func IfExistMulti(tx *sql.Tx, table, rid string, args []string, vals ...interface{}) bool {
 	var stm string
 	var wheres []string
-	if DBOWNER == "sqlite" {
+	if DBOWNER == "sqlite" || DBOWNER == "mysql" {
 		stm = fmt.Sprintf("SELECT %s FROM %s", rid, table)
 		for _, a := range args {
 			wheres = append(wheres, fmt.Sprintf("%s=?", a))
@@ -633,7 +633,7 @@ func ParseRuns(runs []string) ([]string, error) {
 
 // TokenGenerator creates a SQL token generator statement
 func TokenGenerator(runs []string, limit int, name string) (string, []string) {
-	if DBOWNER == "sqlite" {
+	if DBOWNER == "sqlite" || DBOWNER == "mysql" {
 		return TokenGeneratorSQLite(runs, name)
 	}
 	return TokenGeneratorORACLE(runs, limit, name)
@@ -681,7 +681,7 @@ func TokenGeneratorSQLite(runs []string, name string) (string, []string) {
 
 // TokenCondition provides proper condition statement for TokenGenerator
 func TokenCondition() string {
-	if DBOWNER == "sqlite" {
+	if DBOWNER == "sqlite" || DBOWNER == "mysql" {
 		return "(SELECT token FROM TOKEN_GENERATOR WHERE token <> '')"
 	}
 	return "(SELECT TOKEN FROM TOKEN_GENERATOR)"
@@ -786,7 +786,7 @@ func AddParam(
 // IncrementSequences API provide a way to get N unique IDs for given sequence name
 func IncrementSequences(tx *sql.Tx, seq string, n int) ([]int64, error) {
 	var out []int64
-	if DBOWNER == "sqlite" {
+	if DBOWNER == "sqlite" || DBOWNER == "mysql" {
 		ts := time.Now().UnixNano()
 		for i := 0; i < n; i++ {
 			out = append(out, ts+int64(i))
@@ -819,7 +819,7 @@ func IncrementSequence(tx *sql.Tx, seq string) (int64, error) {
 // LastInsertID returns last insert id of given table and idname parameter
 func LastInsertID(tx *sql.Tx, table, idName string) (int64, error) {
 	stm := fmt.Sprintf("select MAX(%s) from %s.%s", idName, DBOWNER, table)
-	if DBOWNER == "sqlite" {
+	if DBOWNER == "sqlite" || DBOWNER == "mysql" {
 		stm = fmt.Sprintf("select MAX(%s) from %s", idName, table)
 	}
 	var pid sql.NullFloat64
@@ -917,7 +917,7 @@ func getInt64(record map[string]any, attr string) int64 {
 func getNextId(tx *sql.Tx, table, tableId string) (int64, error) {
 	var err error
 	var tid int64
-	if DBOWNER == "sqlite" {
+	if DBOWNER == "sqlite" || DBOWNER == "mysql" {
 		tid, err = LastInsertID(tx, table, tableId)
 		tid += 1
 	} else {

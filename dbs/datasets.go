@@ -232,7 +232,7 @@ func (r *Datasets) Insert(tx *sql.Tx) error {
 	var tid int64
 	var err error
 	if r.DATASET_ID == 0 {
-		if DBOWNER == "sqlite" {
+		if DBOWNER == "sqlite" || DBOWNER == "mysql" {
 			tid, err = LastInsertID(tx, "datasets", "dataset_id")
 			r.DATASET_ID = tid + 1
 		} else {
