@@ -27,7 +27,6 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"strings"
 
@@ -126,8 +125,8 @@ func Server() {
 	dbs.DBOWNER = dbowner
 	defer dbs.DB.Close()
 
+	// setup web router and start the service
 	r := setupRouter()
-	sport := fmt.Sprintf(":%d", srvConfig.Config.DataBookkeeping.WebServer.Port)
-	log.Printf("Start HTTP server %s", sport)
-	r.Run(sport)
+	webServer := srvConfig.Config.DataBookkeeping.WebServer
+	server.StartServer(r, webServer)
 }
