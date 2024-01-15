@@ -97,7 +97,7 @@ testdb:
 test : testdb test_code
 
 test_code:
-	touch $HOME/.foxden.yaml
+	touch ~/.foxden.yaml
 	rm -f /tmp/dbs-test.db && \
 	sqlite3 /tmp/dbs-test.db < ./static/schema/sqlite.sql && \
 	LD_LIBRARY_PATH=${odir} DYLD_LIBRARY_PATH=${odir} \
