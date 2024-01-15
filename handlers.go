@@ -15,7 +15,7 @@ import (
 	"strings"
 
 	"github.com/CHESSComputing/DataBookkeeping/dbs"
-	"github.com/CHESSComputing/DataBookkeeping/utils"
+	"github.com/CHESSComputing/golib/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -94,7 +94,7 @@ func getApi(c *gin.Context, a string) (*dbs.API, error) {
 		}
 		defer r.Body.Close()
 		//         var params dbs.Record
-		if utils.VERBOSE > 0 {
+		if Verbose > 0 {
 			dn, _ := r.Header["Cms-Authn-Dn"]
 			log.Printf("DBSPostHandler: API=%s, dn=%s, uri=%s", a, dn, requestURI(r))
 		}
@@ -154,7 +154,7 @@ func getApi(c *gin.Context, a string) (*dbs.API, error) {
 		}
 	}
 
-	if utils.VERBOSE > 0 {
+	if Verbose > 0 {
 		log.Println("Call DBS API", api.String())
 	}
 	return api, nil

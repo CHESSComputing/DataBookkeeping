@@ -3,18 +3,19 @@ module github.com/CHESSComputing/DataBookkeeping
 go 1.21.6
 
 require (
-	github.com/CHESSComputing/golib v0.0.7
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-playground/validator/v10 v10.16.0
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/prometheus/procfs v0.12.0
 	golang.org/x/exp v0.0.0-20240112132812-db7319d0e0e3
+	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (
 	cloud.google.com/go/compute v1.23.3 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
+	github.com/CHESSComputing/golib v0.0.7 // indirect
 	github.com/bytedance/sonic v1.9.1 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
 	github.com/dchest/captcha v1.0.0 // indirect

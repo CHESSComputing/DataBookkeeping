@@ -11,8 +11,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-
-	"github.com/CHESSComputing/DataBookkeeping/utils"
 )
 
 // Buckets represents Buckets DBS DB table
@@ -89,9 +87,9 @@ func (r *Buckets) Insert(tx *sql.Tx) error {
 	}
 	// get SQL statement from static area
 	stm := getSQL("insert_bucket")
-	if utils.VERBOSE > 0 {
+	if Verbose > 0 {
 		log.Printf("Insert Buckets record %+v", r)
-	} else if utils.VERBOSE > 1 {
+	} else if Verbose > 1 {
 		log.Printf("Insert Buckets\n%s\n%+v", stm, r)
 	}
 	_, err = tx.Exec(
@@ -105,7 +103,7 @@ func (r *Buckets) Insert(tx *sql.Tx) error {
 		r.MODIFY_AT,
 		r.MODIFY_BY)
 	if err != nil {
-		if utils.VERBOSE > 0 {
+		if Verbose > 0 {
 			log.Println("unable to insert buckets, error", err)
 		}
 		return Error(err, InsertErrorCode, "", "dbs.buckets.Insert")

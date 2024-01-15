@@ -28,10 +28,8 @@ package main
 import (
 	"database/sql"
 	"log"
-	"strings"
 
 	"github.com/CHESSComputing/DataBookkeeping/dbs"
-	"github.com/CHESSComputing/DataBookkeeping/utils"
 	srvConfig "github.com/CHESSComputing/golib/config"
 	server "github.com/CHESSComputing/golib/server"
 	"github.com/gin-gonic/gin"
@@ -46,6 +44,9 @@ import (
 	// mysql driver
 	_ "github.com/go-sql-driver/mysql"
 )
+
+// Verbose controls verbosity level
+var Verbose int
 
 // helper function to setup our router
 func setupRouter() *gin.Engine {
@@ -100,18 +101,14 @@ func Server() {
 
 	// initialize record validator
 	dbs.RecordValidator = validator.New()
+	Verbose = srvConfig.Config.DataBookkeeping.WebServer.Verbose
+	dbs.Verbose = Verbose
+	dbs.StaticDir = srvConfig.Config.DataBookkeeping.WebServer.StaticDir
 
 	// set database connection once
 	log.Println("parse Config.DBFile:", srvConfig.Config.DataBookkeeping.DBFile)
 	dbtype, dburi, dbowner := dbs.ParseDBFile(srvConfig.Config.DataBookkeeping.DBFile)
-	// for oci driver we know it is oracle backend
-	if strings.HasPrefix(dbtype, "oci") {
-		utils.ORACLE = true
-	}
 	log.Println("DBOWNER", dbowner)
-	// set static dir
-	utils.STATICDIR = srvConfig.Config.DataBookkeeping.WebServer.StaticDir
-	utils.VERBOSE = srvConfig.Config.DataBookkeeping.WebServer.Verbose
 
 	// setup DBS
 	db, dberr := dbInit(dbtype, dburi)

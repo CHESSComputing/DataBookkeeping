@@ -20,9 +20,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/CHESSComputing/DataBookkeeping/utils"
 	validator "github.com/go-playground/validator/v10"
 )
+
+// Verbose controls verbosity level
+var Verbose int
+
+// StaticDir provides location of static directory
+var StaticDir string
 
 // API structure represents DBS API. Each API has reader (to read
 // HTTP POST payload), HTTP writer to write results back to client,
@@ -121,7 +126,7 @@ func insertRecord(rec DBRecord, r io.Reader) error {
 		log.Println(msg)
 		return Error(err, DecodeErrorCode, msg, "dbs.insertRecord")
 	}
-	if utils.VERBOSE > 2 {
+	if Verbose > 2 {
 		log.Printf("insertRecord %+v", rec)
 	}
 
@@ -133,7 +138,7 @@ func insertRecord(rec DBRecord, r io.Reader) error {
 	defer tx.Rollback()
 
 	// set defaults
-	if utils.VERBOSE > 2 {
+	if Verbose > 2 {
 		log.Printf("insert record %+v", rec)
 	}
 	err = rec.Insert(tx)
@@ -144,7 +149,7 @@ func insertRecord(rec DBRecord, r io.Reader) error {
 	}
 
 	// commit transaction
-	if utils.VERBOSE > 2 {
+	if Verbose > 2 {
 		log.Printf("record %+v tx.Commit", rec)
 	}
 	err = tx.Commit()
@@ -156,14 +161,14 @@ func insertRecord(rec DBRecord, r io.Reader) error {
 
 // LoadTemplateSQL function loads DBS SQL templated statements
 func LoadTemplateSQL(tmpl string, tmplData map[string]any) (string, error) {
-	sdir := fmt.Sprintf("%s/sql", utils.STATICDIR)
+	sdir := fmt.Sprintf("%s/sql", StaticDir)
 	if !strings.HasSuffix(tmpl, ".sql") {
 		tmpl += ".sql"
 	}
-	if utils.VERBOSE > 1 {
+	if Verbose > 1 {
 		log.Println("load template", tmpl)
 	}
-	stm, err := utils.ParseTmpl(sdir, tmpl, tmplData)
+	stm, err := ParseTmpl(sdir, tmpl, tmplData)
 	if err != nil {
 		return "", Error(err, LoadErrorCode, "", "dbs.LoadTemplateSQL")
 	}
@@ -171,7 +176,7 @@ func LoadTemplateSQL(tmpl string, tmplData map[string]any) (string, error) {
 		stm = strings.Replace(stm, "sqlite.", "", -1)
 	}
 	if DBOWNER == "sqlite" || DBOWNER == "mysql" {
-		stm = utils.ReplaceBinds(stm)
+		stm = ReplaceBinds(stm)
 	}
 	return stm, nil
 }
@@ -180,14 +185,14 @@ func LoadTemplateSQL(tmpl string, tmplData map[string]any) (string, error) {
 func LoadSQL(owner string) map[string]any {
 	tmplData := make(map[string]any)
 	tmplData["Owner"] = owner
-	sdir := fmt.Sprintf("%s/sql", utils.STATICDIR)
-	if utils.VERBOSE > 1 {
+	sdir := fmt.Sprintf("%s/sql", StaticDir)
+	if Verbose > 1 {
 		log.Println("sql area", sdir)
 	}
 	dbsql := make(map[string]any)
-	for _, f := range utils.ListFiles(sdir) {
+	for _, f := range ListFiles(sdir) {
 		k := strings.Split(f, ".")[0]
-		stm, err := utils.ParseTmpl(sdir, f, tmplData)
+		stm, err := ParseTmpl(sdir, f, tmplData)
 		if err != nil {
 			log.Fatal("unable to parse template", err)
 		}
@@ -211,8 +216,8 @@ func GetTestData() error {
 	if err != nil {
 		return Error(err, LoadErrorCode, "", "dbs.GetTestData")
 	}
-	if utils.VERBOSE > 1 {
-		utils.PrintSQL(stm, args, "execute")
+	if Verbose > 1 {
+		PrintSQL(stm, args, "execute")
 	}
 	tx, err := DB.Begin()
 	if err != nil {
@@ -246,7 +251,7 @@ func getSQL(key string) string {
 	}
 	stm := val.(string)
 	if DBOWNER == "sqlite" || DBOWNER == "mysql" {
-		stm = utils.ReplaceBinds(stm)
+		stm = ReplaceBinds(stm)
 	}
 	return stm
 }
@@ -351,11 +356,11 @@ func CleanStatement(stm string) string {
 func executeAll(w io.Writer, sep, stm string, args ...interface{}) error {
 	stm = CleanStatement(stm)
 	if DRYRUN {
-		utils.PrintSQL(stm, args, "")
+		PrintSQL(stm, args, "")
 		return nil
 	}
-	if utils.VERBOSE > 1 {
-		utils.PrintSQL(stm, args, "execute")
+	if Verbose > 1 {
+		PrintSQL(stm, args, "execute")
 	}
 	var enc *json.Encoder
 	if w != nil {
@@ -470,14 +475,14 @@ func QueryRow(table, id, attr string, val interface{}) (int64, error) {
 	} else {
 		stm = fmt.Sprintf("SELECT T.%s FROM %s.%s T WHERE T.%s = :%s", id, DBOWNER, table, attr, attr)
 	}
-	if utils.VERBOSE > 1 {
+	if Verbose > 1 {
 		log.Printf("QueryRow\n%s; binding value=%+v", stm, val)
 	}
 	// in SQLite the ids are int64 while on ORACLE they are float64
 	var tid int64
 	err := DB.QueryRow(stm, val).Scan(&tid)
 	if err != nil {
-		if utils.VERBOSE > 1 {
+		if Verbose > 1 {
 			log.Printf("fail to get id for %s, %v, error %v", stm, val, err)
 		}
 		return int64(tid), Error(err, QueryErrorCode, "", "dbs.GetID")
@@ -493,14 +498,14 @@ func GetID(tx *sql.Tx, table, id, attr string, val ...interface{}) (int64, error
 	} else {
 		stm = fmt.Sprintf("SELECT T.%s FROM %s.%s T WHERE T.%s = :%s", id, DBOWNER, table, attr, attr)
 	}
-	if utils.VERBOSE > 1 {
+	if Verbose > 1 {
 		log.Printf("getID\n%s; binding value=%+v", stm, val)
 	}
 	// in SQLite the ids are int64 while on ORACLE they are float64
 	var tid int64
 	err := tx.QueryRow(stm, val...).Scan(&tid)
 	if err != nil {
-		if utils.VERBOSE > 1 {
+		if Verbose > 1 {
 			log.Printf("fail to get id for %s, %v, error %v", stm, val, err)
 		}
 		return int64(tid), Error(err, QueryErrorCode, "", "dbs.GetID")
@@ -512,7 +517,7 @@ func GetID(tx *sql.Tx, table, id, attr string, val ...interface{}) (int64, error
 func GetRecID(tx *sql.Tx, rec DBRecord, table, id, attr string, val ...interface{}) (int64, error) {
 	rid, err := GetID(tx, table, id, attr, val...)
 	if err != nil {
-		if utils.VERBOSE > 1 {
+		if Verbose > 1 {
 			log.Printf("unable to find %s for %v", id, val)
 		}
 		err = rec.Insert(tx)
@@ -553,15 +558,15 @@ func IfExistMulti(tx *sql.Tx, table, rid string, args []string, vals ...interfac
 		}
 	}
 	stm = fmt.Sprintf("%s WHERE %s", stm, strings.Join(wheres, " AND "))
-	if utils.VERBOSE > 1 {
-		utils.PrintSQL(stm, vals, "execute")
+	if Verbose > 1 {
+		PrintSQL(stm, vals, "execute")
 	}
 	var tid float64
 	err := tx.QueryRow(stm, vals...).Scan(&tid)
 	if err == nil {
 		return true
 	}
-	if utils.VERBOSE > 1 {
+	if Verbose > 1 {
 		log.Printf("fail to get ID from table %s %s for %v values %v", table, rid, args, vals)
 	}
 	return false
@@ -573,13 +578,13 @@ func IfExist(tx *sql.Tx, table, rid, attr string, val ...interface{}) bool {
 	fid, err := GetID(tx, table, rid, attr, val...)
 	if err == nil {
 		if fid > 0 {
-			if utils.VERBOSE > 1 {
+			if Verbose > 1 {
 				log.Printf("%s found in %s with id=%v", attr, table, fid)
 			}
 			return true
 		}
 	}
-	if utils.VERBOSE > 1 {
+	if Verbose > 1 {
 		log.Printf("fail to get ID from table %s %s for %s=%v", table, rid, attr, val)
 	}
 	return false
@@ -775,7 +780,7 @@ func AddParam(
 	if len(vals) == 1 {
 		op, val := OperatorValue(vals[0])
 		if strings.Contains(val, "e+") || strings.Contains(val, "E+") {
-			val = utils.ConvertFloat(val)
+			val = ConvertFloat(val)
 		}
 		if strings.Contains(val, "[") {
 			val = strings.Replace(val, "[", "", -1)
@@ -829,7 +834,7 @@ func LastInsertID(tx *sql.Tx, table, idName string) (int64, error) {
 		stm = fmt.Sprintf("select MAX(%s) from %s", idName, table)
 	}
 	var pid sql.NullFloat64
-	if utils.VERBOSE > 1 {
+	if Verbose > 1 {
 		log.Println("execute", stm)
 	}
 	err := tx.QueryRow(stm).Scan(&pid)
@@ -886,7 +891,7 @@ func RunsConditions(runs []string, table string) (string, []string, []interface{
 // helper function to extract from dbs record string attribute value
 func getString(record map[string]any, attr string) string {
 	if val, ok := record[attr]; ok {
-		if utils.VERBOSE > 1 {
+		if Verbose > 1 {
 			log.Printf("getString %+v attribute %s value type %T", record, attr, val)
 		}
 		switch v := val.(type) {
@@ -904,7 +909,7 @@ func getString(record map[string]any, attr string) string {
 // helper function to extract from dbs record int64 attribute value
 func getInt64(record map[string]any, attr string) int64 {
 	if val, ok := record[attr]; ok {
-		if utils.VERBOSE > 1 {
+		if Verbose > 1 {
 			log.Printf("getInt64 %+v attribute %s value type %T", record, attr, val)
 		}
 		switch v := val.(type) {

@@ -12,8 +12,6 @@ import (
 	"io"
 	"log"
 	"strings"
-
-	"github.com/CHESSComputing/DataBookkeeping/utils"
 )
 
 // Files represents Files DBS DB table
@@ -56,7 +54,7 @@ func (a *API) GetFile() error {
 			conds, args = AddParam("did", "M.did", a.Params, conds, args)
 		}
 	}
-	if utils.VERBOSE > 0 {
+	if Verbose > 0 {
 		log.Println("### /file params", a.Params, conds, args)
 	}
 
@@ -110,9 +108,9 @@ func (r *Files) Insert(tx *sql.Tx) error {
 	}
 	// get SQL statement from static area
 	stm := getSQL("insert_file")
-	if utils.VERBOSE > 0 {
+	if Verbose > 0 {
 		log.Printf("Insert Files file_id=%d lfn=%s", r.FILE_ID, r.FILE)
-	} else if utils.VERBOSE > 1 {
+	} else if Verbose > 1 {
 		log.Printf("Insert Files\n%s\n%+v", stm, r)
 	}
 	_, err = tx.Exec(
@@ -127,7 +125,7 @@ func (r *Files) Insert(tx *sql.Tx) error {
 		r.MODIFY_AT,
 		r.MODIFY_BY)
 	if err != nil {
-		if utils.VERBOSE > 0 {
+		if Verbose > 0 {
 			log.Println("unable to insert files, error", err)
 		}
 		return Error(err, InsertErrorCode, "", "dbs.files.Insert")

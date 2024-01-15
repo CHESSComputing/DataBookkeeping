@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/CHESSComputing/DataBookkeeping/dbs"
-	"github.com/CHESSComputing/DataBookkeeping/utils"
 )
 
 // helper function to get request URI
@@ -100,7 +99,7 @@ func parsePayload(r *http.Request) (map[string]any, error) {
 	if err != nil {
 		return nil, dbs.Error(err, dbs.DecodeErrorCode, "unable to decode HTTP post payload", "web.parsePayload")
 	}
-	if utils.VERBOSE > 0 {
+	if Verbose > 0 {
 		log.Println("HTTP POST payload\n", params)
 	}
 	for k, v := range params {
@@ -117,7 +116,7 @@ func parsePayload(r *http.Request) (map[string]any, error) {
 				out = append(out, ss)
 			}
 		}
-		if utils.VERBOSE > 1 {
+		if Verbose > 1 {
 			log.Printf("payload: key=%s val='%v' out=%v", k, v, out)
 		}
 		params[k] = out

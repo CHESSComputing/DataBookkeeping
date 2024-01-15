@@ -9,8 +9,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-
-	"github.com/CHESSComputing/DataBookkeeping/utils"
 )
 
 // Datasets represents Datasets DBS DB table
@@ -42,7 +40,7 @@ type DatasetRecord struct {
 //
 //gocyclo:ignore
 func (a *API) GetDataset() error {
-	if utils.VERBOSE > 1 {
+	if Verbose > 1 {
 		log.Printf("datasets params %+v", a.Params)
 	}
 	var args []interface{}
@@ -60,7 +58,7 @@ func (a *API) GetDataset() error {
 			conds, args = AddParam("did", "M.did", a.Params, conds, args)
 		}
 	}
-	if utils.VERBOSE > 0 {
+	if Verbose > 0 {
 		log.Println("### /dataset params", a.Params, conds, args)
 	}
 
@@ -265,7 +263,7 @@ func (r *Datasets) Insert(tx *sql.Tx) error {
 	}
 	// get SQL statement from static area
 	stm := getSQL("insert_dataset")
-	if utils.VERBOSE > 0 {
+	if Verbose > 0 {
 		log.Printf("Insert Datasets\n%s\n%+v", stm, r)
 	}
 	// make final SQL statement to insert dataset record
@@ -282,7 +280,7 @@ func (r *Datasets) Insert(tx *sql.Tx) error {
 		r.MODIFY_AT,
 		r.MODIFY_BY)
 	if err != nil {
-		if utils.VERBOSE > 0 {
+		if Verbose > 0 {
 			log.Printf("unable to insert Datasets %+v", err)
 		}
 		return Error(err, InsertErrorCode, "", "dbs.datasets.Insert")

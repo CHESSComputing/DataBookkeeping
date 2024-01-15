@@ -11,8 +11,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-
-	"github.com/CHESSComputing/DataBookkeeping/utils"
 )
 
 // Metadata represents Metadata DBS DB table
@@ -87,9 +85,9 @@ func (r *Metadata) Insert(tx *sql.Tx) error {
 	}
 	// get SQL statement from static area
 	stm := getSQL("insert_meta")
-	if utils.VERBOSE > 0 {
+	if Verbose > 0 {
 		log.Printf("Insert Metadata record %+v", r)
-	} else if utils.VERBOSE > 1 {
+	} else if Verbose > 1 {
 		log.Printf("Insert Metadata\n%s\n%+v", stm, r)
 	}
 	_, err = tx.Exec(
@@ -101,7 +99,7 @@ func (r *Metadata) Insert(tx *sql.Tx) error {
 		r.MODIFY_AT,
 		r.MODIFY_BY)
 	if err != nil {
-		if utils.VERBOSE > 0 {
+		if Verbose > 0 {
 			log.Println("unable to insert metadata, error", err)
 		}
 		return Error(err, InsertErrorCode, "", "dbs.metadata.Insert")

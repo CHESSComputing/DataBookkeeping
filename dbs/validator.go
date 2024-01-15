@@ -12,7 +12,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/CHESSComputing/DataBookkeeping/utils"
+	"github.com/CHESSComputing/golib/utils"
 )
 
 // DBS string parameters
@@ -103,7 +103,7 @@ func LoadPatterns(fname string) (map[string]LexiconPattern, error) {
 		lex := LexiconPattern{Lexicon: rec, Patterns: patterns}
 		key := rec.Name
 		pmap[key] = lex
-		if utils.VERBOSE > 1 {
+		if Verbose > 1 {
 			log.Printf("regexp pattern\n%s", rec.String())
 		}
 	}
@@ -128,7 +128,7 @@ type StrPattern struct {
 
 // Check implements ObjectPattern interface for StrPattern objects
 func (o StrPattern) Check(key string, val interface{}) error {
-	if utils.VERBOSE > 0 {
+	if Verbose > 0 {
 		log.Printf("StrPatern check key=%s val=%v", key, val)
 		log.Printf("patterns %v max length %v", o.Patterns, o.Len)
 	}
@@ -144,13 +144,13 @@ func (o StrPattern) Check(key string, val interface{}) error {
 	}
 	if len(o.Patterns) == 0 {
 		// nothing to match in patterns
-		if utils.VERBOSE > 0 {
+		if Verbose > 0 {
 			log.Println("nothing to match since we do not have patterns")
 		}
 		return nil
 	}
 	if o.Len > 0 && len(v) > o.Len {
-		if utils.VERBOSE > 0 {
+		if Verbose > 0 {
 			log.Println("lexicon str pattern", o)
 		}
 		// check for list of LFNs
@@ -350,7 +350,7 @@ func Validate(r *http.Request) error {
 					}
 				}
 			}
-			if utils.VERBOSE > 0 {
+			if Verbose > 0 {
 				log.Printf("query parameter key=%s values=%+v\n", k, vvv)
 			}
 		}
@@ -363,12 +363,12 @@ func CheckPattern(key, value string) error {
 	if p, ok := LexiconPatterns[key]; ok {
 		for _, pat := range p.Patterns {
 			if matched := pat.MatchString(value); matched {
-				if utils.VERBOSE > 1 {
+				if Verbose > 1 {
 					log.Printf("CheckPattern key=%s value='%s' found match %s", key, value, pat)
 				}
 				return nil
 			}
-			if utils.VERBOSE > 1 {
+			if Verbose > 1 {
 				log.Printf("CheckPattern key=%s value='%s' does not match %s", key, value, pat)
 			}
 		}
@@ -389,7 +389,7 @@ func ValidatePostPayload(rec map[string]any) error {
 				}
 			}
 		} else if key == "create_at" || key == "modify_at" {
-			v, err := utils.CastInt(val)
+			v, err := CastInt(val)
 			if err != nil {
 				return Error(err, PatternErrorCode, errMsg, "dbs.ValidaatePostPayload")
 			} else if matched := unixTimePattern.MatchString(fmt.Sprintf("%d", v)); !matched {

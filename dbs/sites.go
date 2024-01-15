@@ -11,8 +11,6 @@ import (
 	"fmt"
 	"io"
 	"log"
-
-	"github.com/CHESSComputing/DataBookkeeping/utils"
 )
 
 // Sites represents Sites DBS DB table
@@ -87,9 +85,9 @@ func (r *Sites) Insert(tx *sql.Tx) error {
 	}
 	// get SQL statement from static area
 	stm := getSQL("insert_site")
-	if utils.VERBOSE > 0 {
+	if Verbose > 0 {
 		log.Printf("Insert Sites record %+v", r)
-	} else if utils.VERBOSE > 1 {
+	} else if Verbose > 1 {
 		log.Printf("Insert Sites\n%s\n%+v", stm, r)
 	}
 	_, err = tx.Exec(
@@ -101,7 +99,7 @@ func (r *Sites) Insert(tx *sql.Tx) error {
 		r.MODIFY_AT,
 		r.MODIFY_BY)
 	if err != nil {
-		if utils.VERBOSE > 0 {
+		if Verbose > 0 {
 			log.Println("unable to insert sites, error", err)
 		}
 		return Error(err, InsertErrorCode, "", "dbs.sites.Insert")
