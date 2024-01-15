@@ -1,4 +1,9 @@
 # DataBookkeeping Service
+
+![build status](https://github.com/CHESSComputing/DataBookkeeping/actions/workflows/go.yml/badge.svg)
+[![go report card](https://goreportcard.com/badge/github.com/CHESSComputing/DataBookkeeping)](https://goreportcard.com/report/github.com/CHESSComputing/DataBookkeeping)
+[![godoc](https://godoc.org/github.com/CHESSComputing/DataBookkeeping?status.svg)](https://godoc.org/github.com/CHESSComputing/DataBookkeeping)
+
 Data Bookkeeping service
 
 ### APIs
