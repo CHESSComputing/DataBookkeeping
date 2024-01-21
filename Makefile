@@ -110,5 +110,5 @@ test_int:
 	sqlite3 /tmp/dbs-test.db < ./static/schema/sqlite.sql && \
 	LD_LIBRARY_PATH=${odir} DYLD_LIBRARY_PATH=${odir} \
 	DBS_DB_FILE=/tmp/dbs-test.db \
-	DBS_INT_TESTS=data/int_tests.json \
+	DBS_INT_TESTS_DIR=data \
 	go test -v -failfast -run Integration

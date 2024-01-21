@@ -5,9 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
+	"io/ioutil"
 	"net/url"
 	"os"
+	"strings"
 	"testing"
 )
 
@@ -70,26 +71,37 @@ func runTestWorkflow(t *testing.T, v TestCase) {
 // TestIntegration provides integration tests
 func TestIntegration(t *testing.T) {
 	var testCases []TestCase
-	fname := os.Getenv("DBS_INT_TESTS")
-	t.Logf("Run TestIntegration, fname=%s\n", fname)
-	if fname == "" {
+	idir := os.Getenv("DBS_INT_TEST_DIR")
+	if idir == "" {
 		return
 	}
-	// load test from test file
-	file, err := os.Open(fname)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
-	data, err := io.ReadAll(file)
+	// loop over files in int dir
+	files, err := ioutil.ReadDir(idir)
 	if err != nil {
 		t.Fatal(err)
 	}
-	err = json.Unmarshal(data, &testCases)
-	if err != nil {
-		t.Fatal(err)
-	}
-	for _, v := range testCases {
-		runTestWorkflow(t, v)
+	for _, f := range files {
+		fname := f.Name()
+		if !strings.HasPrefix(fname, "int_") {
+			continue
+		}
+		t.Logf("reding test file %s", fname)
+		// load test from test file
+		file, err := os.Open(fname)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer file.Close()
+		data, err := io.ReadAll(file)
+		if err != nil {
+			t.Fatal(err)
+		}
+		err = json.Unmarshal(data, &testCases)
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, v := range testCases {
+			runTestWorkflow(t, v)
+		}
 	}
 }
