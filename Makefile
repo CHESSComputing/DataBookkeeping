@@ -94,7 +94,7 @@ testdb:
 	mkdir -p /tmp/${USER} && \
 	echo "test" > /tmp/${USER}/test.txt
 
-test : testdb test_code
+test : testdb test_code test_int
 
 test_code:
 	touch ~/.foxden.yaml
@@ -103,3 +103,12 @@ test_code:
 	LD_LIBRARY_PATH=${odir} DYLD_LIBRARY_PATH=${odir} \
 	DBS_DB_FILE=/tmp/dbs-test.db \
 	go test -test.v .
+
+test_int:
+	touch ~/.foxden.yaml
+	rm -f /tmp/dbs-test.db && \
+	sqlite3 /tmp/dbs-test.db < ./static/schema/sqlite.sql && \
+	LD_LIBRARY_PATH=${odir} DYLD_LIBRARY_PATH=${odir} \
+	DBS_DB_FILE=/tmp/dbs-test.db \
+	DBS_INT_TESTS=data/int_tests.json \
+	go test -v -failfast -run Integration

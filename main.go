@@ -19,7 +19,7 @@ import (
 func info() string {
 	goVersion := runtime.Version()
 	tstamp := time.Now()
-	return fmt.Sprintf("git={{VERSION}} go=%s date=%s", goVersion, tstamp)
+	return fmt.Sprintf("git=0.0.0-dev5 go=%s date=%s", goVersion, tstamp)
 }
 
 func main() {

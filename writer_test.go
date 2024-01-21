@@ -57,8 +57,17 @@ func initDB(dryRun bool, dburi string) *sql.DB {
 }
 
 var router *gin.Engine
+var db *sql.DB
 
 func initServer() {
+	if db == nil {
+		// initialize DB for testing
+		dburi := os.Getenv("DBS_DB_FILE")
+		if dburi == "" {
+			log.Fatal("DBS_DB_FILE not defined")
+		}
+		db = initDB(false, dburi)
+	}
 	if router == nil {
 		routes := []server.Route{
 			server.Route{Method: "GET", Path: "/dataset", Handler: DatasetHandler, Authorized: false},
@@ -68,14 +77,24 @@ func initServer() {
 	}
 }
 
+// helper function to print any struct in formatted way
+func logStruct(t *testing.T, msg string, data any) {
+	body, err := json.MarshalIndent(data, "", "  ")
+	if err != nil {
+		//         t.Fatal(err)
+		t.Logf("%s\n%+v\n", msg, data)
+		return
+	}
+	t.Logf("%s\n%s\n", msg, string(body))
+}
+
 // helper function to create http test response recorder
 // for given HTTP Method, endPoint, reader and DBS web handler
-func respRecorder(method, endPoint, api string, reader io.Reader) (*httptest.ResponseRecorder, error) {
+func responseRecorder(t *testing.T, method, endPoint, api string, reader io.Reader) *httptest.ResponseRecorder {
 	// setup HTTP request
 	req, err := http.NewRequest(method, api, reader)
-	log.Printf("### New request %+v", req)
 	if err != nil {
-		return nil, err
+		t.Fatal(err)
 	}
 	req.Header.Add("Accept", "application/json")
 	if method == "POST" {
@@ -85,15 +104,25 @@ func respRecorder(method, endPoint, api string, reader io.Reader) (*httptest.Res
 	// create response recorder
 	rr := httptest.NewRecorder()
 	router.ServeHTTP(rr, req)
+	logStruct(t, "HTTP request", req)
+	logStruct(t, "HTTP response", rr)
+	return rr
+}
 
+// helper function to create http test response recorder
+// for given HTTP Method, endPoint, reader and DBS web handler
+func respRecorder(t *testing.T, method, endPoint, api string, reader io.Reader) (*httptest.ResponseRecorder, error) {
+	rr := responseRecorder(t, method, endPoint, api, reader)
 	if status := rr.Code; status != http.StatusOK {
 		data, e := io.ReadAll(rr.Body)
+		var emsg string
 		if e != nil {
-			log.Println("unable to read reasponse body, error:", e)
+			emsg = fmt.Sprintf("unable to read reasponse body, error: %v", e)
+		} else {
+			emsg = fmt.Sprintf("handler returned status code: %v message: %s",
+				status, string(data))
 		}
-		log.Printf("handler returned status code: %v message: %s",
-			status, string(data))
-		msg := fmt.Sprintf("HTTP status %v", status)
+		msg := fmt.Sprintf("HTTP status %v, error %s", status, emsg)
 		return nil, errors.New(msg)
 	}
 	return rr, nil
@@ -101,19 +130,13 @@ func respRecorder(method, endPoint, api string, reader io.Reader) (*httptest.Res
 
 // TestDBSWriter provides a test to DBS writer functionality
 func TestDBSWriter(t *testing.T) {
-	// initialize DB for testing
-	dburi := os.Getenv("DBS_DB_FILE")
-	if dburi == "" {
-		log.Fatal("DBS_DB_FILE not defined")
-	}
-	db := initDB(false, dburi)
 	initServer()
 	var err error
 
 	endPoint := "/dataset"
-	log.Println("insert datasets")
+	t.Log("insert datasets")
 	insertData(t, db, "POST", endPoint, "data/datasets.json", "dataset")
-	log.Println("re-insert primary dataset")
+	t.Log("re-insert primary dataset")
 	insertData(t, db, "POST", endPoint, "data/datasets.json", "dataset")
 
 	t.Logf("finish DBS writer test")
@@ -131,36 +154,36 @@ func insertData(t *testing.T, db *sql.DB, method, endPoint, dataFile, attr strin
 	var rr *httptest.ResponseRecorder
 	data, err = os.ReadFile(dataFile)
 	if err != nil {
-		log.Printf("ERROR: unable to read %s error %v", dataFile, err.Error())
+		t.Logf("ERROR: unable to read %s error %v", dataFile, err.Error())
 		t.Fatal(err.Error())
 	}
 	var rec map[string]any
 	err = json.Unmarshal(data, &rec)
 	if err != nil {
-		log.Printf("unable to unmarshal received data into map[string]any, error %v, try next []dbs.Record", err)
+		t.Logf("unable to unmarshal received data into map[string]any, error %v, try next []dbs.Record", err)
 		// let's try to load list of records
 		var rrr []map[string]any
 		err = json.Unmarshal(data, &rrr)
 		if err != nil {
 			t.Fatalf("ERROR: unable to unmarshal received data '%s', error %v", string(data), err)
 		}
-		log.Println("succeed to load record as []map[string]any")
+		t.Log("succeed to load record as []map[string]any")
 	}
 	reader := bytes.NewReader(data)
 
 	// test writer DBS API
 	postApi := endPoint
-	rr, err = respRecorder(method, endPoint, postApi, reader)
+	rr, err = respRecorder(t, method, endPoint, postApi, reader)
 	if err != nil {
-		log.Printf("ERROR: unable to make %s HTTP request with endPoint=%s, error %v", method, endPoint, err)
+		t.Logf("ERROR: unable to make %s HTTP request with endPoint=%s, error %v", method, endPoint, err)
 		t.Fatal(err)
 	}
 
-	log.Printf("writer endPoint %s send data:\n%v", endPoint, string(data))
+	t.Logf("writer endPoint %s send data:\n%v", endPoint, string(data))
 
 	// if no attribute is provided we'll skip GET API test
 	if attr == "" {
-		log.Println("skip get API call since no attr is provided")
+		t.Log("skip get API call since no attr is provided")
 		return
 	}
 	// test reader GET DBS API
@@ -176,9 +199,9 @@ func insertData(t *testing.T, db *sql.DB, method, endPoint, dataFile, attr strin
 		value = fmt.Sprintf("%v", v)
 	}
 	getApi := fmt.Sprintf("%s?%s=%s", endPoint, attr, value)
-	rr, err = respRecorder("GET", endPoint, getApi, reader)
+	rr, err = respRecorder(t, "GET", endPoint, getApi, reader)
 	if err != nil {
-		log.Printf("ERROR: unable to place GET HTTP request with api=%s, error %v", getApi, err)
+		t.Logf("ERROR: unable to place GET HTTP request with api=%s, error %v", getApi, err)
 		t.Fatal(err)
 	}
 
@@ -189,5 +212,5 @@ func insertData(t *testing.T, db *sql.DB, method, endPoint, dataFile, attr strin
 	if err != nil {
 		t.Fatalf("ERROR: unable to unmarshal received data '%s', error %v", string(data), err)
 	}
-	log.Printf("reader api %s received data:\n%v", getApi, string(data))
+	t.Logf("reader api %s received data:\n%v", getApi, string(data))
 }

@@ -1,0 +1,38 @@
+[
+    {
+     "description": "test dataset insert API",
+     "method": "POST",
+     "endpoint": "/dataset",
+     "api": "/dataset",
+     "input": {
+       "buckets": [
+         "siteXYZ"
+       ],
+       "dataset": "/x/y/z",
+       "files": [
+         "/x/y/z/file1.png",
+         "/x/y/z/file2.png",
+         "/x/y/z/file3.png"
+       ],
+       "meta_id": "xys",
+       "processing": "glibc",
+           "site": "Cornell"
+     },
+     "output": [],
+     "code": 200
+    },
+    {
+     "description": "test dataset GET API",
+     "method": "GET",
+     "endpoint": "/dataset",
+     "api": "/dataset?dataset=/x/y/z",
+     "code": 200
+    },
+    {
+     "description": "test dataset GET API",
+     "method": "GET",
+     "endpoint": "/dataset",
+     "api": "/dataset?bla=/x/y/zzzz",
+     "code": 400
+    }
+]

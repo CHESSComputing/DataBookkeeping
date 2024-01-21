@@ -6,9 +6,12 @@ package dbs
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log"
+
+	"github.com/CHESSComputing/golib/utils"
 )
 
 // Datasets represents Datasets DBS DB table
@@ -47,6 +50,15 @@ func (a *API) GetDataset() error {
 	var conds []string
 	tmpl := make(map[string]any)
 	tmpl["Owner"] = DBOWNER
+
+	allowed := []string{"dataset", "did"}
+	for k, _ := range a.Params {
+		if !utils.InList(k, allowed) {
+			msg := fmt.Sprintf("invalid parameter %s", k)
+			return errors.New(msg)
+		}
+
+	}
 
 	if val, ok := a.Params["dataset"]; ok {
 		if val != "" {
