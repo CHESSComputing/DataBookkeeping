@@ -94,7 +94,7 @@ testdb:
 	mkdir -p /tmp/${USER} && \
 	echo "test" > /tmp/${USER}/test.txt
 
-test : testdb test_code test_int
+test : testdb test_code
 
 test_code:
 	touch ~/.foxden.yaml

@@ -1,46 +1,44 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
-	"net/url"
 	"os"
+	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 )
 
 // basic elements to define a test case
 type TestCase struct {
-	Description string     `json:"description"` // test case description
-	Method      string     `json:"method"`      // http method
-	Endpoint    string     `json:"endpoint"`    // url endpoint, optional
-	Api         string     `json:"api"`         // server api
-	Params      url.Values `json:"params"`      // url parameters, optional
-	Input       any        `json:"input"`       // POST and PUT body, optional for GET request
-	Output      []any      `json:"output"`      // expected response
-	Code        int        `json:"code"`        // expected HTTP response code
+	Description string   `json:"description"` // test case description
+	Method      string   `json:"method"`      // http method
+	Endpoint    string   `json:"endpoint"`    // url endpoint, optional
+	Url         string   `json:"url"`         // url parameters, optional
+	Input       any      `json:"input"`       // POST and PUT body, optional for GET request
+	Output      []string `json:"output"`      // expected response patterns
+	Code        int      `json:"code"`        // expected HTTP response code
+	Verbose     int      `json:"verbose"`     // verbosity level
+	Fail        bool     `json:"fail"`        // should test fail
 }
 
 // run test workflow for a single endpoint
 // func runTestWorkflow(t *testing.T, c EndpointTestCase) {
 func runTestWorkflow(t *testing.T, v TestCase) {
 	initServer()
-	t.Logf("Running test case: %+v", v)
+	if v.Verbose > 0 {
+		t.Logf("Running test case: %+v", v)
+	}
+	var err error
 	t.Run(v.Description, func(t *testing.T) {
 
-		// create request body
-		data, err := json.Marshal(v.Input)
-		if err != nil {
-			t.Fatal(err.Error())
+		rr := responseRecorder(t, v)
+		if v.Verbose > 1 {
+			t.Logf("response %+v", rr)
 		}
-		reader := bytes.NewReader(data)
-
-		t.Logf("submit method=%s endpoint=%s api=%s data=%s", v.Method, v.Endpoint, v.Api, string(data))
-		rr := responseRecorder(t, v.Method, v.Endpoint, v.Api, reader)
-		t.Logf("response %+v", rr)
 		// check response code
 		if rr.Code != v.Code {
 			msg := fmt.Sprintf("ERROR: wrong response code, expect=%d received=%d", v.Code, rr.Code)
@@ -50,12 +48,32 @@ func runTestWorkflow(t *testing.T, v TestCase) {
 		// check response
 		var d []map[string]any
 		if v.Method == "GET" {
-			err = json.NewDecoder(rr.Body).Decode(&d)
+			data := rr.Body.Bytes()
+			err = json.Unmarshal(data, &d)
+			//             err = json.NewDecoder(rr.Body).Decode(&d)
 			if err != nil {
 				t.Fatalf("Failed to decode body, %v", err)
 			}
+			// check output patterns
+			for _, o := range v.Output {
+				if o == "" {
+					continue
+				}
+				pat, err := regexp.Compile(o)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if matched := pat.MatchString(string(data)); !matched {
+					if v.Fail {
+						t.Logf("We successfully fail while checking pattern '%s'", o)
+					} else {
+						msg := fmt.Sprintf("Pattern '%s' does not match received data %s", o, string(data))
+						t.Fatal(msg)
+					}
+				}
+			}
 		} else if v.Method == "POST" {
-			data = rr.Body.Bytes()
+			data := rr.Body.Bytes()
 			if len(data) != 0 {
 				err = json.Unmarshal(data, &d)
 				if err != nil {
@@ -70,8 +88,7 @@ func runTestWorkflow(t *testing.T, v TestCase) {
 
 // TestIntegration provides integration tests
 func TestIntegration(t *testing.T) {
-	var testCases []TestCase
-	idir := os.Getenv("DBS_INT_TEST_DIR")
+	idir := os.Getenv("DBS_INT_TESTS_DIR")
 	if idir == "" {
 		return
 	}
@@ -81,11 +98,11 @@ func TestIntegration(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, f := range files {
-		fname := f.Name()
-		if !strings.HasPrefix(fname, "int_") {
+		var testCases []TestCase
+		if !strings.HasPrefix(f.Name(), "int_") {
 			continue
 		}
-		t.Logf("reding test file %s", fname)
+		fname := filepath.Join(idir, f.Name())
 		// load test from test file
 		file, err := os.Open(fname)
 		if err != nil {
@@ -100,7 +117,10 @@ func TestIntegration(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		for _, v := range testCases {
+		for i, v := range testCases {
+			if i == 0 && v.Verbose > 0 {
+				t.Logf("reading test file %s", fname)
+			}
 			runTestWorkflow(t, v)
 		}
 	}

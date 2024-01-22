@@ -1,0 +1,21 @@
+[
+    {
+     "description": "test files GET API",
+     "method": "GET",
+     "endpoint": "/file",
+     "url": "/file?dataset=/x/y/z",
+     "output": ["/x/y/z/file1.png", "/x/y/z/file3.png"],
+     "verbose": 2,
+     "code": 200
+    },
+    {
+     "description": "test files GET API",
+     "method": "GET",
+     "endpoint": "/file",
+     "url": "/file?dataset=/x/y/z",
+     "output": ["bla.png"],
+     "fail": true,
+     "verbose": 2,
+     "code": 200
+    }
+]

@@ -3,7 +3,7 @@
      "description": "test dataset insert API",
      "method": "POST",
      "endpoint": "/dataset",
-     "api": "/dataset",
+     "url": "/dataset",
      "input": {
        "buckets": [
          "siteXYZ"
@@ -19,20 +19,21 @@
            "site": "Cornell"
      },
      "output": [],
+     "verbose": 0,
      "code": 200
     },
     {
      "description": "test dataset GET API",
      "method": "GET",
      "endpoint": "/dataset",
-     "api": "/dataset?dataset=/x/y/z",
+     "url": "/dataset?dataset=/x/y/z",
      "code": 200
     },
     {
      "description": "test dataset GET API",
      "method": "GET",
      "endpoint": "/dataset",
-     "api": "/dataset?bla=/x/y/zzzz",
+     "url": "/dataset?bla=/x/y/zzzz",
      "code": 400
     }
 ]
