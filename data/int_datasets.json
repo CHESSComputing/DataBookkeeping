@@ -27,6 +27,18 @@
      "method": "GET",
      "endpoint": "/dataset",
      "url": "/dataset?dataset=/x/y/z",
+     "output": ["/x/y/z"],
+     "verbose": 0,
+     "code": 200
+    },
+    {
+     "description": "test dataset GET API",
+     "method": "GET",
+     "endpoint": "/dataset",
+     "url": "/dataset?dataset=/x/y/z",
+     "output": ["bla=/x/y/z"],
+     "fail": true,
+     "verbose": 0,
      "code": 200
     },
     {
@@ -34,6 +46,7 @@
      "method": "GET",
      "endpoint": "/dataset",
      "url": "/dataset?bla=/x/y/zzzz",
+     "verbose": 0,
      "code": 400
     }
 ]
