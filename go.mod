@@ -9,7 +9,7 @@ require (
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/prometheus/procfs v0.12.0
-	golang.org/x/exp v0.0.0-20240112132812-db7319d0e0e3
+	golang.org/x/exp v0.0.0-20240119083558-1b970713d09a
 	gopkg.in/yaml.v2 v2.4.0
 )
 
@@ -29,6 +29,7 @@ require (
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
+	github.com/gomarkdown/markdown v0.0.0-20231222211730-1d6d20845b47 // indirect
 	github.com/google/uuid v1.5.0 // indirect
 	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/securecookie v1.1.1 // indirect
