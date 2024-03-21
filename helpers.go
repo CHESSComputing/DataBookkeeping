@@ -83,7 +83,10 @@ func responseMsg(w http.ResponseWriter, r *http.Request, err error, code int) in
 	// otherwise we'll use list of JSON records
 	var out []ServerError
 	out = append(out, rec)
-	data, _ := json.Marshal(out)
+	data, err := json.Marshal(out)
+	if err != nil {
+		log.Println("Unable to marhsl out response", err)
+	}
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(code)
 	w.Write(data)
