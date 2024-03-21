@@ -184,7 +184,7 @@ func Error(err error, code int, msg, function string) error {
 	if err != nil {
 		reason = err.Error()
 	}
-	stackSlice := make([]byte, 1024)
+	stackSlice := make([]byte, 1024*4)
 	s := runtime.Stack(stackSlice, false)
 	return &DBSError{
 		Reason:     reason,
