@@ -86,6 +86,7 @@ var ConcurrentBulkBlocks bool
 // DBS API implements logic for its own DB records
 type DBRecord interface {
 	Insert(tx *sql.Tx) error  // used to insert given record to DB
+	Update(tx *sql.Tx) error  // used to update given record to DB
 	Validate() error          // used to validate given record
 	SetDefaults()             // used to set proper defaults for given record
 	Decode(r io.Reader) error // used to decode given record

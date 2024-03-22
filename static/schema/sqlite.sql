@@ -27,16 +27,7 @@ create TABLE sites (
 create TABLE buckets (
     bucket_id INTEGER PRIMARY KEY AUTOINCREMENT,
     bucket VARCHAR(255) NOT NULL UNIQUE,
-    meta_id BIGINT REFERENCES metadata(meta_id) ON UPDATE CASCADE,
     dataset_id INTEGER REFERENCES datasets(dataset_id) ON UPDATE CASCADE,
-    create_at INTEGER,
-    create_by VARCHAR(255),
-    modify_at INTEGER,
-    modify_by VARCHAR(255)
-);
-create TABLE metadata (
-    meta_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    did VARCHAR(255) NOT NULL UNIQUE,
     create_at INTEGER,
     create_by VARCHAR(255),
     modify_at INTEGER,
@@ -44,8 +35,7 @@ create TABLE metadata (
 );
 create TABLE datasets (
     dataset_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    dataset VARCHAR(255) NOT NULL UNIQUE,
-    meta_id INTEGER REFERENCES metadata(meta_id) ON UPDATE CASCADE,
+    did VARCHAR(255) NOT NULL UNIQUE,
     site_id INTEGER REFERENCES sites(site_id) ON UPDATE CASCADE,
     processing_id INTEGER REFERENCES processingS(processing_id) ON UPDATE CASCADE,
     parent_id INTEGER REFERENCES parents(parent_id) ON UPDATE CASCADE,
@@ -58,7 +48,6 @@ create TABLE files (
     file_id INTEGER PRIMARY KEY AUTOINCREMENT,
     file VARCHAR(255) NOT NULL UNIQUE,
     is_file_valid INTEGER DEFAULT 1,
-    meta_id INTEGER REFERENCES metadata(meta_id) ON UPDATE CASCADE,
     dataset_id INTEGER REFERENCES datasets(dataset_id) ON UPDATE CASCADE,
     create_at INTEGER,
     create_by VARCHAR(255),

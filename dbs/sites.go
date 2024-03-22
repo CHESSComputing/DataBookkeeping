@@ -65,6 +65,12 @@ func (a *API) DeleteSite() error {
 	return nil
 }
 
+// Update implementation of Sites
+func (r *Sites) Update(tx *sql.Tx) error {
+	log.Printf("### Update %+v", r)
+	return nil
+}
+
 // Insert implementation of Sites
 func (r *Sites) Insert(tx *sql.Tx) error {
 	var err error

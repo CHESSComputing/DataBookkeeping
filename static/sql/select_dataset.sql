@@ -1,6 +1,5 @@
 SELECT
-    D.dataset,
-    M.did,
+    D.did,
     S.site,
     PR.processing,
     P.parent,
@@ -9,7 +8,6 @@ SELECT
     D.modify_by,
     D.modify_at
 FROM datasets D
-JOIN metadata M on M.meta_id=D.meta_id
-JOIN sites S on S.site_id=D.site_id
-JOIN processing PR on PR.processing_id=D.processing_id
+LEFT JOIN sites S on S.site_id=D.site_id
+LEFT JOIN processing PR on PR.processing_id=D.processing_id
 LEFT OUTER JOIN parents P on P.parent_id=D.parent_id

@@ -17,7 +17,6 @@ import (
 type Buckets struct {
 	BUCKET_ID  int64  `json:"bucket_id"`
 	BUCKET     string `json:"bucket" validate:"required"`
-	META_ID    int64  `json:"meta_id" validate:"required"`
 	DATASET_ID int64  `json:"dataset_id" validate:"required"`
 	CREATE_AT  int64  `json:"create_at"`
 	CREATE_BY  string `json:"create_by"`
@@ -67,6 +66,12 @@ func (a *API) DeleteBucket() error {
 	return nil
 }
 
+// Update implementation of Buckets
+func (r *Buckets) Update(tx *sql.Tx) error {
+	log.Printf("### Update %+v", r)
+	return nil
+}
+
 // Insert implementation of Buckets
 func (r *Buckets) Insert(tx *sql.Tx) error {
 	var err error
@@ -96,7 +101,6 @@ func (r *Buckets) Insert(tx *sql.Tx) error {
 		stm,
 		r.BUCKET_ID,
 		r.BUCKET,
-		r.META_ID,
 		r.DATASET_ID,
 		r.CREATE_AT,
 		r.CREATE_BY,

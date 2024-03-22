@@ -65,6 +65,12 @@ func (a *API) DeleteParent() error {
 	return nil
 }
 
+// Update implementation of Parents
+func (r *Parents) Update(tx *sql.Tx) error {
+	log.Printf("### Update %+v", r)
+	return nil
+}
+
 // Insert implementation of Parents
 func (r *Parents) Insert(tx *sql.Tx) error {
 	var err error

@@ -2,13 +2,12 @@
   "buckets": [
     "siteABC"
   ],
-  "dataset": "/a/b/c",
+  "did": "/a/b/c",
   "files": [
     "/a/b/c/file1.png",
     "/a/b/c/file2.png",
     "/a/b/c/file3.png"
   ],
-  "meta_id": "abc",
   "processing": "glibc",
   "site": "Cornell"
 }

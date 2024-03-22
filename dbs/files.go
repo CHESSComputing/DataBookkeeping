@@ -20,7 +20,6 @@ type Files struct {
 	FILE          string `json:"file" validate:"required"`
 	IS_FILE_VALID int64  `json:"is_file_valid" validate:"number"`
 	DATASET_ID    int64  `json:"dataset_id" validate:"number,gt=0"`
-	META_ID       int64  `json:"meta_id" validate:"required"`
 	CREATE_AT     int64  `json:"create_at" validate:"required,number,gt=0"`
 	CREATE_BY     string `json:"create_by" validate:"required"`
 	MODIFY_AT     int64  `json:"modify_at" validate:"required,number,gt=0"`
@@ -44,14 +43,9 @@ func (a *API) GetFile() error {
 			conds, args = AddParam("file", "F.file", a.Params, conds, args)
 		}
 	}
-	if val, ok := a.Params["dataset"]; ok {
-		if val != "" {
-			conds, args = AddParam("dataset", "D.dataset", a.Params, conds, args)
-		}
-	}
 	if val, ok := a.Params["did"]; ok {
 		if val != "" {
-			conds, args = AddParam("did", "M.did", a.Params, conds, args)
+			conds, args = AddParam("did", "D.did", a.Params, conds, args)
 		}
 	}
 	if Verbose > 0 {
@@ -88,6 +82,12 @@ func (a *API) DeleteFile() error {
 	return nil
 }
 
+// Update implementation of Files
+func (r *Files) Update(tx *sql.Tx) error {
+	log.Printf("### Update %+v", r)
+	return nil
+}
+
 // Insert implementation of Files
 func (r *Files) Insert(tx *sql.Tx) error {
 	var err error
@@ -119,7 +119,6 @@ func (r *Files) Insert(tx *sql.Tx) error {
 		r.FILE,
 		r.IS_FILE_VALID,
 		r.DATASET_ID,
-		r.META_ID,
 		r.CREATE_AT,
 		r.CREATE_BY,
 		r.MODIFY_AT,

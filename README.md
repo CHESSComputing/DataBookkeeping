@@ -48,13 +48,12 @@ Here is an example of HTTP POST request
   "buckets": [
     "bucketABC"
   ],
-  "dataset": "/a/b/c",
+  "did": "/a/b/c",
   "files": [
     "/path/file1.png",
     "/path/file2.png",
     "/path/file3.png"
   ],
-  "meta_id": "123xyz",
   "processing": "glibc",
   "site": "Cornell"
 }

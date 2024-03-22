@@ -8,13 +8,12 @@
        "buckets": [
          "siteXYZ"
        ],
-       "dataset": "/x/y/z",
+       "did": "/x/y/z",
        "files": [
          "/x/y/z/file1.png",
          "/x/y/z/file2.png",
          "/x/y/z/file3.png"
        ],
-       "meta_id": "xys",
        "processing": "glibc",
            "site": "Cornell"
      },
@@ -26,7 +25,7 @@
      "description": "test dataset GET API",
      "method": "GET",
      "endpoint": "/dataset",
-     "url": "/dataset?dataset=/x/y/z",
+     "url": "/dataset?did=/x/y/z",
      "output": ["/x/y/z"],
      "verbose": 0,
      "code": 200
@@ -35,7 +34,7 @@
      "description": "test dataset GET API",
      "method": "GET",
      "endpoint": "/dataset",
-     "url": "/dataset?dataset=/x/y/z",
+     "url": "/dataset?did=/x/y/z",
      "output": ["bla=/x/y/z"],
      "fail": true,
      "verbose": 0,

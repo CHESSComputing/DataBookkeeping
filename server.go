@@ -122,6 +122,13 @@ func Server() {
 	dbs.DBOWNER = dbowner
 	defer dbs.DB.Close()
 
+	// load Lexicon patterns
+	lexPatterns, err := dbs.LoadPatterns(srvConfig.Config.DataBookkeeping.LexiconFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+	dbs.LexiconPatterns = lexPatterns
+
 	// setup web router and start the service
 	r := setupRouter()
 	webServer := srvConfig.Config.DataBookkeeping.WebServer
