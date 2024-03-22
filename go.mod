@@ -1,21 +1,22 @@
 module github.com/CHESSComputing/DataBookkeeping
 
-go 1.22.0
+go 1.22.1
 
 require (
-	github.com/CHESSComputing/golib v0.1.7
+	github.com/CHESSComputing/golib v0.1.8
 	github.com/gin-gonic/gin v1.9.1
-	github.com/go-playground/validator/v10 v10.18.0
-	github.com/go-sql-driver/mysql v1.7.1
+	github.com/go-playground/validator/v10 v10.19.0
+	github.com/go-sql-driver/mysql v1.8.0
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
-	github.com/prometheus/procfs v0.12.0
-	golang.org/x/exp v0.0.0-20240222234643-814bf88cf225
+	github.com/prometheus/procfs v0.13.0
+	golang.org/x/exp v0.0.0-20240318143956-a85f2c67cd81
 	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (
 	cloud.google.com/go/compute v1.23.3 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
+	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/bytedance/sonic v1.9.1 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
 	github.com/dchest/captcha v1.0.0 // indirect
@@ -74,7 +75,7 @@ require (
 	golang.org/x/crypto v0.19.0 // indirect
 	golang.org/x/net v0.21.0 // indirect
 	golang.org/x/oauth2 v0.16.0 // indirect
-	golang.org/x/sys v0.17.0 // indirect
+	golang.org/x/sys v0.18.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
