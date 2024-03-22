@@ -103,7 +103,7 @@ func responseRecorder(t *testing.T, v TestCase) *httptest.ResponseRecorder {
 	reader := bytes.NewReader(data)
 
 	if v.Verbose > 0 {
-		t.Logf("submit method=%s endpoint=%s api=%s data=%s", v.Method, v.Endpoint, v.Url, string(data))
+		t.Logf("submit method=%s endpoint=%s url=%s input=%v output=%v code=%v fail=%v data=%s", v.Method, v.Endpoint, v.Url, v.Input, v.Output, v.Code, v.Fail, string(data))
 	}
 	// setup HTTP request
 	req, err := http.NewRequest(v.Method, v.Url, reader)
