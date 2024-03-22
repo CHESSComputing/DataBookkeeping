@@ -47,5 +47,30 @@
      "url": "/dataset?bla=/x/y/zzzz",
      "verbose": 0,
      "code": 400
+    },
+    {
+     "description": "test dataset insert API with wrong did pattern",
+     "method": "POST",
+     "endpoint": "/dataset",
+     "url": "/dataset",
+     "input": {
+       "did": "xyz"
+     },
+     "output": [],
+     "verbose": 0,
+     "code": 400
+    },
+    {
+     "description": "test dataset insert API with wrong file pattern",
+     "method": "POST",
+     "endpoint": "/dataset",
+     "url": "/dataset",
+     "input": {
+       "did": "/xyz=2a",
+       "files": [123, 456]
+     },
+     "output": [],
+     "verbose": 0,
+     "code": 400
     }
 ]
