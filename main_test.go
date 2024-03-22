@@ -28,6 +28,13 @@ func initDB(dryRun bool, dburi string) *sql.DB {
 	if err != nil {
 		log.Fatal("unable to get current working dir")
 	}
+	// load Lexicon patterns
+	lexPatterns, err := dbs.LoadPatterns(srvConfig.Config.DataBookkeeping.LexiconFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+	dbs.LexiconPatterns = lexPatterns
+
 	dbs.StaticDir = "static"
 	dbtype := "sqlite3"
 	dbowner := "sqlite"
