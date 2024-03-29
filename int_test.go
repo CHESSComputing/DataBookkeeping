@@ -77,7 +77,7 @@ func runTestWorkflow(t *testing.T, v TestCase) {
 			if len(data) != 0 {
 				err = json.Unmarshal(data, &d)
 				if err != nil {
-					msg := fmt.Sprintf("Rsponse data '%s', error %v", string(data), err)
+					msg := fmt.Sprintf("Response data '%s', error %v", string(data), err)
 					t.Fatal(msg)
 				}
 			}
