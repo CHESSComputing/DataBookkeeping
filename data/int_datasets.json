@@ -49,7 +49,7 @@
      "code": 400
     },
     {
-     "description": "test dataset insert API with wrong did pattern did=xyz",
+     "description": "test dataset insert POST API with wrong did pattern did=xyz",
      "method": "POST",
      "endpoint": "/dataset",
      "url": "/dataset",
@@ -61,7 +61,7 @@
      "code": 400
     },
     {
-     "description": "test dataset insert API with wrong file pattern file=123",
+     "description": "test dataset insert POST API with wrong file pattern file=123",
      "method": "POST",
      "endpoint": "/dataset",
      "url": "/dataset",
