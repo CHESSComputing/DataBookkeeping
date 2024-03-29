@@ -31,6 +31,7 @@ import (
 
 	"github.com/CHESSComputing/DataBookkeeping/dbs"
 	srvConfig "github.com/CHESSComputing/golib/config"
+	"github.com/CHESSComputing/golib/lexicon"
 	server "github.com/CHESSComputing/golib/server"
 	"github.com/gin-gonic/gin"
 	validator "github.com/go-playground/validator/v10"
@@ -123,11 +124,11 @@ func Server() {
 	defer dbs.DB.Close()
 
 	// load Lexicon patterns
-	lexPatterns, err := dbs.LoadPatterns(srvConfig.Config.DataBookkeeping.LexiconFile)
+	lexPatterns, err := lexicon.LoadPatterns(srvConfig.Config.DataBookkeeping.LexiconFile)
 	if err != nil {
 		log.Fatal(err)
 	}
-	dbs.LexiconPatterns = lexPatterns
+	lexicon.LexiconPatterns = lexPatterns
 
 	// setup web router and start the service
 	r := setupRouter()

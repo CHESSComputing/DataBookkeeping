@@ -12,6 +12,7 @@ import (
 
 	"github.com/CHESSComputing/DataBookkeeping/dbs"
 	srvConfig "github.com/CHESSComputing/golib/config"
+	"github.com/CHESSComputing/golib/lexicon"
 	server "github.com/CHESSComputing/golib/server"
 	"github.com/gin-gonic/gin"
 	validator "github.com/go-playground/validator/v10"
@@ -29,11 +30,11 @@ func initDB(dryRun bool, dburi string) *sql.DB {
 		log.Fatal("unable to get current working dir")
 	}
 	// load Lexicon patterns
-	lexPatterns, err := dbs.LoadPatterns(srvConfig.Config.DataBookkeeping.LexiconFile)
+	lexPatterns, err := lexicon.LoadPatterns(srvConfig.Config.DataBookkeeping.LexiconFile)
 	if err != nil {
 		log.Fatal(err)
 	}
-	dbs.LexiconPatterns = lexPatterns
+	lexicon.LexiconPatterns = lexPatterns
 
 	dbs.StaticDir = "static"
 	dbtype := "sqlite3"

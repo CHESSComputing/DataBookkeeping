@@ -20,6 +20,7 @@ import (
 	"strings"
 	"time"
 
+	lexicon "github.com/CHESSComputing/golib/lexicon"
 	validator "github.com/go-playground/validator/v10"
 )
 
@@ -606,9 +607,9 @@ func OperatorValue(arg string) (string, string) {
 func ParseRuns(runs []string) ([]string, error) {
 	var out []string
 	for _, v := range runs {
-		if matched := intPattern.MatchString(v); matched {
+		if matched := lexicon.IntPattern.MatchString(v); matched {
 			out = append(out, v)
-		} else if matched := runRangePattern.MatchString(v); matched {
+		} else if matched := lexicon.RunRangePattern.MatchString(v); matched {
 			arr := strings.Split(v, "-")
 			if len(arr) != 2 {
 				msg := fmt.Sprintf("fail to parse run-range '%s'", v)

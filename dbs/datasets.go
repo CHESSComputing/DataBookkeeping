@@ -11,6 +11,7 @@ import (
 	"io"
 	"log"
 
+	lexicon "github.com/CHESSComputing/golib/lexicon"
 	"github.com/CHESSComputing/golib/utils"
 )
 
@@ -85,6 +86,7 @@ func (a *API) GetDataset() error {
 func (a *API) InsertDataset() error {
 	// the API provides Reader which will be used by Decode function to load the HTTP payload
 	// and cast it to Datasets data structure
+	log.Println("### InsertDataset", a)
 
 	// read given input
 	data, err := io.ReadAll(a.Reader)
@@ -113,6 +115,11 @@ func (a *API) InsertDataset() error {
 		DID:       rec.Did,
 		CREATE_BY: a.CreateBy,
 		MODIFY_BY: a.CreateBy,
+	}
+	record.SetDefaults()
+	err = record.Validate()
+	if err != nil {
+		return Error(err, ValidateErrorCode, "validation error", "dbs.datasets.InsertDataset")
 	}
 	err = insertParts(&rec, &record)
 	if err != nil {
@@ -330,10 +337,11 @@ func (r *Datasets) Insert(tx *sql.Tx) error {
 //
 //gocyclo:ignore
 func (r *Datasets) Validate() error {
-	if err := CheckPattern("did", r.DID); err != nil {
+	log.Printf("### Validate %+v did=%v", r, lexicon.CheckPattern("did", r.DID))
+	if err := lexicon.CheckPattern("did", r.DID); err != nil {
 		return Error(err, PatternErrorCode, "", "dbs.datasets.Validate")
 	}
-	if matched := unixTimePattern.MatchString(fmt.Sprintf("%d", r.CREATE_AT)); !matched {
+	if matched := lexicon.UnixTimePattern.MatchString(fmt.Sprintf("%d", r.CREATE_AT)); !matched {
 		msg := "invalid pattern for creation date"
 		return Error(InvalidParamErr, PatternErrorCode, msg, "dbs.datasets.Validate")
 	}

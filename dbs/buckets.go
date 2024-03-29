@@ -11,6 +11,8 @@ import (
 	"fmt"
 	"io"
 	"log"
+
+	lexicon "github.com/CHESSComputing/golib/lexicon"
 )
 
 // Buckets represents Buckets DBS DB table
@@ -120,11 +122,11 @@ func (r *Buckets) Validate() error {
 	if err := RecordValidator.Struct(*r); err != nil {
 		return DecodeValidatorError(r, err)
 	}
-	if matched := unixTimePattern.MatchString(fmt.Sprintf("%d", r.CREATE_AT)); !matched {
+	if matched := lexicon.UnixTimePattern.MatchString(fmt.Sprintf("%d", r.CREATE_AT)); !matched {
 		msg := "invalid pattern for creation date"
 		return Error(InvalidParamErr, PatternErrorCode, msg, "dbs.buckets.Validate")
 	}
-	if matched := unixTimePattern.MatchString(fmt.Sprintf("%d", r.MODIFY_AT)); !matched {
+	if matched := lexicon.UnixTimePattern.MatchString(fmt.Sprintf("%d", r.MODIFY_AT)); !matched {
 		msg := "invalid pattern for last modification date"
 		return Error(InvalidParamErr, PatternErrorCode, msg, "dbs.buckets.Validate")
 	}
