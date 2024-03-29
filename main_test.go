@@ -19,8 +19,8 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-// helper function to initialize DB for tests
-func initDB(dryRun bool, dburi string) *sql.DB {
+// helper function to initialize DBS for tests
+func initDBS(dryRun bool, dburi string) *sql.DB {
 	srvConfig.Init()
 	log.SetFlags(0)
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
@@ -70,7 +70,7 @@ func initServer() {
 		if dburi == "" {
 			log.Fatal("DBS_DB_FILE not defined")
 		}
-		db = initDB(false, dburi)
+		db = initDBS(false, dburi)
 	}
 	if router == nil {
 		routes := []server.Route{
