@@ -3,9 +3,9 @@ module github.com/CHESSComputing/DataBookkeeping
 go 1.22.2
 
 require (
-	github.com/CHESSComputing/golib v0.2.2
+	github.com/CHESSComputing/golib v0.2.3
 	github.com/gin-gonic/gin v1.9.1
-	github.com/go-playground/validator/v10 v10.19.0
+	github.com/go-playground/validator/v10 v10.20.0
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible
 	github.com/prometheus/procfs v0.14.0
@@ -69,6 +69,7 @@ require (
 	github.com/ulule/limiter/v3 v3.11.2 // indirect
 	github.com/vkuznet/http-logging v0.0.0-20210729230351-fc50acd79868 // indirect
 	github.com/yusufpapurcu/wmi v1.2.3 // indirect
+	go.mongodb.org/mongo-driver v1.13.1 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.9.0 // indirect
 	golang.org/x/arch v0.3.0 // indirect
