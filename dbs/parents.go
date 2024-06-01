@@ -45,6 +45,11 @@ func (a *API) GetParent() error {
 	if err != nil {
 		return Error(err, LoadErrorCode, "", "dbs.parents.GetParent")
 	}
+	if val, ok := a.Params["did"]; ok {
+		if val != "" {
+			conds, args = AddParam("did", "D.did", a.Params, conds, args)
+		}
+	}
 
 	stm = WhereClause(stm, conds)
 

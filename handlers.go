@@ -162,9 +162,9 @@ func getApi(c *gin.Context, a string) (*dbs.API, error) {
 		} else if a == "file" && rest.Name != "" {
 			api.Params["file"] = rest.Name
 		} else if a == "parent" && rest.Name != "" {
-			api.Params["parent"] = rest.Name
+			api.Params["did"] = rest.Name
 		} else if a == "child" && rest.Name != "" {
-			api.Params["child"] = rest.Name
+			api.Params["did"] = rest.Name
 		}
 	}
 
