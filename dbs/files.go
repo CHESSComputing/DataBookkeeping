@@ -28,6 +28,12 @@ type Files struct {
 	MODIFY_BY     string `json:"modify_by" validate:"required"`
 }
 
+// FileRecord represents input file record from HTTP request
+type FileRecord struct {
+	File    string `json:"file" validate:"required"`
+	Dataset string `json:"dataset" validate:"required"`
+}
+
 // Files DBS API
 //
 //gocyclo:ignore

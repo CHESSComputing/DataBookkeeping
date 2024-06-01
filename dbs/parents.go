@@ -25,6 +25,11 @@ type Parents struct {
 	MODIFY_BY string `json:"modify_by"`
 }
 
+// ParentRecord represents input parent record from HTTP request
+type ParentRecord struct {
+	Parent string `json:"parent" validate:"required"`
+}
+
 // Parents DBS API
 //
 //gocyclo:ignore
