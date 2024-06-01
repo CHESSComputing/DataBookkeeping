@@ -28,6 +28,7 @@ type Parents struct {
 // ParentRecord represents input parent record from HTTP request
 type ParentRecord struct {
 	Parent string `json:"parent" validate:"required"`
+	Did    string `json:"did" validate:"required"`
 }
 
 // Parents DBS API

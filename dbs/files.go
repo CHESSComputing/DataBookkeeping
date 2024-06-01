@@ -30,8 +30,8 @@ type Files struct {
 
 // FileRecord represents input file record from HTTP request
 type FileRecord struct {
-	File    string `json:"file" validate:"required"`
-	Dataset string `json:"dataset" validate:"required"`
+	File string `json:"file" validate:"required"`
+	Did  string `json:"did" validate:"required"`
 }
 
 // Files DBS API
