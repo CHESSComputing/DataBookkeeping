@@ -186,9 +186,14 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 	}
 	record.DATASET_ID = datasetId
 
+	// perform update of dataset record
+	if err = record.Update(tx); err != nil {
+		return err
+	}
+
 	// insert parent info
 	if rec.Parent != "" {
-		parentId, err = GetID(tx, "parents", "parent_id", "parent", rec.Parent)
+		parentId, err = GetID(tx, "datasets", "dataset_id", "did", rec.Parent)
 		if err != nil {
 			return err
 		}
@@ -196,17 +201,8 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 		if err = parent.Insert(tx); err != nil {
 			return err
 		}
-		parentId, err = GetID(tx, "parents", "parent_id", "parent", rec.Parent)
-		if err != nil {
-			return err
-		}
 	}
 	record.PARENT_ID = parentId
-
-	// perform update of dataset record
-	if err = record.Update(tx); err != nil {
-		return err
-	}
 
 	// insert all buckets
 	for _, b := range rec.Buckets {
