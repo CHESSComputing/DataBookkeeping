@@ -23,6 +23,16 @@ type NameRequest struct {
 	Name string `uri:"name" json:"name"`
 }
 
+// ChildHandler provides access to /child and /child/:name end-point
+func ChildHandler(c *gin.Context) {
+	ApiHandler(c, "child")
+}
+
+// ParentHandler provides access to /parent and /parent/:name end-point
+func ParentHandler(c *gin.Context) {
+	ApiHandler(c, "parent")
+}
+
 // FileHandler provides access to /files and /file/:name end-point
 func FileHandler(c *gin.Context) {
 	ApiHandler(c, "file")
@@ -151,6 +161,10 @@ func getApi(c *gin.Context, a string) (*dbs.API, error) {
 			api.Params["dataset"] = rest.Name
 		} else if a == "file" && rest.Name != "" {
 			api.Params["file"] = rest.Name
+		} else if a == "parent" && rest.Name != "" {
+			api.Params["parent"] = rest.Name
+		} else if a == "child" && rest.Name != "" {
+			api.Params["child"] = rest.Name
 		}
 	}
 
@@ -181,6 +195,10 @@ func DBSGetHandler(c *gin.Context, a string) {
 		err = api.GetDataset()
 	} else if a == "file" {
 		err = api.GetFile()
+	} else if a == "child" {
+		err = api.GetChild()
+	} else if a == "parent" {
+		err = api.GetParent()
 	} else {
 		err = dbs.NotImplementedApiErr
 	}
@@ -206,6 +224,8 @@ func DBSPostHandler(c *gin.Context, a string) {
 		err = api.InsertDataset()
 	} else if a == "file" {
 		err = api.InsertFile()
+	} else if a == "parent" {
+		err = api.InsertParent()
 	} else {
 		err = dbs.NotImplementedApiErr
 	}
@@ -229,6 +249,8 @@ func DBSPutHandler(c *gin.Context, a string) {
 		err = api.UpdateDataset()
 	} else if a == "file" {
 		err = api.UpdateFile()
+	} else if a == "Parent" {
+		err = api.UpdateParent()
 	} else {
 		err = dbs.NotImplementedApiErr
 	}
@@ -252,6 +274,8 @@ func DBSDeleteHandler(c *gin.Context, a string) {
 		err = api.DeleteDataset()
 	} else if a == "file" {
 		err = api.DeleteFile()
+	} else if a == "parent" {
+		err = api.DeleteParent()
 	} else {
 		err = dbs.NotImplementedApiErr
 	}

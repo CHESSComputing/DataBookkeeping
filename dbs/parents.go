@@ -37,7 +37,7 @@ func (a *API) GetParent() error {
 	tmpl["Owner"] = DBOWNER
 	stm, err := LoadTemplateSQL("select_parent", tmpl)
 	if err != nil {
-		return Error(err, LoadErrorCode, "", "dbs.parents.Parents")
+		return Error(err, LoadErrorCode, "", "dbs.parents.GetParent")
 	}
 
 	stm = WhereClause(stm, conds)
@@ -45,7 +45,7 @@ func (a *API) GetParent() error {
 	// use generic query API to fetch the results from DB
 	err = executeAll(a.Writer, a.Separator, stm, args...)
 	if err != nil {
-		return Error(err, QueryErrorCode, "", "dbs.parents.Parents")
+		return Error(err, QueryErrorCode, "", "dbs.parents.GetParent")
 	}
 	return nil
 }

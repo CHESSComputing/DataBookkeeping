@@ -56,16 +56,35 @@ func setupRouter() *gin.Engine {
 		server.Route{Method: "GET", Path: "/datasets", Handler: DatasetHandler, Authorized: false},
 		server.Route{Method: "GET", Path: "/dataset", Handler: DatasetHandler, Authorized: false},
 		server.Route{Method: "GET", Path: "/dataset/*name", Handler: DatasetHandler, Authorized: false},
+
 		server.Route{Method: "GET", Path: "/files", Handler: FileHandler, Authorized: false},
 		server.Route{Method: "GET", Path: "/file", Handler: FileHandler, Authorized: false},
 		server.Route{Method: "GET", Path: "/file/*name", Handler: FileHandler, Authorized: false},
+
+		server.Route{Method: "GET", Path: "/parents", Handler: ParentHandler, Authorized: false},
+		server.Route{Method: "GET", Path: "/parent", Handler: ParentHandler, Authorized: false},
+		server.Route{Method: "GET", Path: "/parent/*name", Handler: ParentHandler, Authorized: false},
+
+		server.Route{Method: "GET", Path: "/children", Handler: ChildHandler, Authorized: false},
+		server.Route{Method: "GET", Path: "/child", Handler: ChildHandler, Authorized: false},
+		server.Route{Method: "GET", Path: "/child/*name", Handler: ChildHandler, Authorized: false},
+
 		// authorized routes
+
+		// dataset routes
 		server.Route{Method: "POST", Path: "/dataset", Handler: DatasetHandler, Authorized: true, Scope: "write"},
-		server.Route{Method: "POST", Path: "/file", Handler: FileHandler, Authorized: true, Scope: "write"},
 		server.Route{Method: "PUT", Path: "/dataset/*name", Handler: DatasetHandler, Authorized: true, Scope: "write"},
-		server.Route{Method: "PUT", Path: "/file/*name", Handler: FileHandler, Authorized: true, Scope: "write"},
 		server.Route{Method: "DELETE", Path: "/dataset/*name", Handler: DatasetHandler, Authorized: true, Scope: "delete"},
+
+		// file routes
+		server.Route{Method: "POST", Path: "/file", Handler: FileHandler, Authorized: true, Scope: "write"},
+		server.Route{Method: "PUT", Path: "/file/*name", Handler: FileHandler, Authorized: true, Scope: "write"},
 		server.Route{Method: "DELETE", Path: "/file/*name", Handler: FileHandler, Authorized: true, Scope: "delete"},
+
+		// parent routes
+		server.Route{Method: "POST", Path: "/parent", Handler: ParentHandler, Authorized: true, Scope: "write"},
+		server.Route{Method: "PUT", Path: "/parent/*name", Handler: ParentHandler, Authorized: true, Scope: "write"},
+		server.Route{Method: "DELETE", Path: "/parent/*name", Handler: ParentHandler, Authorized: true, Scope: "write"},
 	}
 	r := server.Router(routes, nil, "static", srvConfig.Config.DataBookkeeping.WebServer)
 	return r
