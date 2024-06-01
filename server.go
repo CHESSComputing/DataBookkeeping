@@ -62,12 +62,9 @@ func setupRouter() *gin.Engine {
 		server.Route{Method: "GET", Path: "/file/*name", Handler: FileHandler, Authorized: false},
 
 		server.Route{Method: "GET", Path: "/parents", Handler: ParentHandler, Authorized: false},
-		server.Route{Method: "GET", Path: "/parent", Handler: ParentHandler, Authorized: false},
-		server.Route{Method: "GET", Path: "/parent/*name", Handler: ParentHandler, Authorized: false},
 
 		server.Route{Method: "GET", Path: "/children", Handler: ChildHandler, Authorized: false},
 		server.Route{Method: "GET", Path: "/child", Handler: ChildHandler, Authorized: false},
-		server.Route{Method: "GET", Path: "/child/*name", Handler: ChildHandler, Authorized: false},
 
 		// authorized routes
 
