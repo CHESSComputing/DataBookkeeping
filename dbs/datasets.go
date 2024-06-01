@@ -170,24 +170,6 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 	}
 	record.PROCESSING_ID = processingId
 
-	// insert parent info
-	if rec.Parent != "" {
-		parentId, err = GetID(tx, "parents", "parent_id", "parent", rec.Parent)
-		if err != nil {
-			if rec.Parent != "" || parentId == 0 {
-				parent := Parents{PARENT: rec.Parent}
-				if err = parent.Insert(tx); err != nil {
-					return err
-				}
-				parentId, err = GetID(tx, "parents", "parent_id", "parent", rec.Parent)
-				if err != nil {
-					return err
-				}
-			}
-		}
-	}
-	record.PARENT_ID = parentId
-
 	// insert dataset info
 	datasetId, err = GetID(tx, "datasets", "dataset_id", "did", rec.Did)
 	if err != nil {
@@ -203,6 +185,23 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 		}
 	}
 	record.DATASET_ID = datasetId
+
+	// insert parent info
+	if rec.Parent != "" {
+		parentId, err = GetID(tx, "parents", "parent_id", "parent", rec.Parent)
+		if err != nil {
+			return err
+		}
+		parent := Parents{PARENT_ID: parentId, DATASET_ID: datasetId}
+		if err = parent.Insert(tx); err != nil {
+			return err
+		}
+		parentId, err = GetID(tx, "parents", "parent_id", "parent", rec.Parent)
+		if err != nil {
+			return err
+		}
+	}
+	record.PARENT_ID = parentId
 
 	// perform update of dataset record
 	if err = record.Update(tx); err != nil {

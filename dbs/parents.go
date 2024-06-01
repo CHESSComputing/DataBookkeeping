@@ -17,12 +17,12 @@ import (
 
 // Parents represents Parents DBS DB table
 type Parents struct {
-	PARENT_ID int64  `json:"parent_id"`
-	PARENT    string `json:"parent" validate:"required"`
-	CREATE_AT int64  `json:"create_at"`
-	CREATE_BY string `json:"create_by"`
-	MODIFY_AT int64  `json:"modify_at"`
-	MODIFY_BY string `json:"modify_by"`
+	PARENT_ID  int64  `json:"parent_id"`
+	DATASET_ID int64  `json:"dataset_id"`
+	CREATE_AT  int64  `json:"create_at"`
+	CREATE_BY  string `json:"create_by"`
+	MODIFY_AT  int64  `json:"modify_at"`
+	MODIFY_BY  string `json:"modify_by"`
 }
 
 // ParentRecord represents input parent record from HTTP request
@@ -58,9 +58,53 @@ func (a *API) GetParent() error {
 
 // InsertParent inserts parent record into DB
 func (a *API) InsertParent() error {
+	// read given input
+	data, err := io.ReadAll(a.Reader)
+	if err != nil {
+		log.Println("fail to read data", err)
+		return Error(err, ReaderErrorCode, "", "dbs.parents.InsertParent")
+	}
+	rec := ParentRecord{}
+	if a.ContentType == "application/json" {
+		err = json.Unmarshal(data, &rec)
+	} else {
+		log.Println("Parser dataset record using default application/json mtime")
+		err = json.Unmarshal(data, &rec)
+	}
+	if err != nil {
+		log.Println("reading", a.ContentType)
+		log.Println("reading data", string(data))
+		log.Println("fail to decode data", err)
+		return Error(err, UnmarshalErrorCode, "", "dbs.parents.InsertParent")
+	}
+	log.Printf("### input ParentRecord %+v", rec)
+	// find parent id and current did
+	tx, err := DB.Begin()
+	if err != nil {
+		return Error(err, TransactionErrorCode, "", "dbs.insertRecord")
+	}
+	defer tx.Rollback()
+	datasetId, err := GetID(tx, "datasets", "dataset_id", "did", rec.Did)
+	if err != nil {
+		return Error(err, LoadErrorCode, "", "dbs.parents.InsertRecord")
+	}
+	parentId, err := GetID(tx, "datasets", "dataset_id", "did", rec.Parent)
+	if err != nil {
+		return Error(err, LoadErrorCode, "", "dbs.parents.InsertRecord")
+	}
 	// the API provides Reader which will be used by Decode function to load the HTTP payload
 	// and cast it to Parents data structure
-	return insertRecord(&Parents{}, a.Reader)
+	record := Parents{
+		PARENT_ID:  parentId,
+		DATASET_ID: datasetId,
+	}
+	log.Printf("### insertParent %+v", record)
+	err = record.Insert(tx)
+	if err != nil {
+		return err
+	}
+	err = tx.Commit()
+	return err
 }
 
 // UpdateParent inserts parent record in DB
@@ -107,7 +151,7 @@ func (r *Parents) Insert(tx *sql.Tx) error {
 	_, err = tx.Exec(
 		stm,
 		r.PARENT_ID,
-		r.PARENT,
+		r.DATASET_ID,
 		r.CREATE_AT,
 		r.CREATE_BY,
 		r.MODIFY_AT,
@@ -166,7 +210,7 @@ func (r *Parents) Decode(reader io.Reader) error {
 	//     decoder := json.NewDecoder(r)
 	//     err := decoder.Decode(&rec)
 	if err != nil {
-		log.Println("fail to decode data", err)
+		log.Printf("fail to decode data '%s', error %v", string(data), err)
 		return Error(err, UnmarshalErrorCode, "", "dbs.parents.Decode")
 	}
 	return nil

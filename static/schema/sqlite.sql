@@ -9,8 +9,8 @@ create TABLE processing (
     modify_by VARCHAR(255)
 );
 create TABLE parents (
-    parent_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    parent VARCHAR(255) NOT NULL UNIQUE,
+    parent_id INTEGER NOT NULL,
+    dataset_id INTEGER NOT NULL,
     create_at INTEGER,
     create_by VARCHAR(255),
     modify_at INTEGER,

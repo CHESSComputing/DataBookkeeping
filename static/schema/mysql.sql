@@ -7,8 +7,8 @@ CREATE TABLE processing (
     modify_by VARCHAR(255)
 );
 CREATE TABLE parents (
-    parent_id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    parent VARCHAR(255) NOT NULL UNIQUE,
+    parent_id INTEGER NOT NULL,
+    dataset_id INTEGER NOT NULL,
     create_at INTEGER,
     create_by VARCHAR(255),
     modify_at INTEGER,
