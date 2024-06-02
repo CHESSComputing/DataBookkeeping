@@ -19,6 +19,11 @@ func (a *API) GetChild() error {
 	if err != nil {
 		return Error(err, LoadErrorCode, "", "dbs.children.GetChild")
 	}
+	if val, ok := a.Params["did"]; ok {
+		if val != "" {
+			conds, args = AddParam("did", "PDS.did", a.Params, conds, args)
+		}
+	}
 
 	stm = WhereClause(stm, conds)
 
