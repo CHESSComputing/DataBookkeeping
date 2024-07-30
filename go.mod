@@ -3,7 +3,7 @@ module github.com/CHESSComputing/DataBookkeeping
 go 1.22.5
 
 require (
-	github.com/CHESSComputing/golib v0.3.2
+	github.com/CHESSComputing/golib v0.3.3
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-playground/validator/v10 v10.22.0
 	github.com/go-sql-driver/mysql v1.8.1
