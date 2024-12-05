@@ -87,7 +87,7 @@ func Server() {
 	// set database connection once
 	log.Println("parse Config.DBFile:", srvConfig.Config.DataBookkeeping.DBFile)
 	dbtype, dburi, dbowner := sqldb.ParseDBFile(srvConfig.Config.DataBookkeeping.DBFile)
-	log.Println("InitDB: type=%s owner=%s", dbtype, dbowner)
+	log.Printf("InitDB: type=%s owner=%s", dbtype, dbowner)
 
 	// setup DBS
 	db, dberr := sqldb.InitDB(dbtype, dburi)
