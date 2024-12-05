@@ -15,7 +15,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -301,17 +300,6 @@ func WhereClause(stm string, conds []string) string {
 		stm = fmt.Sprintf("%s WHERE %s", stm, strings.Join(conds, " AND "))
 	}
 	return strings.Trim(stm, " ")
-}
-
-// ParseDBFile function parses given file name and extracts from it dbtype and dburi
-// file should contain the "dbtype dburi" string
-func ParseDBFile(dbfile string) (string, string, string) {
-	dat, err := os.ReadFile(dbfile)
-	if err != nil {
-		log.Fatal(err)
-	}
-	arr := strings.Split(string(dat), " ")
-	return arr[0], arr[1], strings.Replace(arr[2], "\n", "", -1)
 }
 
 func placeholder(pholder string) string {

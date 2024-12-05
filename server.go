@@ -10,14 +10,6 @@ package main
 // Templates:   http://gohugo.io/templates/go-templates/
 //              http://golang.org/pkg/html/template/
 // Go examples: https://gobyexample.com/
-// for Go database API: http://go-database-sql.org/overview.html
-// Oracle drivers:
-//   _ "gopkg.in/rana/ora.v4"
-//   _ "github.com/mattn/go-oci8"
-// MySQL driver:
-//   _ "github.com/go-sql-driver/mysql"
-// SQLite driver:
-//  _ "github.com/mattn/go-sqlite3"
 //
 // Get profile's output
 // visit http://localhost:<port>/debug/pprof
@@ -26,24 +18,18 @@ package main
 // go tool pprof -png http://localhost:<port>/debug/pprof/profile > /tmp/profile.png
 
 import (
-	"database/sql"
 	"log"
 
 	"github.com/CHESSComputing/DataBookkeeping/dbs"
 	srvConfig "github.com/CHESSComputing/golib/config"
 	"github.com/CHESSComputing/golib/lexicon"
 	server "github.com/CHESSComputing/golib/server"
+	sqldb "github.com/CHESSComputing/golib/sqldb"
 	"github.com/gin-gonic/gin"
 	validator "github.com/go-playground/validator/v10"
 
 	// GO profiler
 	_ "net/http/pprof"
-
-	// imports for supported DB drivers
-	// go-sqlite driver
-	_ "github.com/mattn/go-sqlite3"
-	// mysql driver
-	_ "github.com/go-sql-driver/mysql"
 )
 
 // Verbose controls verbosity level
@@ -87,30 +73,6 @@ func setupRouter() *gin.Engine {
 	return r
 }
 
-// helper function to initialize DB access
-func dbInit(dbtype, dburi string) (*sql.DB, error) {
-	db, dberr := sql.Open(dbtype, dburi)
-	if dberr != nil {
-		log.Printf("unable to open dbtype=%s dburi=%s, error %v", dbtype, dburi, dberr)
-		return nil, dberr
-	}
-	dberr = db.Ping()
-	if dberr != nil {
-		log.Println("DB ping error", dberr)
-		return nil, dberr
-	}
-	db.SetMaxOpenConns(srvConfig.Config.DataBookkeeping.MaxDBConnections)
-	db.SetMaxIdleConns(srvConfig.Config.DataBookkeeping.MaxIdleConnections)
-	// Disables connection pool for sqlite3. This enables some concurrency with sqlite3 databases
-	// See https://stackoverflow.com/questions/57683132/turning-off-connection-pool-for-go-http-client
-	// and https://sqlite.org/wal.html
-	// This only will apply to sqlite3 databases
-	if dbtype == "sqlite3" {
-		db.Exec("PRAGMA journal_mode=WAL;")
-	}
-	return db, nil
-}
-
 // Server defines our HTTP server
 func Server() {
 	// be verbose
@@ -124,11 +86,11 @@ func Server() {
 
 	// set database connection once
 	log.Println("parse Config.DBFile:", srvConfig.Config.DataBookkeeping.DBFile)
-	dbtype, dburi, dbowner := dbs.ParseDBFile(srvConfig.Config.DataBookkeeping.DBFile)
-	log.Println("DBOWNER", dbowner)
+	dbtype, dburi, dbowner := sqldb.ParseDBFile(srvConfig.Config.DataBookkeeping.DBFile)
+	log.Println("InitDB: type=%s owner=%s", dbtype, dbowner)
 
 	// setup DBS
-	db, dberr := dbInit(dbtype, dburi)
+	db, dberr := sqldb.InitDB(dbtype, dburi)
 	if dberr != nil {
 		log.Fatal(dberr)
 	}
