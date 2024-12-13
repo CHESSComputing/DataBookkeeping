@@ -1,9 +1,9 @@
 CREATE TABLE processing (
     processing_id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
     processing VARCHAR(255) NOT NULL UNIQUE,
-    environment_id BIGINT REFERENCES python_environments(environment_id) ON UPDATE CASCADE,
-    os_id BIGINT REFERENCES os_environments(os_id) ON UPDATE CASCADE,
-    script_id BIGINT REFERENCES scripts(script_id) ON UPDATE CASCADE,
+    environment_id BIGINT REFERENCES environments(environment_id) ON UPDATE CASCADE ON DELETE SET NULL,
+    os_id BIGINT REFERENCES osinfo(os_id) ON UPDATE CASCADE ON DELETE SET NULL,
+    script_id BIGINT REFERENCES scripts(script_id) ON UPDATE CASCADE ON DELETE SET NULL,
     create_at INTEGER,
     create_by VARCHAR(255),
     modify_at INTEGER,
@@ -62,23 +62,25 @@ CREATE TABLE files (
 );
 
 -- Python Environments
-CREATE TABLE python_environments (
+CREATE TABLE environments (
     environment_id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,        -- Name of the environment (e.g., conda, virtualenv)
     version VARCHAR(255),              -- Python version
     details TEXT,                      -- Additional environment details
+    parent_environment BIGINT,
     create_at INTEGER,
     create_by VARCHAR(255),
     modify_at INTEGER,
-    modify_by VARCHAR(255)
+    modify_by VARCHAR(255),
+    FOREIGN KEY (parent_environment_id) REFERENCES environments(environment_id) ON UPDATE CASCADE ON DELETE SET NULL
 );
 
--- OS Environments
-CREATE TABLE os_environments (
+-- OS info
+CREATE TABLE osinfo (
     os_id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
     os_name VARCHAR(255) NOT NULL,     -- Operating system name (e.g., Linux)
-    os_version VARCHAR(255),           -- Kernel/OS version
-    release_number VARCHAR(255),       -- OS release number
+    os_version VARCHAR(255),           -- OS version
+    kernel_number VARCHAR(255),        -- kernel number
     create_at INTEGER,
     create_by VARCHAR(255),
     modify_at INTEGER,
@@ -90,8 +92,10 @@ CREATE TABLE scripts (
     script_id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
     script_name VARCHAR(255) NOT NULL, -- Name of the script
     parameters TEXT,                   -- Parameters used for the script
+    parent_script_id BIGINT,
     create_at INTEGER,
     create_by VARCHAR(255),
     modify_at INTEGER,
-    modify_by VARCHAR(255)
+    modify_by VARCHAR(255),
+    FOREIGN KEY (parent_script_id) REFERENCES scripts(script_id) ON UPDATE CASCADE ON DELETE SET NULL
 );
