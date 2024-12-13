@@ -3,12 +3,12 @@ module github.com/CHESSComputing/DataBookkeeping
 go 1.23.4
 
 require (
-	github.com/CHESSComputing/golib v0.5.4
+	github.com/CHESSComputing/golib v0.5.5
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-playground/validator/v10 v10.23.0
 	github.com/mattn/go-sqlite3 v1.14.24
 	github.com/prometheus/procfs v0.15.1
-	golang.org/x/exp v0.0.0-20241204233417-43b7b7cde48d
+	golang.org/x/exp v0.0.0-20241210194714-1829a127f884
 	gopkg.in/yaml.v2 v2.4.0
 )
 
