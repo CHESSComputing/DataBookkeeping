@@ -17,25 +17,31 @@ import (
 
 // Datasets represents Datasets DBS DB table
 type Datasets struct {
-	DATASET_ID    int64  `json:"dataset_id"`
-	DID           string `json:"did" validate:"required"`
-	SITE_ID       int64  `json:"site_id" validate:"required"`
-	PROCESSING_ID int64  `json:"processing_id" validate:"required"`
-	PARENT_ID     int64  `json:"parent_id" validate:"required"`
-	CREATE_AT     int64  `json:"create_at" validate:"required,number"`
-	CREATE_BY     string `json:"create_by" validate:"required"`
-	MODIFY_AT     int64  `json:"modify_at" validate:"required,number"`
-	MODIFY_BY     string `json:"modify_by" validate:"required"`
+	DATASET_ID     int64  `json:"dataset_id"`
+	DID            string `json:"did" validate:"required"`
+	SITE_ID        int64  `json:"site_id" validate:"required"`
+	PROCESSING_ID  int64  `json:"processing_id" validate:"required"`
+	ENVIRONMENT_ID int64  `json:"environment_id" validate:"required"`
+	OSINFO_ID      int64  `json:"osinfo_id" validate:"required"`
+	SCRIPT_ID      int64  `json:"script_id" validate:"required"`
+	PARENT_ID      int64  `json:"parent_id" validate:"required"`
+	CREATE_AT      int64  `json:"create_at" validate:"required,number"`
+	CREATE_BY      string `json:"create_by" validate:"required"`
+	MODIFY_AT      int64  `json:"modify_at" validate:"required,number"`
+	MODIFY_BY      string `json:"modify_by" validate:"required"`
 }
 
 // DatasetRecord represents input dataset record from HTTP request
 type DatasetRecord struct {
-	Did        string   `json:"did" validate:"required"`
-	Buckets    []string `json:"buckets" validate:"required"`
-	Site       string   `json:"site" validate:"required"`
-	Processing string   `json:"processing" validate:"required"`
-	Parent     string   `json:"parent" validate:"required"`
-	Files      []string `json:"files" validate:"required"`
+	Did         string   `json:"did" validate:"required"`
+	Buckets     []string `json:"buckets" validate:"required"`
+	Site        string   `json:"site" validate:"required"`
+	Processing  string   `json:"processing" validate:"required"`
+	Parent      string   `json:"parent" validate:"required"`
+	Files       []string `json:"files" validate:"required"`
+	Environment string   `json:"environment" validate:"required"`
+	OsInfo      string   `json:"osinfo" validate:"required"`
+	Script      string   `json:"script" validate:"required"`
 }
 
 // Datasets API
@@ -136,7 +142,7 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 		return Error(err, TransactionErrorCode, "", "dbs.insertRecord")
 	}
 	defer tx.Rollback()
-	var siteId, processingId, parentId, datasetId int64
+	var siteId, processingId, parentId, datasetId, environmentId, osId, scriptId int64
 
 	// insert site info
 	if rec.Site != "" {
@@ -169,6 +175,35 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 		}
 	}
 	record.PROCESSING_ID = processingId
+
+	// insert environment info
+	if rec.Environment != "" {
+		environmentId, err = GetID(tx, "environments", "environment_id", "name", rec.Environment)
+		if err != nil {
+			return err
+		}
+	}
+	record.ENVIRONMENT_ID = environmentId
+
+	// insert os info
+	if rec.OsInfo != "" {
+		// TODO: from given OsInfo string we should decode back os name, version, and kernel numbers
+		// and look-up appropriate osId from osinfo table
+		//         osId, err = GetID(tx, "osinfo", "os_id", "osinfo", rec.OsInfo)
+		//         if err != nil {
+		//             return err
+		//         }
+	}
+	record.OSINFO_ID = osId
+
+	// insert script info
+	if rec.Script != "" {
+		scriptId, err = GetID(tx, "scripts", "script_id", "script_name", rec.Script)
+		if err != nil {
+			return err
+		}
+	}
+	record.SCRIPT_ID = scriptId
 
 	// insert dataset info
 	datasetId, err = GetID(tx, "datasets", "dataset_id", "did", rec.Did)
