@@ -33,15 +33,15 @@ type Datasets struct {
 
 // DatasetRecord represents input dataset record from HTTP request
 type DatasetRecord struct {
-	Did         string   `json:"did" validate:"required"`
-	Buckets     []string `json:"buckets" validate:"required"`
-	Site        string   `json:"site" validate:"required"`
-	Processing  string   `json:"processing" validate:"required"`
-	Parent      string   `json:"parent" validate:"required"`
-	Files       []string `json:"files" validate:"required"`
-	Environment string   `json:"environment" validate:"required"`
-	OsInfo      string   `json:"osinfo" validate:"required"`
-	Script      string   `json:"script" validate:"required"`
+	Did         string            `json:"did" validate:"required"`
+	Buckets     []string          `json:"buckets" validate:"required"`
+	Site        string            `json:"site" validate:"required"`
+	Processing  string            `json:"processing" validate:"required"`
+	Parent      string            `json:"parent" validate:"required"`
+	Files       []string          `json:"files" validate:"required"`
+	Environment EnvironmentRecord `json:"environment",omitempty`
+	OsInfo      OsInfoRecord      `json:"osinfo",omitempty`
+	Script      ScriptRecord      `json:"script",omitempty`
 }
 
 // Datasets API
@@ -177,31 +177,23 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 	record.PROCESSING_ID = processingId
 
 	// insert environment info
-	if rec.Environment != "" {
-		environmentId, err = GetID(tx, "environments", "environment_id", "name", rec.Environment)
-		if err != nil {
-			return err
-		}
+	environmentId, err = rec.Environment.Insert(tx)
+	if err != nil {
+		return err
 	}
 	record.ENVIRONMENT_ID = environmentId
 
 	// insert os info
-	if rec.OsInfo != "" {
-		// TODO: from given OsInfo string we should decode back os name, version, and kernel numbers
-		// and look-up appropriate osId from osinfo table
-		//         osId, err = GetID(tx, "osinfo", "os_id", "osinfo", rec.OsInfo)
-		//         if err != nil {
-		//             return err
-		//         }
+	osId, err = rec.OsInfo.Insert(tx)
+	if err != nil {
+		return err
 	}
 	record.OSINFO_ID = osId
 
 	// insert script info
-	if rec.Script != "" {
-		scriptId, err = GetID(tx, "scripts", "script_id", "script_name", rec.Script)
-		if err != nil {
-			return err
-		}
+	scriptId, err = rec.Script.Insert(tx)
+	if err != nil {
+		return err
 	}
 	record.SCRIPT_ID = scriptId
 

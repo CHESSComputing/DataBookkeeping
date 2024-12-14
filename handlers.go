@@ -38,6 +38,21 @@ func FileHandler(c *gin.Context) {
 	ApiHandler(c, "file")
 }
 
+// OsinfoHandler provides access to /osinfo and /osinfo/:name end-point
+func OsinfoHandler(c *gin.Context) {
+	ApiHandler(c, "osinfo")
+}
+
+// EnvironmentHandler provides access to /environment and /environment/:name end-point
+func EnvironmentHandler(c *gin.Context) {
+	ApiHandler(c, "environment")
+}
+
+// ScriptHandler provides access to /script and /script/:name end-point
+func ScriptHandler(c *gin.Context) {
+	ApiHandler(c, "script")
+}
+
 // DatasetHandler provides access to GET /datasets and /dataset/:name end-point
 func DatasetHandler(c *gin.Context) {
 	ApiHandler(c, "dataset")
@@ -199,6 +214,12 @@ func DBSGetHandler(c *gin.Context, a string) {
 		err = api.GetChild()
 	} else if a == "parent" {
 		err = api.GetParent()
+	} else if a == "osinfo" {
+		err = api.GetOsInfo()
+	} else if a == "environment" {
+		err = api.GetEnvironment()
+	} else if a == "script" {
+		err = api.GetScript()
 	} else {
 		err = dbs.NotImplementedApiErr
 	}
@@ -226,6 +247,12 @@ func DBSPostHandler(c *gin.Context, a string) {
 		err = api.InsertFile()
 	} else if a == "parent" {
 		err = api.InsertParent()
+	} else if a == "osinfo" {
+		err = api.InsertOsInfo()
+	} else if a == "environment" {
+		err = api.InsertEnvironment()
+	} else if a == "script" {
+		err = api.InsertScript()
 	} else {
 		err = dbs.NotImplementedApiErr
 	}
@@ -251,6 +278,12 @@ func DBSPutHandler(c *gin.Context, a string) {
 		err = api.UpdateFile()
 	} else if a == "Parent" {
 		err = api.UpdateParent()
+	} else if a == "osinfo" {
+		err = api.UpdateOsInfo()
+	} else if a == "environment" {
+		err = api.UpdateEnvironment()
+	} else if a == "script" {
+		err = api.UpdateScript()
 	} else {
 		err = dbs.NotImplementedApiErr
 	}
@@ -276,6 +309,12 @@ func DBSDeleteHandler(c *gin.Context, a string) {
 		err = api.DeleteFile()
 	} else if a == "parent" {
 		err = api.DeleteParent()
+	} else if a == "osinfo" {
+		err = api.DeleteOsInfo()
+	} else if a == "environment" {
+		err = api.DeleteEnvironment()
+	} else if a == "script" {
+		err = api.DeleteScript()
 	} else {
 		err = dbs.NotImplementedApiErr
 	}

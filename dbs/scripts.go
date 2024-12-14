@@ -15,21 +15,36 @@ import (
 	lexicon "github.com/CHESSComputing/golib/lexicon"
 )
 
-// Script represents script input data
-type Script struct {
-	Name       string
-	Parameters []string
+// ScriptRecord represents script input data record
+type ScriptRecord struct {
+	Name    string `json:"name"`
+	Options string `json:"options"`
+}
+
+// Insert API
+func (e *ScriptRecord) Insert(tx *sql.Tx) (int64, error) {
+	r := Scripts{NAME: e.Name, OPTIONS: e.Options}
+	if r.SCRIPT_ID == 0 {
+		id, err := getNextId(tx, "script", "script_id")
+		if err != nil {
+			log.Println("unable to get script id", err)
+			return 0, Error(err, ParametersErrorCode, "", "dbs.script.Insert")
+		}
+		r.SCRIPT_ID = id
+	}
+	err := r.Insert(tx)
+	return r.SCRIPT_ID, err
 }
 
 // Scripts represents Scripts DBS DB table
 type Scripts struct {
-	SCRIPT_ID   int64  `json:"script_id"`
-	SCRIPT_NAME string `json:"script_name" validate:"required"`
-	PARAMETERS  string `json:"parameters"`
-	CREATE_AT   int64  `json:"create_at"`
-	CREATE_BY   string `json:"create_by"`
-	MODIFY_AT   int64  `json:"modify_at"`
-	MODIFY_BY   string `json:"modify_by"`
+	SCRIPT_ID int64  `json:"script_id"`
+	NAME      string `json:"name" validate:"required"`
+	OPTIONS   string `json:"options"`
+	CREATE_AT int64  `json:"create_at"`
+	CREATE_BY string `json:"create_by"`
+	MODIFY_AT int64  `json:"modify_at"`
+	MODIFY_BY string `json:"modify_by"`
 }
 
 // Scripts DBS API
@@ -108,8 +123,8 @@ func (r *Scripts) Insert(tx *sql.Tx) error {
 	_, err = tx.Exec(
 		stm,
 		r.SCRIPT_ID,
-		r.SCRIPT_NAME,
-		r.PARAMETERS,
+		r.NAME,
+		r.OPTIONS,
 		r.CREATE_AT,
 		r.CREATE_BY,
 		r.MODIFY_AT,

@@ -78,9 +78,9 @@ CREATE TABLE environments (
 -- OS info
 CREATE TABLE osinfo (
     os_id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    os_name VARCHAR(255) NOT NULL,     -- Operating system name (e.g., Linux)
-    os_version VARCHAR(255),           -- OS version
-    kernel_number VARCHAR(255),        -- kernel number
+    name VARCHAR(255) NOT NULL,     -- Operating system name (e.g., Linux)
+    version VARCHAR(255),           -- OS version
+    kernel VARCHAR(255),            -- kernel number
     create_at INTEGER,
     create_by VARCHAR(255),
     modify_at INTEGER,
@@ -90,8 +90,8 @@ CREATE TABLE osinfo (
 -- Scripts
 CREATE TABLE scripts (
     script_id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    script_name VARCHAR(255) NOT NULL, -- Name of the script
-    parameters TEXT,                   -- Parameters used for the script
+    name VARCHAR(255) NOT NULL,     -- Name of the script
+    options TEXT,                   -- Parameters used for the script
     parent_script_id BIGINT,
     create_at INTEGER,
     create_by VARCHAR(255),

@@ -68,6 +68,21 @@ func setupRouter() *gin.Engine {
 		server.Route{Method: "POST", Path: "/parent", Handler: ParentHandler, Authorized: true, Scope: "write"},
 		server.Route{Method: "PUT", Path: "/parent/*name", Handler: ParentHandler, Authorized: true, Scope: "write"},
 		server.Route{Method: "DELETE", Path: "/parent/*name", Handler: ParentHandler, Authorized: true, Scope: "write"},
+
+		// osinfo routes
+		server.Route{Method: "POST", Path: "/osinfo", Handler: OsinfoHandler, Authorized: true, Scope: "write"},
+		server.Route{Method: "PUT", Path: "/osinfo/*name", Handler: OsinfoHandler, Authorized: true, Scope: "write"},
+		server.Route{Method: "DELETE", Path: "/osinfo/*name", Handler: OsinfoHandler, Authorized: true, Scope: "delete"},
+
+		// environment routes
+		server.Route{Method: "POST", Path: "/environment", Handler: EnvironmentHandler, Authorized: true, Scope: "write"},
+		server.Route{Method: "PUT", Path: "/environment/*name", Handler: EnvironmentHandler, Authorized: true, Scope: "write"},
+		server.Route{Method: "DELETE", Path: "/environment/*name", Handler: EnvironmentHandler, Authorized: true, Scope: "delete"},
+
+		// script routes
+		server.Route{Method: "POST", Path: "/script", Handler: ScriptHandler, Authorized: true, Scope: "write"},
+		server.Route{Method: "PUT", Path: "/script/*name", Handler: ScriptHandler, Authorized: true, Scope: "write"},
+		server.Route{Method: "DELETE", Path: "/script/*name", Handler: ScriptHandler, Authorized: true, Scope: "delete"},
 	}
 	r := server.Router(routes, nil, "static", srvConfig.Config.DataBookkeeping.WebServer)
 	return r

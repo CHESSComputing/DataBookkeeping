@@ -1,0 +1,1 @@
+SELECT * FROM osinfo O;

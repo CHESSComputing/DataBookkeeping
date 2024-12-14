@@ -15,11 +15,26 @@ import (
 	lexicon "github.com/CHESSComputing/golib/lexicon"
 )
 
-// Environment represents data input for environment
-type Environment struct {
-	Name    string
-	Version string
-	Details string
+// EnvironmentRecord represents data input for environment record
+type EnvironmentRecord struct {
+	Name    string `json:"name"`
+	Version string `json:"version"`
+	Details string `json:"details"`
+}
+
+// Insert API
+func (e *EnvironmentRecord) Insert(tx *sql.Tx) (int64, error) {
+	r := Environments{NAME: e.Name, VERSION: e.Version, DETAILS: e.Details}
+	if r.ENVIRONMENT_ID == 0 {
+		id, err := getNextId(tx, "environment", "environment_id")
+		if err != nil {
+			log.Println("unable to get environment id", err)
+			return 0, Error(err, ParametersErrorCode, "", "dbs.environment.Insert")
+		}
+		r.ENVIRONMENT_ID = id
+	}
+	err := r.Insert(tx)
+	return r.ENVIRONMENT_ID, err
 }
 
 // Environments represents Environments DBS DB table
@@ -28,7 +43,6 @@ type Environments struct {
 	NAME           string `json:"name" validate:"required"`
 	VERSION        string `json:"version" validate:"required"`
 	DETAILS        string `json:"details" validate:"required"`
-	DATASET_ID     int64  `json:"dataset_id" validate:"required"`
 	CREATE_AT      int64  `json:"create_at"`
 	CREATE_BY      string `json:"create_by"`
 	MODIFY_AT      int64  `json:"modify_at"`
@@ -114,7 +128,6 @@ func (r *Environments) Insert(tx *sql.Tx) error {
 		r.NAME,
 		r.VERSION,
 		r.DETAILS,
-		r.DATASET_ID,
 		r.CREATE_AT,
 		r.CREATE_BY,
 		r.MODIFY_AT,

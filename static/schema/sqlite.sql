@@ -71,9 +71,9 @@ CREATE TABLE environments (
 );
 CREATE TABLE osinfo (
     os_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    os_name VARCHAR(255) NOT NULL,
-    os_version VARCHAR(255),
-    kernel_number VARCHAR(255),
+    name VARCHAR(255) NOT NULL,
+    version VARCHAR(255),
+    kernel VARCHAR(255),
     create_at INTEGER,
     create_by VARCHAR(255),
     modify_at INTEGER,
@@ -81,8 +81,8 @@ CREATE TABLE osinfo (
 );
 CREATE TABLE scripts (
     script_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    script_name VARCHAR(255) NOT NULL,
-    parameters TEXT,
+    name VARCHAR(255) NOT NULL,
+    options TEXT,
     parent_script_id INTEGER,
     create_at INTEGER,
     create_by VARCHAR(255),

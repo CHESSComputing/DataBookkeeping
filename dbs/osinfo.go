@@ -15,17 +15,38 @@ import (
 	lexicon "github.com/CHESSComputing/golib/lexicon"
 )
 
+// OsInfoRecord represent input os info record
+type OsInfoRecord struct {
+	Name    string `json:"name"`
+	Version string `json:"version"`
+	Kernel  string `json:"kernel"`
+}
+
+// Insert API
+func (o *OsInfoRecord) Insert(tx *sql.Tx) (int64, error) {
+	r := OsInfo{NAME: o.Name, VERSION: o.Version, KERNEL: o.Kernel}
+	if r.OSINFO_ID == 0 {
+		id, err := getNextId(tx, "osinfo", "osinfo_id")
+		if err != nil {
+			log.Println("unable to get osinfo id", err)
+			return 0, Error(err, ParametersErrorCode, "", "dbs.osinfo.Insert")
+		}
+		r.OSINFO_ID = id
+	}
+	err := r.Insert(tx)
+	return r.OSINFO_ID, err
+}
+
 // OsInfo represents OsInfo DBS DB table
 type OsInfo struct {
-	OSINFO_ID     int64  `json:"osinfo_id"`
-	OS_NAME       string `json:"os_name" validate:"required"`
-	OS_VERSION    string `json:"os_version" validate:"required"`
-	KERNEL_NUMBER string `json:"release_number" validate:"required"`
-	DATASET_ID    int64  `json:"dataset_id" validate:"required"`
-	CREATE_AT     int64  `json:"create_at"`
-	CREATE_BY     string `json:"create_by"`
-	MODIFY_AT     int64  `json:"modify_at"`
-	MODIFY_BY     string `json:"modify_by"`
+	OSINFO_ID int64  `json:"osinfo_id"`
+	NAME      string `json:"name" validate:"required"`
+	VERSION   string `json:"version" validate:"required"`
+	KERNEL    string `json:"kernel" validate:"required"`
+	CREATE_AT int64  `json:"create_at"`
+	CREATE_BY string `json:"create_by"`
+	MODIFY_AT int64  `json:"modify_at"`
+	MODIFY_BY string `json:"modify_by"`
 }
 
 // OsInfo DBS API
@@ -104,10 +125,9 @@ func (r *OsInfo) Insert(tx *sql.Tx) error {
 	_, err = tx.Exec(
 		stm,
 		r.OSINFO_ID,
-		r.OS_NAME,
-		r.OS_VERSION,
-		r.KERNEL_NUMBER,
-		r.DATASET_ID,
+		r.NAME,
+		r.VERSION,
+		r.KERNEL,
 		r.CREATE_AT,
 		r.CREATE_BY,
 		r.MODIFY_AT,
