@@ -26,7 +26,7 @@ type EnvironmentRecord struct {
 func (e *EnvironmentRecord) Insert(tx *sql.Tx) (int64, error) {
 	r := Environments{NAME: e.Name, VERSION: e.Version, DETAILS: e.Details}
 	if r.ENVIRONMENT_ID == 0 {
-		id, err := getNextId(tx, "environment", "environment_id")
+		id, err := getNextId(tx, "environments", "environment_id")
 		if err != nil {
 			log.Println("unable to get environment id", err)
 			return 0, Error(err, ParametersErrorCode, "", "dbs.environment.Insert")

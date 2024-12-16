@@ -25,21 +25,21 @@ type OsInfoRecord struct {
 // Insert API
 func (o *OsInfoRecord) Insert(tx *sql.Tx) (int64, error) {
 	r := OsInfo{NAME: o.Name, VERSION: o.Version, KERNEL: o.Kernel}
-	if r.OSINFO_ID == 0 {
-		id, err := getNextId(tx, "osinfo", "osinfo_id")
+	if r.OS_ID == 0 {
+		id, err := getNextId(tx, "osinfo", "os_id")
 		if err != nil {
 			log.Println("unable to get osinfo id", err)
 			return 0, Error(err, ParametersErrorCode, "", "dbs.osinfo.Insert")
 		}
-		r.OSINFO_ID = id
+		r.OS_ID = id
 	}
 	err := r.Insert(tx)
-	return r.OSINFO_ID, err
+	return r.OS_ID, err
 }
 
 // OsInfo represents OsInfo DBS DB table
 type OsInfo struct {
-	OSINFO_ID int64  `json:"osinfo_id"`
+	OS_ID     int64  `json:"os_id"`
 	NAME      string `json:"name" validate:"required"`
 	VERSION   string `json:"version" validate:"required"`
 	KERNEL    string `json:"kernel" validate:"required"`
@@ -100,13 +100,13 @@ func (r *OsInfo) Update(tx *sql.Tx) error {
 // Insert implementation of OsInfo
 func (r *OsInfo) Insert(tx *sql.Tx) error {
 	var err error
-	if r.OSINFO_ID == 0 {
-		osinfoID, err := getNextId(tx, "osinfo", "osinfo_id")
+	if r.OS_ID == 0 {
+		osinfoID, err := getNextId(tx, "osinfo", "os_id")
 		if err != nil {
 			log.Println("unable to get osinfoID", err)
 			return Error(err, ParametersErrorCode, "", "dbs.osinfo.Insert")
 		}
-		r.OSINFO_ID = osinfoID
+		r.OS_ID = osinfoID
 	}
 	// set defaults and validate the record
 	r.SetDefaults()
@@ -124,7 +124,7 @@ func (r *OsInfo) Insert(tx *sql.Tx) error {
 	}
 	_, err = tx.Exec(
 		stm,
-		r.OSINFO_ID,
+		r.OS_ID,
 		r.NAME,
 		r.VERSION,
 		r.KERNEL,

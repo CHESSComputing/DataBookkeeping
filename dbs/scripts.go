@@ -25,7 +25,7 @@ type ScriptRecord struct {
 func (e *ScriptRecord) Insert(tx *sql.Tx) (int64, error) {
 	r := Scripts{NAME: e.Name, OPTIONS: e.Options}
 	if r.SCRIPT_ID == 0 {
-		id, err := getNextId(tx, "script", "script_id")
+		id, err := getNextId(tx, "scripts", "script_id")
 		if err != nil {
 			log.Println("unable to get script id", err)
 			return 0, Error(err, ParametersErrorCode, "", "dbs.script.Insert")

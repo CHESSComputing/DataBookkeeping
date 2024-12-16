@@ -160,22 +160,6 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 	}
 	record.SITE_ID = siteId
 
-	// insert processing info
-	if rec.Processing != "" {
-		processingId, err = GetID(tx, "processing", "processing_id", "processing", rec.Processing)
-		if err != nil || processingId == 0 {
-			processing := Processing{PROCESSING: rec.Processing}
-			if err = processing.Insert(tx); err != nil {
-				return err
-			}
-			processingId, err = GetID(tx, "processing", "processing_id", "processing", rec.Processing)
-			if err != nil {
-				return err
-			}
-		}
-	}
-	record.PROCESSING_ID = processingId
-
 	// insert environment info
 	environmentId, err = rec.Environment.Insert(tx)
 	if err != nil {
@@ -196,6 +180,27 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 		return err
 	}
 	record.SCRIPT_ID = scriptId
+
+	// insert processing info
+	if rec.Processing != "" {
+		processingId, err = GetID(tx, "processing", "processing_id", "processing", rec.Processing)
+		if err != nil || processingId == 0 {
+			processing := Processing{
+				PROCESSING:     rec.Processing,
+				OS_ID:          osId,
+				ENVIRONMENT_ID: environmentId,
+				SCRIPT_ID:      scriptId,
+			}
+			if err = processing.Insert(tx); err != nil {
+				return err
+			}
+			processingId, err = GetID(tx, "processing", "processing_id", "processing", rec.Processing)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	record.PROCESSING_ID = processingId
 
 	// insert dataset info
 	datasetId, err = GetID(tx, "datasets", "dataset_id", "did", rec.Did)
