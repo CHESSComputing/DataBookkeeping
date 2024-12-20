@@ -98,6 +98,10 @@ func TestIntegration(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, f := range files {
+		if f.Name() == "README.md" {
+			continue
+		}
+		fmt.Println("run integration test with", f.Name())
 		var testCases []TestCase
 		if !strings.HasPrefix(f.Name(), "int_") {
 			continue
