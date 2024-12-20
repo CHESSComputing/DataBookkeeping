@@ -37,7 +37,16 @@ func runTestWorkflow(t *testing.T, v TestCase) {
 
 		rr := responseRecorder(t, v)
 		if v.Verbose > 1 {
-			t.Logf("response %+v", rr)
+			t.Logf("response code %v", rr.Code)
+			body := rr.Body
+			var records []ServerError
+			if err = json.Unmarshal(body.Bytes(), &records); err == nil {
+				for _, rec := range records {
+					fmt.Printf("ERROR: %s", rec.DBSError)
+				}
+			} else {
+				fmt.Println("### body\n", body.String())
+			}
 		}
 		// check response code
 		if rr.Code != v.Code {
