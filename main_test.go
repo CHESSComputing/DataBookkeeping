@@ -22,6 +22,9 @@ import (
 // helper function to initialize DBS for tests
 func initDBS(dryRun bool, dburi string) *sql.DB {
 	srvConfig.Init()
+	// set server log file to stdout
+	srvConfig.Config.DataBookkeeping.LogFile = ""
+	// set log flags
 	log.SetFlags(0)
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 	// current directory is a <pwd>/test
@@ -84,6 +87,10 @@ func initServer() {
 			server.Route{Method: "POST", Path: "/dataset", Handler: DatasetHandler, Authorized: false},
 			server.Route{Method: "GET", Path: "/file", Handler: FileHandler, Authorized: false},
 			server.Route{Method: "POST", Path: "/file", Handler: FileHandler, Authorized: false},
+			server.Route{Method: "GET", Path: "/script", Handler: ScriptHandler, Authorized: false},
+			server.Route{Method: "POST", Path: "/script", Handler: ScriptHandler, Authorized: false},
+			server.Route{Method: "GET", Path: "/environment", Handler: EnvironmentHandler, Authorized: false},
+			server.Route{Method: "POST", Path: "/environment", Handler: EnvironmentHandler, Authorized: false},
 		}
 		router = server.Router(routes, nil, "static", srvConfig.Config.DataBookkeeping.WebServer)
 	}
