@@ -67,7 +67,7 @@ CREATE TABLE environments (
     name VARCHAR(255) NOT NULL,        -- Name of the environment (e.g., conda, virtualenv)
     version VARCHAR(255),              -- Python version
     details TEXT,                      -- Additional environment details
-    parent_environment_id BIGINT,
+    parent_environment_id INTEGER,
     create_at INTEGER,
     create_by VARCHAR(255),
     modify_at INTEGER,
@@ -92,7 +92,7 @@ CREATE TABLE scripts (
     script_id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,     -- Name of the script
     options TEXT,                   -- Parameters used for the script
-    parent_script_id BIGINT,
+    parent_script_id INTEGER,
     create_at INTEGER,
     create_by VARCHAR(255),
     modify_at INTEGER,
