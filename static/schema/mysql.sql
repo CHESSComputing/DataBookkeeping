@@ -67,7 +67,7 @@ CREATE TABLE environments (
     name VARCHAR(255) NOT NULL,        -- Name of the environment (e.g., conda, virtualenv)
     version VARCHAR(255),              -- Python version
     details TEXT,                      -- Additional environment details
-    parent_environment BIGINT,
+    parent_environment_id BIGINT,
     create_at INTEGER,
     create_by VARCHAR(255),
     modify_at INTEGER,
