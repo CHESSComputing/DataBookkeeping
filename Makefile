@@ -137,3 +137,12 @@ test_int:
 	DBS_DB_FILE=/tmp/dbs-test.db \
 	DBS_INT_TESTS_DIR=data \
 	go test -v -failfast -run Integration
+
+test_debug:
+	touch ~/.foxden.yaml
+	rm -f /tmp/dbs-test.db && \
+	sqlite3 /tmp/dbs-test.db < ./static/schema/sqlite.sql && \
+	LD_LIBRARY_PATH=${odir} DYLD_LIBRARY_PATH=${odir} \
+	DBS_DB_FILE=/tmp/dbs-test.db \
+	DBS_INT_TESTS_DIR=debug \
+	go test -v -failfast -run Integration
