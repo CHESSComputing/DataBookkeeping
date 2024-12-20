@@ -119,7 +119,7 @@ testdb:
 	mkdir -p /tmp/${USER} && \
 	echo "test" > /tmp/${USER}/test.txt
 
-test : testdb test_code
+test : testdb test_code test_int
 
 test_code:
 	touch ~/.foxden.yaml
