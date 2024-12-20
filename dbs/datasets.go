@@ -79,7 +79,6 @@ func (a *API) GetDataset() error {
 func (a *API) InsertDataset() error {
 	// the API provides Reader which will be used by Decode function to load the HTTP payload
 	// and cast it to Datasets data structure
-	log.Println("### InsertDataset", a)
 
 	// read given input
 	data, err := io.ReadAll(a.Reader)
@@ -269,7 +268,6 @@ func (a *API) DeleteDataset() error {
 
 // Update implementation of Datasets
 func (r *Datasets) Update(tx *sql.Tx) error {
-	log.Printf("### Update %+v", r)
 	var err error
 	if r.DATASET_ID == 0 {
 		return Error(err, ValidateErrorCode, "Dataset should have valid id", "dbs.datasets.Update")
