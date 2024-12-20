@@ -30,7 +30,13 @@ func initDBS(dryRun bool, dburi string) *sql.DB {
 		log.Fatal("unable to get current working dir")
 	}
 	// load Lexicon patterns
-	lexPatterns, err := lexicon.LoadPatterns(srvConfig.Config.DataBookkeeping.LexiconFile)
+	var lexPatterns map[string]lexicon.LexiconPattern
+	if srvConfig.Config.DataBookkeeping.LexiconFile != "" {
+		lexPatterns, err = lexicon.LoadPatterns(srvConfig.Config.DataBookkeeping.LexiconFile)
+	} else {
+		// use for unit test in github
+		lexPatterns, err = lexicon.LoadPatterns("data/dbs_lexicon.json")
+	}
 	if err != nil {
 		log.Fatal(err)
 	}
