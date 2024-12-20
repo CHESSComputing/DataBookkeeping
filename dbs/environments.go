@@ -20,6 +20,7 @@ type EnvironmentRecord struct {
 	Name    string `json:"name"`
 	Version string `json:"version"`
 	Details string `json:"details"`
+	Parent  string `json:"parent_environment",omitempty`
 }
 
 // Insert API
@@ -33,20 +34,30 @@ func (e *EnvironmentRecord) Insert(tx *sql.Tx) (int64, error) {
 		}
 		r.ENVIRONMENT_ID = id
 	}
+	// identify parent script id if parent is present
+	if e.Parent != "" {
+		parent_environment_id, err := GetID(tx, "environments", "environment_id", "name", e.Parent)
+		if err == nil {
+			r.PARENT_ENVIRONMENT_ID = parent_environment_id
+		} else {
+			return 0, err
+		}
+	}
 	err := r.Insert(tx)
 	return r.ENVIRONMENT_ID, err
 }
 
 // Environments represents Environments DBS DB table
 type Environments struct {
-	ENVIRONMENT_ID int64  `json:"environment_id"`
-	NAME           string `json:"name" validate:"required"`
-	VERSION        string `json:"version" validate:"required"`
-	DETAILS        string `json:"details" validate:"required"`
-	CREATE_AT      int64  `json:"create_at"`
-	CREATE_BY      string `json:"create_by"`
-	MODIFY_AT      int64  `json:"modify_at"`
-	MODIFY_BY      string `json:"modify_by"`
+	ENVIRONMENT_ID        int64  `json:"environment_id"`
+	NAME                  string `json:"name" validate:"required"`
+	VERSION               string `json:"version" validate:"required"`
+	DETAILS               string `json:"details" validate:"required"`
+	PARENT_ENVIRONMENT_ID int64  `json:"parent_environment_id"`
+	CREATE_AT             int64  `json:"create_at"`
+	CREATE_BY             string `json:"create_by"`
+	MODIFY_AT             int64  `json:"modify_at"`
+	MODIFY_BY             string `json:"modify_by"`
 }
 
 // Environments DBS API
@@ -78,7 +89,37 @@ func (a *API) GetEnvironment() error {
 func (a *API) InsertEnvironment() error {
 	// the API provides Reader which will be used by Decode function to load the HTTP payload
 	// and cast it to Environments data structure
-	return insertRecord(&Environments{}, a.Reader)
+
+	// decode input as EnvironmentRecord
+	var rec EnvironmentRecord
+
+	data, err := io.ReadAll(a.Reader)
+	if err != nil {
+		log.Println("fail to read data", err)
+		return Error(err, ReaderErrorCode, "", "dbs.scripts.InsertEnvironment")
+	}
+	err = json.Unmarshal(data, &rec)
+	if err != nil {
+		msg := fmt.Sprintf("fail to decode record")
+		log.Println(msg)
+		return Error(err, DecodeErrorCode, msg, "dbs.scripts.InsertEnvironment")
+	}
+
+	// start transaction
+	tx, err := DB.Begin()
+	if err != nil {
+		return Error(err, TransactionErrorCode, "", "dbs.InsertEnvironment")
+	}
+	defer tx.Rollback()
+	if _, err := rec.Insert(tx); err != nil {
+		return err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return Error(err, CommitErrorCode, "", "dbs.InsertEnvironment")
+	}
+	return err
 }
 
 // UpdateEnvironment inserts environment record in DB
@@ -128,6 +169,7 @@ func (r *Environments) Insert(tx *sql.Tx) error {
 		r.NAME,
 		r.VERSION,
 		r.DETAILS,
+		r.PARENT_ENVIRONMENT_ID,
 		r.CREATE_AT,
 		r.CREATE_BY,
 		r.MODIFY_AT,
