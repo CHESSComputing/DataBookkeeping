@@ -19,6 +19,7 @@ import (
 type ScriptRecord struct {
 	Name    string `json:"name"`
 	Options string `json:"options"`
+	Parent  string `json:"parent_script",omitempty`
 }
 
 // Insert API
@@ -32,19 +33,29 @@ func (e *ScriptRecord) Insert(tx *sql.Tx) (int64, error) {
 		}
 		r.SCRIPT_ID = id
 	}
+	// identify parent script id if parent is present
+	if e.Parent != "" {
+		parent_script_id, err := GetID(tx, "scripts", "script_id", "name", e.Parent)
+		if err == nil {
+			r.PARENT_SCRIPT_ID = parent_script_id
+		} else {
+			return 0, err
+		}
+	}
 	err := r.Insert(tx)
 	return r.SCRIPT_ID, err
 }
 
 // Scripts represents Scripts DBS DB table
 type Scripts struct {
-	SCRIPT_ID int64  `json:"script_id"`
-	NAME      string `json:"name" validate:"required"`
-	OPTIONS   string `json:"options"`
-	CREATE_AT int64  `json:"create_at"`
-	CREATE_BY string `json:"create_by"`
-	MODIFY_AT int64  `json:"modify_at"`
-	MODIFY_BY string `json:"modify_by"`
+	SCRIPT_ID        int64  `json:"script_id"`
+	NAME             string `json:"name" validate:"required"`
+	OPTIONS          string `json:"options"`
+	PARENT_SCRIPT_ID int64  `json:"parent_script_id"`
+	CREATE_AT        int64  `json:"create_at"`
+	CREATE_BY        string `json:"create_by"`
+	MODIFY_AT        int64  `json:"modify_at"`
+	MODIFY_BY        string `json:"modify_by"`
 }
 
 // Scripts DBS API
@@ -76,7 +87,37 @@ func (a *API) GetScript() error {
 func (a *API) InsertScript() error {
 	// the API provides Reader which will be used by Decode function to load the HTTP payload
 	// and cast it to Scripts data structure
-	return insertRecord(&Scripts{}, a.Reader)
+
+	// decode input as ScriptRecord
+	var rec ScriptRecord
+
+	data, err := io.ReadAll(a.Reader)
+	if err != nil {
+		log.Println("fail to read data", err)
+		return Error(err, ReaderErrorCode, "", "dbs.scripts.InsertScript")
+	}
+	err = json.Unmarshal(data, &rec)
+	if err != nil {
+		msg := fmt.Sprintf("fail to decode record")
+		log.Println(msg)
+		return Error(err, DecodeErrorCode, msg, "dbs.scripts.InsertScript")
+	}
+
+	// start transaction
+	tx, err := DB.Begin()
+	if err != nil {
+		return Error(err, TransactionErrorCode, "", "dbs.InsertScript")
+	}
+	defer tx.Rollback()
+	if _, err := rec.Insert(tx); err != nil {
+		return err
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return Error(err, CommitErrorCode, "", "dbs.InsertScript")
+	}
+	return err
 }
 
 // UpdateScript inserts script record in DB
@@ -125,6 +166,7 @@ func (r *Scripts) Insert(tx *sql.Tx) error {
 		r.SCRIPT_ID,
 		r.NAME,
 		r.OPTIONS,
+		r.PARENT_SCRIPT_ID,
 		r.CREATE_AT,
 		r.CREATE_BY,
 		r.MODIFY_AT,
