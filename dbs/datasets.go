@@ -182,22 +182,23 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 	record.SCRIPT_ID = scriptId
 
 	// insert processing info
-	if rec.Processing != "" {
+	if rec.Processing == "" {
+		return errors.New("procesing part of provenance records is empty")
+	}
+	processingId, err = GetID(tx, "processing", "processing_id", "processing", rec.Processing)
+	if err != nil || processingId == 0 {
+		processing := Processing{
+			PROCESSING:     rec.Processing,
+			OS_ID:          osId,
+			ENVIRONMENT_ID: environmentId,
+			SCRIPT_ID:      scriptId,
+		}
+		if err = processing.Insert(tx); err != nil {
+			return err
+		}
 		processingId, err = GetID(tx, "processing", "processing_id", "processing", rec.Processing)
-		if err != nil || processingId == 0 {
-			processing := Processing{
-				PROCESSING:     rec.Processing,
-				OS_ID:          osId,
-				ENVIRONMENT_ID: environmentId,
-				SCRIPT_ID:      scriptId,
-			}
-			if err = processing.Insert(tx); err != nil {
-				return err
-			}
-			processingId, err = GetID(tx, "processing", "processing_id", "processing", rec.Processing)
-			if err != nil {
-				return err
-			}
+		if err != nil {
+			return err
 		}
 	}
 	record.PROCESSING_ID = processingId
