@@ -19,29 +19,16 @@ import (
 type Datasets struct {
 	DATASET_ID     int64  `json:"dataset_id"`
 	DID            string `json:"did" validate:"required"`
-	SITE_ID        int64  `json:"site_id" validate:"required"`
-	PROCESSING_ID  int64  `json:"processing_id" validate:"required"`
-	ENVIRONMENT_ID int64  `json:"environment_id" validate:"required"`
-	OSINFO_ID      int64  `json:"osinfo_id" validate:"required"`
-	SCRIPT_ID      int64  `json:"script_id" validate:"required"`
-	PARENT_ID      int64  `json:"parent_id" validate:"required"`
+	SITE_ID        int64  `json:"site_id" validate:"required",number`
+	PROCESSING_ID  int64  `json:"processing_id" validate:"required",number`
+	ENVIRONMENT_ID int64  `json:"environment_id" validate:"required",number`
+	OSINFO_ID      int64  `json:"osinfo_id" validate:"required",number`
+	SCRIPT_ID      int64  `json:"script_id" validate:"required",number`
+	PARENT_ID      int64  `json:"parent_id" validate:"required",number`
 	CREATE_AT      int64  `json:"create_at" validate:"required,number"`
 	CREATE_BY      string `json:"create_by" validate:"required"`
 	MODIFY_AT      int64  `json:"modify_at" validate:"required,number"`
 	MODIFY_BY      string `json:"modify_by" validate:"required"`
-}
-
-// DatasetRecord represents input dataset record from HTTP request
-type DatasetRecord struct {
-	Did         string            `json:"did" validate:"required"`
-	Buckets     []string          `json:"buckets" validate:"required"`
-	Site        string            `json:"site" validate:"required"`
-	Processing  string            `json:"processing" validate:"required"`
-	Parent      string            `json:"parent" validate:"required"`
-	Files       []string          `json:"files" validate:"required"`
-	Environment EnvironmentRecord `json:"environment",omitempty`
-	OsInfo      OsInfoRecord      `json:"osinfo",omitempty`
-	Script      ScriptRecord      `json:"script",omitempty`
 }
 
 // Datasets API
@@ -113,7 +100,13 @@ func (a *API) InsertDataset() error {
 		log.Println("fail to decode data", err)
 		return Error(err, UnmarshalErrorCode, "", "dbs.datasets.InsertDataset")
 	}
-	log.Printf("### input DatasetRecord %+v", rec)
+	if Verbose > 0 {
+		log.Printf("### input DatasetRecord %+v", rec)
+	}
+	err = rec.Validate()
+	if err != nil {
+		return Error(err, ValidateErrorCode, "validation error", "dbs.datasets.InsertDataset")
+	}
 
 	// parse incoming DatasetRequest and insert relationships, e.g.
 	// site, bucket, parent, processing, files
@@ -365,7 +358,6 @@ func (r *Datasets) Insert(tx *sql.Tx) error {
 //
 //gocyclo:ignore
 func (r *Datasets) Validate() error {
-	log.Printf("### Validate %+v did=%v", r, lexicon.CheckPattern("did", r.DID))
 	if err := lexicon.CheckPattern("did", r.DID); err != nil {
 		return Error(err, PatternErrorCode, "", "dbs.datasets.Validate")
 	}
