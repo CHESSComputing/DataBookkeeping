@@ -3,6 +3,8 @@ package dbs
 import (
 	"database/sql"
 	"log"
+
+	lexicon "github.com/CHESSComputing/golib/lexicon"
 )
 
 // OsInfoRecord represent input os info record
@@ -25,4 +27,18 @@ func (o *OsInfoRecord) Insert(tx *sql.Tx) (int64, error) {
 	}
 	err := r.Insert(tx)
 	return r.OS_ID, err
+}
+
+// Validate implementation of OsInfoRecord
+func (r *OsInfoRecord) Validate() error {
+	if err := lexicon.CheckPattern("osinfo_name", r.Name); err != nil {
+		return Error(err, PatternErrorCode, "fail osinfo.name validation", "dbs.datasets.DatasetRecord.Validate")
+	}
+	if err := lexicon.CheckPattern("osinfo_version", r.Version); err != nil {
+		return Error(err, PatternErrorCode, "fail osinfo.version validation", "dbs.datasets.DatasetRecord.Validate")
+	}
+	if err := lexicon.CheckPattern("osinfo_kernel", r.Kernel); err != nil {
+		return Error(err, PatternErrorCode, "fail osinfo.name validation", "dbs.datasets.DatasetRecord.Validate")
+	}
+	return nil
 }

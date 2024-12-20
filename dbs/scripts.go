@@ -72,6 +72,11 @@ func (a *API) InsertScript() error {
 		return Error(err, DecodeErrorCode, msg, "dbs.scripts.InsertScript")
 	}
 
+	err = rec.Validate()
+	if err != nil {
+		return Error(err, ValidateErrorCode, "validation error", "dbs.scripts.InsertScript")
+	}
+
 	// start transaction
 	tx, err := DB.Begin()
 	if err != nil {

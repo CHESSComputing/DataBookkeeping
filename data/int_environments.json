@@ -1,0 +1,38 @@
+[
+    {
+     "description": "test environment insert API",
+     "method": "POST",
+     "endpoint": "/environment",
+     "url": "/environment",
+     "input": {
+       "name": "environment1", "version": "version", "details": "details"
+     },
+     "output": [],
+     "verbose": 0,
+     "code": 200
+    },
+    {
+     "description": "test environment insert API with parent environment",
+     "method": "POST",
+     "endpoint": "/environment",
+     "url": "/environment",
+     "input": {
+       "name": "environment2", "version": "version", "details": "details", "parent_environment": "environment1"
+     },
+     "output": [],
+     "verbose": 0,
+     "code": 200
+    },
+    {
+     "description": "test environment insert API with parent environment",
+     "method": "GET",
+     "endpoint": "/environment",
+     "url": "/environment",
+     "input": {
+       "name": "environment2"
+     },
+     "output": [],
+     "verbose": 2,
+     "code": 200
+    }
+]

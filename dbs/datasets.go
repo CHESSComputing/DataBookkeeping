@@ -76,6 +76,7 @@ func (a *API) GetDataset() error {
 	return nil
 }
 
+// InsertDataset inserts dataset into database
 func (a *API) InsertDataset() error {
 	// the API provides Reader which will be used by Decode function to load the HTTP payload
 	// and cast it to Datasets data structure

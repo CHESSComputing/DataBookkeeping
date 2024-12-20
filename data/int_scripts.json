@@ -1,0 +1,38 @@
+[
+    {
+     "description": "test script insert API",
+     "method": "POST",
+     "endpoint": "/script",
+     "url": "/script",
+     "input": {
+       "name": "script1", "options": "-m -p"
+     },
+     "output": [],
+     "verbose": 0,
+     "code": 200
+    },
+    {
+     "description": "test script insert API with parent script",
+     "method": "POST",
+     "endpoint": "/script",
+     "url": "/script",
+     "input": {
+       "name": "script2", "options": "-m -p", "parent_script": "script1"
+     },
+     "output": [],
+     "verbose": 0,
+     "code": 200
+    },
+    {
+     "description": "test script insert API with parent script",
+     "method": "GET",
+     "endpoint": "/script",
+     "url": "/script",
+     "input": {
+       "name": "script2"
+     },
+     "output": [],
+     "verbose": 2,
+     "code": 200
+    }
+]

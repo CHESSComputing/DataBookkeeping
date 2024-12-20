@@ -64,13 +64,18 @@ func (a *API) InsertEnvironment() error {
 	data, err := io.ReadAll(a.Reader)
 	if err != nil {
 		log.Println("fail to read data", err)
-		return Error(err, ReaderErrorCode, "", "dbs.scripts.InsertEnvironment")
+		return Error(err, ReaderErrorCode, "", "dbs.environments.InsertEnvironment")
 	}
 	err = json.Unmarshal(data, &rec)
 	if err != nil {
 		msg := fmt.Sprintf("fail to decode record")
 		log.Println(msg)
-		return Error(err, DecodeErrorCode, msg, "dbs.scripts.InsertEnvironment")
+		return Error(err, DecodeErrorCode, msg, "dbs.environments.InsertEnvironment")
+	}
+
+	err = rec.Validate()
+	if err != nil {
+		return Error(err, ValidateErrorCode, "validation error", "dbs.environments.InsertEnvironment")
 	}
 
 	// start transaction

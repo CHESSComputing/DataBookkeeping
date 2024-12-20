@@ -3,6 +3,8 @@ package dbs
 import (
 	"database/sql"
 	"log"
+
+	lexicon "github.com/CHESSComputing/golib/lexicon"
 )
 
 // ScriptRecord represents script input data record
@@ -34,4 +36,18 @@ func (e *ScriptRecord) Insert(tx *sql.Tx) (int64, error) {
 	}
 	err := r.Insert(tx)
 	return r.SCRIPT_ID, err
+}
+
+// Validate implementation of ScriptRecord
+func (r *ScriptRecord) Validate() error {
+	if err := lexicon.CheckPattern("script_name", r.Name); err != nil {
+		return Error(err, PatternErrorCode, "fail script.Name validation", "dbs.datasets.DatasetRecord.Validate")
+	}
+	if err := lexicon.CheckPattern("script_options", r.Options); err != nil {
+		return Error(err, PatternErrorCode, "fail script.Options validation", "dbs.datasets.DatasetRecord.Validate")
+	}
+	if err := lexicon.CheckPattern("script_parent", r.Parent); err != nil {
+		return Error(err, PatternErrorCode, "fail script.Parent validation", "dbs.datasets.DatasetRecord.Validate")
+	}
+	return nil
 }
