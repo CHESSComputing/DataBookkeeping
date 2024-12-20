@@ -40,8 +40,8 @@ type HTTPError struct {
 
 // ServerError represents HTTP server error structure
 type ServerError struct {
-	DBSError  error     `json:"error"`     // DBS error
-	HTTPError HTTPError `json:"http"`      // HTTP section of the error
+	DBSError  string    `json:"dbs_error"` // DBS error
+	HTTPError HTTPError `json:"http_http"` // HTTP section of the error
 	Exception int       `json:"exception"` // for compatibility with Python server
 	Type      string    `json:"type"`      // for compatibility with Python server
 	Message   string    `json:"message"`   // for compatibility with Python server
@@ -66,7 +66,7 @@ func responseMsg(w http.ResponseWriter, r *http.Request, err error, code int) in
 	}
 	rec := ServerError{
 		HTTPError: hrec,
-		DBSError:  err,
+		DBSError:  err.Error(),
 		Exception: code,        // for compatibility with Python server
 		Type:      "HTTPError", // for compatibility with Python server
 		Message:   err.Error(), // for compatibility with Python server
