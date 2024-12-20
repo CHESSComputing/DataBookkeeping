@@ -14,8 +14,11 @@
          "/x/y/z/file2.png",
          "/x/y/z/file3.png"
        ],
+       "osinfo": {"name": "linux-cc7", "kernel": "1-2-3", "version": "cc7-123"},
+       "environment": {"name": "conda-123", "version": "version", "details": "details"},
+       "script": {"name": "myscript", "options": "-m -p"},
        "processing": "glibc",
-           "site": "Cornell"
+       "site": "Cornell"
      },
      "output": [],
      "verbose": 0,
@@ -83,6 +86,103 @@
      },
      "output": [],
      "verbose": 0,
+     "code": 400
+    },
+    {
+     "description": "test dataset insert API did:/xxx=1/yyy=aaa/zzz=1a and empty processing",
+     "method": "POST",
+     "endpoint": "/dataset",
+     "url": "/dataset",
+     "input": {
+       "buckets": [
+         "siteXYZ"
+       ],
+       "did": "/xxx=1/yyy=aaa/zzz=1a",
+       "files": [
+         "/x/y/z/file1.png",
+         "/x/y/z/file2.png",
+         "/x/y/z/file3.png"
+       ],
+       "osinfo": {"name": "linux-cc7", "kernel": "1-2-3", "version": "cc7-123"},
+       "environment": {"name": "conda-123", "version": "version", "details": "details"},
+       "script": {"name": "myscript", "options": "-m -p"},
+       "processing": "",
+       "site": "Cornell"
+     },
+     "output": [],
+     "verbose": 0,
+     "code": 400
+    },
+    {
+     "description": "test dataset insert API did:/xxx=1/yyy=aaa/zzz=1a and empty environment",
+     "method": "POST",
+     "endpoint": "/dataset",
+     "url": "/dataset",
+     "input": {
+       "buckets": [
+         "siteXYZ"
+       ],
+       "did": "/xxx=1/yyy=aaa/zzz=1a",
+       "files": [
+         "/x/y/z/file1.png",
+         "/x/y/z/file2.png",
+         "/x/y/z/file3.png"
+       ],
+       "osinfo": {"name": "linux-cc7", "kernel": "1-2-3", "version": "cc7-123"},
+       "script": {"name": "myscript", "options": "-m -p"},
+       "processing": "",
+       "site": "Cornell"
+     },
+     "output": [],
+     "verbose": 0,
+     "code": 400
+    },
+    {
+     "description": "test dataset insert API did:/xxx=1/yyy=aaa/zzz=1a and empty script",
+     "method": "POST",
+     "endpoint": "/dataset",
+     "url": "/dataset",
+     "input": {
+       "buckets": [
+         "siteXYZ"
+       ],
+       "did": "/xxx=1/yyy=aaa/zzz=1a",
+       "files": [
+         "/x/y/z/file1.png",
+         "/x/y/z/file2.png",
+         "/x/y/z/file3.png"
+       ],
+       "osinfo": {"name": "linux-cc7", "kernel": "1-2-3", "version": "cc7-123"},
+       "environment": {"name": "conda-123", "version": "version", "details": "details"},
+       "processing": "",
+       "site": "Cornell"
+     },
+     "output": [],
+     "verbose": 0,
+     "code": 400
+    },
+    {
+     "description": "test dataset insert API did:/xxx=1/yyy=aaa/zzz=1a and empty osinfo",
+     "method": "POST",
+     "endpoint": "/dataset",
+     "url": "/dataset",
+     "input": {
+       "buckets": [
+         "siteXYZ"
+       ],
+       "did": "/xxx=1/yyy=aaa/zzz=1a",
+       "files": [
+         "/x/y/z/file1.png",
+         "/x/y/z/file2.png",
+         "/x/y/z/file3.png"
+       ],
+       "environment": {"name": "conda-123", "version": "version", "details": "details"},
+       "script": {"name": "myscript", "options": "-m -p"},
+       "processing": "glibc",
+       "site": "Cornell"
+     },
+     "output": [],
+     "verbose": 1,
      "code": 400
     }
 ]
