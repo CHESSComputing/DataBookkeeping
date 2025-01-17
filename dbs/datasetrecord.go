@@ -8,7 +8,7 @@ type DatasetRecord struct {
 	Buckets     []string          `json:"buckets" validate:"required"`
 	Site        string            `json:"site" validate:"required"`
 	Processing  string            `json:"processing" validate:"required"`
-	Parent      string            `json:"parent" validate:"required"`
+	Parent      string            `json:"parent_did" validate:"required"`
 	InputFiles  []string          `json:"input_files" validate:"required"`
 	OutputFiles []string          `json:"output_files" validate:"required"`
 	Environment EnvironmentRecord `json:"environment",omitempty`

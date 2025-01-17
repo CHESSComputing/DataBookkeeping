@@ -61,6 +61,9 @@ func (a *API) GetProvenance() error {
 	provenance.OutputFiles = []string{}
 	provenance.Environment.Packages = []PackageRecord{}
 
+	// keep map of unique packages
+	packageSet := make(map[string]struct{}) // Acts as a unique set
+
 	for rows.Next() {
 		var parentDID sql.NullString
 		var fileType sql.NullString
@@ -127,10 +130,27 @@ func (a *API) GetProvenance() error {
 		if provenance.Environment.Packages == nil {
 			provenance.Environment.Packages = []PackageRecord{}
 		}
-		provenance.Environment.Packages = append(provenance.Environment.Packages, PackageRecord{
-			Name:    provenance.Environment.Name,
-			Version: provenance.Environment.Version,
-		})
+		/*
+			if packageName.Valid && packageVersion.Valid {
+				provenance.Environment.Packages = append(provenance.Environment.Packages, PackageRecord{
+					Name:    packageName.String,
+					Version: packageVersion.String,
+				})
+			}
+		*/
+
+		// Check if the package is already in the set before adding
+		if packageName.Valid && packageVersion.Valid {
+			pkgKey := packageName.String + "|" + packageVersion.String
+			if _, exists := packageSet[pkgKey]; !exists {
+				provenance.Environment.Packages = append(provenance.Environment.Packages, PackageRecord{
+					Name:    packageName.String,
+					Version: packageVersion.String,
+				})
+				packageSet[pkgKey] = struct{}{} // Mark as added
+			}
+		}
+
 	}
 
 	// Convert to JSON
