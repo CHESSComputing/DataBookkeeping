@@ -9,7 +9,7 @@
          "siteXYZ"
        ],
        "did": "/xxx=1/yyy=aaa/zzz=1a",
-       "files": [
+       "input_files": [
          "/x/y/z/file1.png",
          "/x/y/z/file2.png",
          "/x/y/z/file3.png"
@@ -70,7 +70,7 @@
      "url": "/dataset",
      "input": {
        "did": "/xyz=2a",
-       "files": [123, 456]
+       "input_files": [123, 456]
      },
      "output": [],
      "verbose": 0,
@@ -98,7 +98,7 @@
          "siteXYZ"
        ],
        "did": "/xxx=1/yyy=aaa/zzz=1a",
-       "files": [
+       "input_files": [
          "/x/y/z/file1.png",
          "/x/y/z/file2.png",
          "/x/y/z/file3.png"
@@ -123,7 +123,7 @@
          "siteXYZ"
        ],
        "did": "/xxx=1/yyy=aaa/zzz=1a",
-       "files": [
+       "input_files": [
          "/x/y/z/file1.png",
          "/x/y/z/file2.png",
          "/x/y/z/file3.png"
@@ -147,7 +147,7 @@
          "siteXYZ"
        ],
        "did": "/xxx=1/yyy=aaa/zzz=1a",
-       "files": [
+       "input_files": [
          "/x/y/z/file1.png",
          "/x/y/z/file2.png",
          "/x/y/z/file3.png"
@@ -171,7 +171,7 @@
          "siteXYZ"
        ],
        "did": "/xxx=1/yyy=aaa/zzz=1a",
-       "files": [
+       "input_files": [
          "/x/y/z/file1.png",
          "/x/y/z/file2.png",
          "/x/y/z/file3.png"
