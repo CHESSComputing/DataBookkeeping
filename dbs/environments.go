@@ -21,6 +21,7 @@ type Environments struct {
 	NAME                  string `json:"name" validate:"required"`
 	VERSION               string `json:"version" validate:"required"`
 	DETAILS               string `json:"details" validate:"required"`
+	OS_ID                 int64  `json:"os_id"`
 	PARENT_ENVIRONMENT_ID int64  `json:"parent_environment_id"`
 	CREATE_AT             int64  `json:"create_at"`
 	CREATE_BY             string `json:"create_by"`
@@ -142,6 +143,7 @@ func (r *Environments) Insert(tx *sql.Tx) (int64, error) {
 		r.NAME,
 		r.VERSION,
 		r.DETAILS,
+		r.OS_ID,
 		r.PARENT_ENVIRONMENT_ID,
 		r.CREATE_AT,
 		r.CREATE_BY,

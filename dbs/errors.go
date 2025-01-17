@@ -111,7 +111,7 @@ func (e *DBSError) Explain() string {
 	case TransactionErrorCode:
 		return "DBS DB transaction error"
 	case QueryErrorCode:
-		return "DBS DB query error, e.g. mailformed SQL statement"
+		return "DBS DB query error, e.g. malformed SQL statement"
 	case RowsScanErrorCode:
 		return "DBS DB row scane error, e.g. fail to get DB record from a database"
 	case SessionErrorCode:
@@ -119,7 +119,7 @@ func (e *DBSError) Explain() string {
 	case CommitErrorCode:
 		return "DBS DB transaction commit error"
 	case ParseErrorCode:
-		return "DBS parser error, e.g. mailformed input parameter to the query"
+		return "DBS parser error, e.g. malformed input parameter to the query"
 	case LoadErrorCode:
 		return "DBS file load error, e.g. fail to load DB template"
 	case GetIDErrorCode:
@@ -135,7 +135,7 @@ func (e *DBSError) Explain() string {
 	case PatternErrorCode:
 		return "DBS validation error when wrong pattern is provided"
 	case DecodeErrorCode:
-		return "DBS decode record failure, e.g. mailformed JSON"
+		return "DBS decode record failure, e.g. malformed JSON"
 	case EncodeErrorCode:
 		return "DBS encode record failure, e.g. unable to convert structure to JSON"
 	case ContentTypeErrorCode:

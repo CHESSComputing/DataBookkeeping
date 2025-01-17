@@ -150,19 +150,19 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 	}
 	record.SITE_ID = siteId
 
-	// insert environment info
-	environmentId, err = rec.Environment.Insert(tx)
-	if err != nil {
-		return err
-	}
-	record.ENVIRONMENT_ID = environmentId
-
 	// insert os info
 	osId, err = rec.OsInfo.Insert(tx)
 	if err != nil {
 		return err
 	}
 	record.OSINFO_ID = osId
+
+	// insert environment info
+	environmentId, err = rec.Environment.Insert(tx)
+	if err != nil {
+		return err
+	}
+	record.ENVIRONMENT_ID = environmentId
 
 	// insert script info
 	scriptId, err = rec.Script.Insert(tx)

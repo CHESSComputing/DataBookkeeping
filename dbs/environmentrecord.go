@@ -30,6 +30,16 @@ func (e *EnvironmentRecord) Insert(tx *sql.Tx) (int64, error) {
 		}
 	}
 
+	// find out osinfo id from given OsInfo
+	if e.OsInfo != "" {
+		os_id, err := GetID(tx, "osinfo", "os_id", "name", e.OsInfo)
+		if err == nil {
+			r.OS_ID = os_id
+		} else {
+			return 0, err
+		}
+	}
+
 	// insert env record
 	eid, err := r.Insert(tx)
 

@@ -58,6 +58,11 @@ func DatasetHandler(c *gin.Context) {
 	ApiHandler(c, "dataset")
 }
 
+// ProvenanceHandler provides access to /provenance and /provenance/:did end-point
+func ProvenanceHandler(c *gin.Context) {
+	ApiHandler(c, "provenance")
+}
+
 // ApiHandler represents generic API handler for GET/POST/PUT/DELETE requests of a specific API
 func ApiHandler(c *gin.Context, api string) {
 	r := c.Request
@@ -208,6 +213,8 @@ func DBSGetHandler(c *gin.Context, a string) {
 	}
 	if a == "dataset" {
 		err = api.GetDataset()
+	} else if a == "provenance" {
+		err = api.GetProvenance()
 	} else if a == "file" {
 		err = api.GetFile()
 	} else if a == "child" {

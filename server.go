@@ -56,6 +56,8 @@ func setupRouter() *gin.Engine {
 		server.Route{Method: "GET", Path: "/environment", Handler: EnvironmentHandler, Authorized: false},
 		server.Route{Method: "GET", Path: "/script", Handler: ScriptHandler, Authorized: false},
 
+		server.Route{Method: "GET", Path: "/provenance", Handler: ProvenanceHandler, Authorized: false},
+
 		// authorized routes
 
 		// dataset routes
