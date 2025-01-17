@@ -9,7 +9,8 @@ type DatasetRecord struct {
 	Site        string            `json:"site" validate:"required"`
 	Processing  string            `json:"processing" validate:"required"`
 	Parent      string            `json:"parent" validate:"required"`
-	Files       []string          `json:"files" validate:"required"`
+	InputFiles  []string          `json:"input_files" validate:"required"`
+	OutputFiles []string          `json:"output_files" validate:"required"`
 	Environment EnvironmentRecord `json:"environment",omitempty`
 	OsInfo      OsInfoRecord      `json:"osinfo",omitempty`
 	Script      ScriptRecord      `json:"script",omitempty`
@@ -34,9 +35,14 @@ func (r *DatasetRecord) Validate() error {
 			return Error(err, PatternErrorCode, "fail bucket validation", "dbs.DatasetRecord.Validate")
 		}
 	}
-	for _, f := range r.Files {
+	for _, f := range r.InputFiles {
 		if err := lexicon.CheckPattern("fail", f); err != nil {
-			return Error(err, PatternErrorCode, "fail fail validation", "dbs.DatasetRecord.Validate")
+			return Error(err, PatternErrorCode, "fail file validation", "dbs.DatasetRecord.Validate")
+		}
+	}
+	for _, f := range r.OutputFiles {
+		if err := lexicon.CheckPattern("fail", f); err != nil {
+			return Error(err, PatternErrorCode, "fail file validation", "dbs.DatasetRecord.Validate")
 		}
 	}
 	if err := lexicon.CheckPattern("osinfo_name", r.OsInfo.Name); err != nil {
