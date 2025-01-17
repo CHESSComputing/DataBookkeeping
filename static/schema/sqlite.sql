@@ -62,11 +62,13 @@ CREATE TABLE environments (
     name VARCHAR(255) NOT NULL,
     version VARCHAR(255),
     details TEXT,
+    os_id INTEGER,
     parent_environment_id INTEGER,
     create_at INTEGER,
     create_by VARCHAR(255),
     modify_at INTEGER,
     modify_by VARCHAR(255),
+    FOREIGN KEY (os_id) REFERENCES osinfo(os_id) ON DELETE SET NULL ON UPDATE CASCADE,
     FOREIGN KEY (parent_environment_id) REFERENCES environments(environment_id) ON DELETE SET NULL ON UPDATE CASCADE
 );
 CREATE TABLE osinfo (
@@ -74,6 +76,15 @@ CREATE TABLE osinfo (
     name VARCHAR(255) NOT NULL,
     version VARCHAR(255),
     kernel VARCHAR(255),
+    create_at INTEGER,
+    create_by VARCHAR(255),
+    modify_at INTEGER,
+    modify_by VARCHAR(255)
+);
+CREATE TABLE packages (
+    package_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name VARCHAR(255) NOT NULL,
+    version VARCHAR(255),
     create_at INTEGER,
     create_by VARCHAR(255),
     modify_at INTEGER,
@@ -89,4 +100,36 @@ CREATE TABLE scripts (
     modify_at INTEGER,
     modify_by VARCHAR(255),
     FOREIGN KEY (parent_script_id) REFERENCES scripts(script_id) ON DELETE SET NULL ON UPDATE CASCADE
+);
+-- Many-to-many relationships
+
+-- dataset may have input and output files, and file can be present in
+-- different datasets
+CREATE TABLE dataset_files (
+    dataset_id INTEGER NOT NULL,
+    file_id INTEGER NOT NULL,
+    file_type TEXT,
+    PRIMARY KEY (dataset_id, file_id, file_type),  -- Prevents duplicate dataset-file-type combinations
+    FOREIGN KEY (dataset_id) REFERENCES datasets(dataset_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (file_id) REFERENCES files(file_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- dataset may have many environments, and one environment can be associated
+-- with different datasets
+CREATE TABLE dataset_environments (
+    dataset_id INTEGER NOT NULL,
+    environment_id INTEGER NOT NULL,
+    PRIMARY KEY (dataset_id, environment_id),  -- Prevents duplicate dataset-environment combinations
+    FOREIGN KEY (dataset_id) REFERENCES datasets(dataset_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (environment_id) REFERENCES files(environment_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- environment can have multiple python packages and a given package may be
+-- presented in different environments
+CREATE TABLE environment_packages (
+    environment_id INTEGER NOT NULL,
+    package_id INTEGER NOT NULL,
+    PRIMARY KEY (environment_id, package_id),
+    FOREIGN KEY (environment_id) REFERENCES environments(environment_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (package_id) REFERENCES packages(package_id) ON DELETE CASCADE ON UPDATE CASCADE
 );

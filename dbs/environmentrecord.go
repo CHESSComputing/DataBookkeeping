@@ -9,10 +9,12 @@ import (
 
 // EnvironmentRecord represents data input for environment record
 type EnvironmentRecord struct {
-	Name    string `json:"name"`
-	Version string `json:"version"`
-	Details string `json:"details"`
-	Parent  string `json:"parent_environment",omitempty`
+	Name     string          `json:"name"`
+	Version  string          `json:"version"`
+	Details  string          `json:"details"`
+	Parent   string          `json:"parent_environment",omitempty`
+	OsInfo   string          `json:"osinfo",omitempty`
+	Packages []PackageRecord `json:"packages",omitempty`
 }
 
 // Insert API
@@ -42,16 +44,16 @@ func (e *EnvironmentRecord) Insert(tx *sql.Tx) (int64, error) {
 // Validate implementation of EnvironmentRecord
 func (r *EnvironmentRecord) Validate() error {
 	if err := lexicon.CheckPattern("env_name", r.Name); err != nil {
-		return Error(err, PatternErrorCode, "fail env.Name validation", "dbs.datasets.DatasetRecord.Validate")
+		return Error(err, PatternErrorCode, "fail env.Name validation", "dbs.EnvironmentRecord.Validate")
 	}
 	if err := lexicon.CheckPattern("env_version", r.Version); err != nil {
-		return Error(err, PatternErrorCode, "fail env.Version validation", "dbs.datasets.DatasetRecord.Validate")
+		return Error(err, PatternErrorCode, "fail env.Version validation", "dbs.EnvironmentRecord.Validate")
 	}
 	if err := lexicon.CheckPattern("env_details", r.Details); err != nil {
-		return Error(err, PatternErrorCode, "fail env.Details validation", "dbs.datasets.DatasetRecord.Validate")
+		return Error(err, PatternErrorCode, "fail env.Details validation", "dbs.EnvironmentRecord.Validate")
 	}
 	if err := lexicon.CheckPattern("env_parent", r.Parent); err != nil {
-		return Error(err, PatternErrorCode, "fail env.Parent validation", "dbs.datasets.DatasetRecord.Validate")
+		return Error(err, PatternErrorCode, "fail env.Parent validation", "dbs.EnvironmentRecord.Validate")
 	}
 	return nil
 }

@@ -32,13 +32,13 @@ func (o *OsInfoRecord) Insert(tx *sql.Tx) (int64, error) {
 // Validate implementation of OsInfoRecord
 func (r *OsInfoRecord) Validate() error {
 	if err := lexicon.CheckPattern("osinfo_name", r.Name); err != nil {
-		return Error(err, PatternErrorCode, "fail osinfo.name validation", "dbs.datasets.DatasetRecord.Validate")
+		return Error(err, PatternErrorCode, "fail osinfo.name validation", "dbs.OsInfoRecord.Validate")
 	}
 	if err := lexicon.CheckPattern("osinfo_version", r.Version); err != nil {
-		return Error(err, PatternErrorCode, "fail osinfo.version validation", "dbs.datasets.DatasetRecord.Validate")
+		return Error(err, PatternErrorCode, "fail osinfo.version validation", "dbs.OsInfoRecord.Validate")
 	}
 	if err := lexicon.CheckPattern("osinfo_kernel", r.Kernel); err != nil {
-		return Error(err, PatternErrorCode, "fail osinfo.name validation", "dbs.datasets.DatasetRecord.Validate")
+		return Error(err, PatternErrorCode, "fail osinfo.name validation", "dbs.OsInfoRecord.Validate")
 	}
 	return nil
 }
