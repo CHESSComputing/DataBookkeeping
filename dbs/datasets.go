@@ -203,7 +203,7 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 	}
 	record.DATASET_ID = datasetId
 
-	err = InsertDatasetEnvironment(datasetId, environmentId)
+	err = InsertManyToMany(tx, "insert_dataset_environment", datasetId, environmentId)
 	if err != nil {
 		return err
 	}
@@ -251,7 +251,7 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 		if err != nil {
 			log.Printf("File %+v already exist", file)
 		}
-		err = InsertDatasetFile(datasetId, fileId, "input")
+		err = InsertManyToMany(tx, "insert_dataset_file", datasetId, fileId, "input")
 		if err != nil {
 			return err
 		}
@@ -270,7 +270,7 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 		if err != nil {
 			log.Printf("File %+v already exist", file)
 		}
-		err = InsertDatasetFile(datasetId, fileId, "output")
+		err = InsertManyToMany(tx, "insert_dataset_file", datasetId, fileId, "output")
 		if err != nil {
 			return err
 		}

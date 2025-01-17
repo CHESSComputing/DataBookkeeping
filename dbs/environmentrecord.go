@@ -41,7 +41,7 @@ func (e *EnvironmentRecord) Insert(tx *sql.Tx) (int64, error) {
 			msg := "fail to insert package"
 			return 0, Error(err, PackagesErrorCode, msg, "dbs.EnvironmentRecord.Insert")
 		}
-		err = InsertEnvironmentPackage(eid, pid)
+		err = InsertManyToMany(tx, "insert_environment_package", eid, pid)
 		if err != nil {
 			msg := "fail to insert environment-package relationship"
 			return 0, Error(err, ManyToManyErrorCode, msg, "dbs.EnvironmentRecord.Insert")
