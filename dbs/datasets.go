@@ -122,7 +122,7 @@ func (a *API) InsertDataset() error {
 	}
 	err = insertParts(&rec, &record)
 	if err != nil {
-		return Error(err, CommitErrorCode, "", "dbs.insertRecord")
+		return Error(err, DatasetErrorCode, "fail to insert parts of dataset", "dbs.insertRecord")
 	}
 	return nil
 }
@@ -292,7 +292,7 @@ func (a *API) DeleteDataset() error {
 func (r *Datasets) Update(tx *sql.Tx) error {
 	var err error
 	if r.DATASET_ID == 0 {
-		return Error(err, ValidateErrorCode, "Dataset should have valid id", "dbs.datasets.Update")
+		return Error(err, UpdateErrorCode, "Dataset should have valid id", "dbs.datasets.Update")
 	}
 	// set defaults and validate the record
 	r.SetDefaults()
@@ -379,27 +379,27 @@ func (r *Datasets) Insert(tx *sql.Tx) (int64, error) {
 //gocyclo:ignore
 func (r *Datasets) Validate() error {
 	if err := lexicon.CheckPattern("did", r.DID); err != nil {
-		return Error(err, PatternErrorCode, "", "dbs.datasets.Validate")
+		return Error(err, ValidateErrorCode, "", "dbs.datasets.Validate")
 	}
 	if matched := lexicon.UnixTimePattern.MatchString(fmt.Sprintf("%d", r.CREATE_AT)); !matched {
 		msg := "invalid pattern for creation date"
-		return Error(InvalidParamErr, PatternErrorCode, msg, "dbs.datasets.Validate")
+		return Error(InvalidParamErr, ValidateErrorCode, msg, "dbs.datasets.Validate")
 	}
 	if r.CREATE_AT == 0 {
 		msg := "missing create_at"
-		return Error(InvalidParamErr, ParametersErrorCode, msg, "dbs.datasets.Validate")
+		return Error(InvalidParamErr, ValidateErrorCode, msg, "dbs.datasets.Validate")
 	}
 	if r.CREATE_BY == "" {
 		msg := "missing create_by"
-		return Error(InvalidParamErr, ParametersErrorCode, msg, "dbs.datasets.Validate")
+		return Error(InvalidParamErr, ValidateErrorCode, msg, "dbs.datasets.Validate")
 	}
 	if r.MODIFY_AT == 0 {
 		msg := "missing modify_at"
-		return Error(InvalidParamErr, ParametersErrorCode, msg, "dbs.datasets.Validate")
+		return Error(InvalidParamErr, ValidateErrorCode, msg, "dbs.datasets.Validate")
 	}
 	if r.MODIFY_BY == "" {
 		msg := "missing modify_by"
-		return Error(InvalidParamErr, ParametersErrorCode, msg, "dbs.datasets.Validate")
+		return Error(InvalidParamErr, ValidateErrorCode, msg, "dbs.datasets.Validate")
 	}
 	return nil
 }

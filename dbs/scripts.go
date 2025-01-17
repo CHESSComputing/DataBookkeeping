@@ -117,7 +117,7 @@ func (r *Scripts) Insert(tx *sql.Tx) (int64, error) {
 		scriptID, err := getNextId(tx, "scripts", "script_id")
 		if err != nil {
 			log.Println("unable to get scriptID", err)
-			return 0, Error(err, ParametersErrorCode, "", "dbs.scripts.Insert")
+			return 0, Error(err, ScriptsErrorCode, "", "dbs.scripts.Insert")
 		}
 		r.SCRIPT_ID = scriptID
 	}
@@ -161,11 +161,11 @@ func (r *Scripts) Validate() error {
 	}
 	if matched := lexicon.UnixTimePattern.MatchString(fmt.Sprintf("%d", r.CREATE_AT)); !matched {
 		msg := "invalid pattern for creation date"
-		return Error(InvalidParamErr, PatternErrorCode, msg, "dbs.scripts.Validate")
+		return Error(InvalidParamErr, ValidateErrorCode, msg, "dbs.scripts.Validate")
 	}
 	if matched := lexicon.UnixTimePattern.MatchString(fmt.Sprintf("%d", r.MODIFY_AT)); !matched {
 		msg := "invalid pattern for last modification date"
-		return Error(InvalidParamErr, PatternErrorCode, msg, "dbs.scripts.Validate")
+		return Error(InvalidParamErr, ValidateErrorCode, msg, "dbs.scripts.Validate")
 	}
 	return nil
 }

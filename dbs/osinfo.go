@@ -82,7 +82,7 @@ func (r *OsInfo) Insert(tx *sql.Tx) (int64, error) {
 		osinfoID, err := getNextId(tx, "osinfo", "os_id")
 		if err != nil {
 			log.Println("unable to get osinfoID", err)
-			return 0, Error(err, ParametersErrorCode, "", "dbs.osinfo.Insert")
+			return 0, Error(err, OsInfoErrorCode, "", "dbs.osinfo.Insert")
 		}
 		r.OS_ID = osinfoID
 	}
@@ -126,11 +126,11 @@ func (r *OsInfo) Validate() error {
 	}
 	if matched := lexicon.UnixTimePattern.MatchString(fmt.Sprintf("%d", r.CREATE_AT)); !matched {
 		msg := "invalid pattern for creation date"
-		return Error(InvalidParamErr, PatternErrorCode, msg, "dbs.osinfo.Validate")
+		return Error(InvalidParamErr, ValidateErrorCode, msg, "dbs.osinfo.Validate")
 	}
 	if matched := lexicon.UnixTimePattern.MatchString(fmt.Sprintf("%d", r.MODIFY_AT)); !matched {
 		msg := "invalid pattern for last modification date"
-		return Error(InvalidParamErr, PatternErrorCode, msg, "dbs.osinfo.Validate")
+		return Error(InvalidParamErr, ValidateErrorCode, msg, "dbs.osinfo.Validate")
 	}
 	return nil
 }

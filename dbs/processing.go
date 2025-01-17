@@ -83,7 +83,7 @@ func (r *Processing) Insert(tx *sql.Tx) (int64, error) {
 		processingID, err := getNextId(tx, "processing", "processing_id")
 		if err != nil {
 			log.Println("unable to get processingID", err)
-			return 0, Error(err, ParametersErrorCode, "", "dbs.processing.Insert")
+			return 0, Error(err, ProcessingErrorCode, "", "dbs.processing.Insert")
 		}
 		r.PROCESSING_ID = processingID
 	}
@@ -128,11 +128,11 @@ func (r *Processing) Validate() error {
 	}
 	if matched := lexicon.UnixTimePattern.MatchString(fmt.Sprintf("%d", r.CREATE_AT)); !matched {
 		msg := "invalid pattern for creation date"
-		return Error(InvalidParamErr, PatternErrorCode, msg, "dbs.processing.Validate")
+		return Error(InvalidParamErr, ValidateErrorCode, msg, "dbs.processing.Validate")
 	}
 	if matched := lexicon.UnixTimePattern.MatchString(fmt.Sprintf("%d", r.MODIFY_AT)); !matched {
 		msg := "invalid pattern for last modification date"
-		return Error(InvalidParamErr, PatternErrorCode, msg, "dbs.processing.Validate")
+		return Error(InvalidParamErr, ValidateErrorCode, msg, "dbs.processing.Validate")
 	}
 	return nil
 }

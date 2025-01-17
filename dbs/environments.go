@@ -118,7 +118,7 @@ func (r *Environments) Insert(tx *sql.Tx) (int64, error) {
 		environmentID, err := getNextId(tx, "environments", "environment_id")
 		if err != nil {
 			log.Println("unable to get environmentID", err)
-			return 0, Error(err, ParametersErrorCode, "", "dbs.environments.Insert")
+			return 0, Error(err, EnvironmentsErrorCode, "", "dbs.environments.Insert")
 		}
 		r.ENVIRONMENT_ID = environmentID
 	}

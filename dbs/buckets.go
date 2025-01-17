@@ -81,7 +81,7 @@ func (r *Buckets) Insert(tx *sql.Tx) (int64, error) {
 		bucketID, err := getNextId(tx, "buckets", "bucket_id")
 		if err != nil {
 			log.Println("unable to get bucketID", err)
-			return 0, Error(err, ParametersErrorCode, "", "dbs.buckets.Insert")
+			return 0, Error(err, InsertErrorCode, "", "dbs.buckets.Insert")
 		}
 		r.BUCKET_ID = bucketID
 	}
@@ -124,11 +124,11 @@ func (r *Buckets) Validate() error {
 	}
 	if matched := lexicon.UnixTimePattern.MatchString(fmt.Sprintf("%d", r.CREATE_AT)); !matched {
 		msg := "invalid pattern for creation date"
-		return Error(InvalidParamErr, PatternErrorCode, msg, "dbs.buckets.Validate")
+		return Error(InvalidParamErr, ValidateErrorCode, msg, "dbs.buckets.Validate")
 	}
 	if matched := lexicon.UnixTimePattern.MatchString(fmt.Sprintf("%d", r.MODIFY_AT)); !matched {
 		msg := "invalid pattern for last modification date"
-		return Error(InvalidParamErr, PatternErrorCode, msg, "dbs.buckets.Validate")
+		return Error(InvalidParamErr, ValidateErrorCode, msg, "dbs.buckets.Validate")
 	}
 	return nil
 }

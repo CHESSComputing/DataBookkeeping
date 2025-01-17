@@ -2,7 +2,6 @@ package dbs
 
 import (
 	"database/sql"
-	"log"
 
 	lexicon "github.com/CHESSComputing/golib/lexicon"
 )
@@ -39,10 +38,14 @@ func (e *EnvironmentRecord) Insert(tx *sql.Tx) (int64, error) {
 		p := Packages{NAME: pkg.Name, VERSION: pkg.Version}
 		pid, err := p.Insert(tx)
 		if err != nil {
-			return 0, Error(err, ParametersErrorCode, "", "dbs.environment.Insert")
+			msg := "fail to insert package"
+			return 0, Error(err, PackagesErrorCode, msg, "dbs.EnvironmentRecord.Insert")
 		}
-		// TODO: insert many-to-many relationship between env and packages
-		log.Printf("TODO: insert many-to-many relationship between env %d and packages %d", eid, pid)
+		err = InsertEnvironmentPackage(eid, pid)
+		if err != nil {
+			msg := "fail to insert environment-package relationship"
+			return 0, Error(err, ManyToManyErrorCode, msg, "dbs.EnvironmentRecord.Insert")
+		}
 	}
 	return eid, err
 }
@@ -50,16 +53,16 @@ func (e *EnvironmentRecord) Insert(tx *sql.Tx) (int64, error) {
 // Validate implementation of EnvironmentRecord
 func (r *EnvironmentRecord) Validate() error {
 	if err := lexicon.CheckPattern("env_name", r.Name); err != nil {
-		return Error(err, PatternErrorCode, "fail env.Name validation", "dbs.EnvironmentRecord.Validate")
+		return Error(err, ValidateErrorCode, "fail env.Name validation", "dbs.EnvironmentRecord.Validate")
 	}
 	if err := lexicon.CheckPattern("env_version", r.Version); err != nil {
-		return Error(err, PatternErrorCode, "fail env.Version validation", "dbs.EnvironmentRecord.Validate")
+		return Error(err, ValidateErrorCode, "fail env.Version validation", "dbs.EnvironmentRecord.Validate")
 	}
 	if err := lexicon.CheckPattern("env_details", r.Details); err != nil {
-		return Error(err, PatternErrorCode, "fail env.Details validation", "dbs.EnvironmentRecord.Validate")
+		return Error(err, ValidateErrorCode, "fail env.Details validation", "dbs.EnvironmentRecord.Validate")
 	}
 	if err := lexicon.CheckPattern("env_parent", r.Parent); err != nil {
-		return Error(err, PatternErrorCode, "fail env.Parent validation", "dbs.EnvironmentRecord.Validate")
+		return Error(err, ValidateErrorCode, "fail env.Parent validation", "dbs.EnvironmentRecord.Validate")
 	}
 	return nil
 }

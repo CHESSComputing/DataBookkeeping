@@ -103,7 +103,7 @@ func (r *Files) Insert(tx *sql.Tx) (int64, error) {
 		fileID, err := getNextId(tx, "files", "file_id")
 		if err != nil {
 			log.Println("unable to get fileID", err)
-			return 0, Error(err, ParametersErrorCode, "", "dbs.files.Insert")
+			return 0, Error(err, FilesErrorCode, "", "dbs.files.Insert")
 		}
 		r.FILE_ID = fileID
 	}
@@ -146,15 +146,15 @@ func (r *Files) Validate() error {
 		return DecodeValidatorError(r, err)
 	}
 	if err := lexicon.CheckPattern("file", r.FILE); err != nil {
-		return Error(err, PatternErrorCode, "", "dbs.files.Validate")
+		return Error(err, ValidateErrorCode, "", "dbs.files.Validate")
 	}
 	if matched := lexicon.UnixTimePattern.MatchString(fmt.Sprintf("%d", r.CREATE_AT)); !matched {
 		msg := "invalid pattern for creation date"
-		return Error(InvalidParamErr, PatternErrorCode, msg, "dbs.files.Validate")
+		return Error(InvalidParamErr, ValidateErrorCode, msg, "dbs.files.Validate")
 	}
 	if matched := lexicon.UnixTimePattern.MatchString(fmt.Sprintf("%d", r.MODIFY_AT)); !matched {
 		msg := "invalid pattern for last modification date"
-		return Error(InvalidParamErr, PatternErrorCode, msg, "dbs.files.Validate")
+		return Error(InvalidParamErr, ValidateErrorCode, msg, "dbs.files.Validate")
 	}
 	return nil
 }

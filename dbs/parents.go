@@ -135,7 +135,7 @@ func (r *Parents) Insert(tx *sql.Tx) (int64, error) {
 		parentID, err := getNextId(tx, "parents", "parent_id")
 		if err != nil {
 			log.Println("unable to get parentID", err)
-			return 0, Error(err, ParametersErrorCode, "", "dbs.parents.Insert")
+			return 0, Error(err, ParentsErrorCode, "", "dbs.parents.Insert")
 		}
 		r.PARENT_ID = parentID
 	}
@@ -177,11 +177,11 @@ func (r *Parents) Validate() error {
 	}
 	if matched := lexicon.UnixTimePattern.MatchString(fmt.Sprintf("%d", r.CREATE_AT)); !matched {
 		msg := "invalid pattern for creation date"
-		return Error(InvalidParamErr, PatternErrorCode, msg, "dbs.parents.Validate")
+		return Error(InvalidParamErr, ValidateErrorCode, msg, "dbs.parents.Validate")
 	}
 	if matched := lexicon.UnixTimePattern.MatchString(fmt.Sprintf("%d", r.MODIFY_AT)); !matched {
 		msg := "invalid pattern for last modification date"
-		return Error(InvalidParamErr, PatternErrorCode, msg, "dbs.parents.Validate")
+		return Error(InvalidParamErr, ValidateErrorCode, msg, "dbs.parents.Validate")
 	}
 	return nil
 }

@@ -80,7 +80,7 @@ func (r *Sites) Insert(tx *sql.Tx) (int64, error) {
 		siteID, err := getNextId(tx, "sites", "site_id")
 		if err != nil {
 			log.Println("unable to get siteID", err)
-			return 0, Error(err, ParametersErrorCode, "", "dbs.sites.Insert")
+			return 0, Error(err, SitesErrorCode, "", "dbs.sites.Insert")
 		}
 		r.SITE_ID = siteID
 	}
@@ -122,11 +122,11 @@ func (r *Sites) Validate() error {
 	}
 	if matched := lexicon.UnixTimePattern.MatchString(fmt.Sprintf("%d", r.CREATE_AT)); !matched {
 		msg := "invalid pattern for creation date"
-		return Error(InvalidParamErr, PatternErrorCode, msg, "dbs.sites.Validate")
+		return Error(InvalidParamErr, ValidateErrorCode, msg, "dbs.sites.Validate")
 	}
 	if matched := lexicon.UnixTimePattern.MatchString(fmt.Sprintf("%d", r.MODIFY_AT)); !matched {
 		msg := "invalid pattern for last modification date"
-		return Error(InvalidParamErr, PatternErrorCode, msg, "dbs.sites.Validate")
+		return Error(InvalidParamErr, ValidateErrorCode, msg, "dbs.sites.Validate")
 	}
 	return nil
 }

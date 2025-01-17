@@ -30,7 +30,7 @@ func (a *API) GetChild() error {
 	// use generic query API to fetch the results from DB
 	err = executeAll(a.Writer, a.Separator, stm, args...)
 	if err != nil {
-		return Error(err, QueryErrorCode, "", "dbs.children.GetChild")
+		return Error(err, QueryErrorCode, "fail to get child", "dbs.children.GetChild")
 	}
 	return nil
 }
