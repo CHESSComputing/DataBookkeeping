@@ -135,7 +135,7 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 		return Error(err, TransactionErrorCode, "", "dbs.insertRecord")
 	}
 	defer tx.Rollback()
-	var siteId, processingId, parentId, datasetId, environmentId, osId, scriptId int64
+	var siteId, processingId, parentId, datasetId, environmentId, osId, scriptId, fileId int64
 
 	// insert site info
 	if rec.Site != "" {
@@ -203,6 +203,11 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 	}
 	record.DATASET_ID = datasetId
 
+	err = InsertDatasetEnvironment(datasetId, environmentId)
+	if err != nil {
+		return err
+	}
+
 	// perform update of dataset record
 	if err = record.Update(tx); err != nil {
 		return err
@@ -233,8 +238,8 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 		}
 	}
 
-	// insert all files
-	for _, f := range rec.Files {
+	// insert all input files
+	for _, f := range rec.InputFiles {
 		file := Files{
 			FILE:          f,
 			IS_FILE_VALID: 1, // by default all files are valid
@@ -242,8 +247,32 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 			CREATE_BY:     record.CREATE_BY,
 			MODIFY_BY:     record.CREATE_BY,
 		}
-		if _, err = file.Insert(tx); err != nil {
+		fileId, err = file.Insert(tx)
+		if err != nil {
 			log.Printf("File %+v already exist", file)
+		}
+		err = InsertDatasetFile(datasetId, fileId, "input")
+		if err != nil {
+			return err
+		}
+	}
+
+	// insert all output files
+	for _, f := range rec.OutputFiles {
+		file := Files{
+			FILE:          f,
+			IS_FILE_VALID: 1, // by default all files are valid
+			DATASET_ID:    datasetId,
+			CREATE_BY:     record.CREATE_BY,
+			MODIFY_BY:     record.CREATE_BY,
+		}
+		fileId, err = file.Insert(tx)
+		if err != nil {
+			log.Printf("File %+v already exist", file)
+		}
+		err = InsertDatasetFile(datasetId, fileId, "output")
+		if err != nil {
+			return err
 		}
 	}
 
