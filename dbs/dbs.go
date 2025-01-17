@@ -85,11 +85,11 @@ var ConcurrentBulkBlocks bool
 // Each DBS API represents specific Table in back-end DB. And, each individual
 // DBS API implements logic for its own DB records
 type DBRecord interface {
-	Insert(tx *sql.Tx) error  // used to insert given record to DB
-	Update(tx *sql.Tx) error  // used to update given record to DB
-	Validate() error          // used to validate given record
-	SetDefaults()             // used to set proper defaults for given record
-	Decode(r io.Reader) error // used to decode given record
+	Insert(tx *sql.Tx) (int64, error) // used to insert given record to DB
+	Update(tx *sql.Tx) error          // used to update given record to DB
+	Validate() error                  // used to validate given record
+	SetDefaults()                     // used to set proper defaults for given record
+	Decode(r io.Reader) error         // used to decode given record
 }
 
 // DecodeValidatorError provides uniform error representation
@@ -142,7 +142,7 @@ func insertRecord(rec DBRecord, r io.Reader) error {
 	if Verbose > 2 {
 		log.Printf("insert record %+v", rec)
 	}
-	err = rec.Insert(tx)
+	_, err = rec.Insert(tx)
 	if err != nil {
 		msg := fmt.Sprintf("unable to insert %+v", rec)
 		log.Println(msg)
@@ -510,13 +510,13 @@ func GetRecID(tx *sql.Tx, rec DBRecord, table, id, attr string, val ...interface
 		if Verbose > 1 {
 			log.Printf("unable to find %s for %v", id, val)
 		}
-		err = rec.Insert(tx)
+		_, err = rec.Insert(tx)
 		if err != nil {
 			// if we have concurrent threads to insert data we may end-up with
 			// ORA-00001 error which violates unique constrain
 			if strings.Contains(err.Error(), "ORA-00001") {
 				time.Sleep(1 * time.Second)
-				err = rec.Insert(tx)
+				_, err = rec.Insert(tx)
 				if err != nil {
 					return 0, Error(err, InsertErrorCode, "", "dbs.GetRecID")
 				}
