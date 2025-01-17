@@ -2,7 +2,6 @@ package dbs
 
 import (
 	"database/sql"
-	"log"
 
 	lexicon "github.com/CHESSComputing/golib/lexicon"
 )
@@ -16,16 +15,8 @@ type PackageRecord struct {
 // Insert API
 func (e *PackageRecord) Insert(tx *sql.Tx) (int64, error) {
 	r := Packages{NAME: e.Name, VERSION: e.Version}
-	if r.PACKAGE_ID == 0 {
-		id, err := getNextId(tx, "packages", "package_id")
-		if err != nil {
-			log.Println("unable to get package id", err)
-			return 0, Error(err, ParametersErrorCode, "", "dbs.package.Insert")
-		}
-		r.PACKAGE_ID = id
-	}
-	err := r.Insert(tx)
-	return r.PACKAGE_ID, err
+	pid, err := r.Insert(tx)
+	return pid, err
 }
 
 // Validate implementation of PackageRecord

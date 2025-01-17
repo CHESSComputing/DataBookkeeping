@@ -142,10 +142,7 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 		siteId, err = GetID(tx, "sites", "site_id", "site", rec.Site)
 		if err != nil || siteId == 0 {
 			site := Sites{SITE: rec.Site}
-			if err = site.Insert(tx); err != nil {
-				return err
-			}
-			siteId, err = GetID(tx, "sites", "site_id", "site", rec.Site)
+			siteId, err = site.Insert(tx)
 			if err != nil {
 				return err
 			}
@@ -186,10 +183,7 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 			ENVIRONMENT_ID: environmentId,
 			SCRIPT_ID:      scriptId,
 		}
-		if err = processing.Insert(tx); err != nil {
-			return err
-		}
-		processingId, err = GetID(tx, "processing", "processing_id", "processing", rec.Processing)
+		processingId, err = processing.Insert(tx)
 		if err != nil {
 			return err
 		}
@@ -202,10 +196,7 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 		record.SITE_ID = siteId
 		record.PARENT_ID = parentId
 		record.PROCESSING_ID = processingId
-		if err = record.Insert(tx); err != nil {
-			return err
-		}
-		datasetId, err = GetID(tx, "datasets", "dataset_id", "did", rec.Did)
+		datasetId, err = record.Insert(tx)
 		if err != nil {
 			return err
 		}
@@ -224,7 +215,8 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 			return err
 		}
 		parent := Parents{PARENT_ID: parentId, DATASET_ID: datasetId}
-		if err = parent.Insert(tx); err != nil {
+		parentId, err = parent.Insert(tx)
+		if err != nil {
 			return err
 		}
 	}
@@ -236,7 +228,7 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 			BUCKET:     b,
 			DATASET_ID: datasetId,
 		}
-		if err = bucket.Insert(tx); err != nil {
+		if _, err = bucket.Insert(tx); err != nil {
 			log.Printf("Bucket %+v already exist", bucket)
 		}
 	}
@@ -250,7 +242,7 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 			CREATE_BY:     record.CREATE_BY,
 			MODIFY_BY:     record.CREATE_BY,
 		}
-		if err = file.Insert(tx); err != nil {
+		if _, err = file.Insert(tx); err != nil {
 			log.Printf("File %+v already exist", file)
 		}
 	}
@@ -305,7 +297,7 @@ func (r *Datasets) Update(tx *sql.Tx) error {
 }
 
 // Insert implementation of Datasets
-func (r *Datasets) Insert(tx *sql.Tx) error {
+func (r *Datasets) Insert(tx *sql.Tx) (int64, error) {
 	var tid int64
 	var err error
 	if r.DATASET_ID == 0 {
@@ -318,14 +310,14 @@ func (r *Datasets) Insert(tx *sql.Tx) error {
 		}
 	}
 	if err != nil {
-		return Error(err, LastInsertErrorCode, "", "dbs.datasets.Insert")
+		return 0, Error(err, LastInsertErrorCode, "", "dbs.datasets.Insert")
 	}
 	// set defaults and validate the record
 	r.SetDefaults()
 	err = r.Validate()
 	if err != nil {
 		log.Println("unable to validate record", err)
-		return Error(err, ValidateErrorCode, "", "dbs.datasets.Insert")
+		return 0, Error(err, ValidateErrorCode, "", "dbs.datasets.Insert")
 	}
 	// get SQL statement from static area
 	stm := getSQL("insert_dataset")
@@ -348,9 +340,9 @@ func (r *Datasets) Insert(tx *sql.Tx) error {
 		if Verbose > 0 {
 			log.Printf("unable to insert Datasets %+v", err)
 		}
-		return Error(err, InsertErrorCode, "", "dbs.datasets.Insert")
+		return 0, Error(err, InsertErrorCode, "", "dbs.datasets.Insert")
 	}
-	return nil
+	return r.DATASET_ID, nil
 }
 
 // Validate implementation of Datasets

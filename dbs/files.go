@@ -97,13 +97,13 @@ func (r *Files) Update(tx *sql.Tx) error {
 }
 
 // Insert implementation of Files
-func (r *Files) Insert(tx *sql.Tx) error {
+func (r *Files) Insert(tx *sql.Tx) (int64, error) {
 	var err error
 	if r.FILE_ID == 0 {
 		fileID, err := getNextId(tx, "files", "file_id")
 		if err != nil {
 			log.Println("unable to get fileID", err)
-			return Error(err, ParametersErrorCode, "", "dbs.files.Insert")
+			return 0, Error(err, ParametersErrorCode, "", "dbs.files.Insert")
 		}
 		r.FILE_ID = fileID
 	}
@@ -112,7 +112,7 @@ func (r *Files) Insert(tx *sql.Tx) error {
 	err = r.Validate()
 	if err != nil {
 		log.Println("unable to validate record", err)
-		return Error(err, ValidateErrorCode, "", "dbs.files.Insert")
+		return 0, Error(err, ValidateErrorCode, "", "dbs.files.Insert")
 	}
 	// get SQL statement from static area
 	stm := getSQL("insert_file")
@@ -135,9 +135,9 @@ func (r *Files) Insert(tx *sql.Tx) error {
 		if Verbose > 0 {
 			log.Println("unable to insert files, error", err)
 		}
-		return Error(err, InsertErrorCode, "", "dbs.files.Insert")
+		return 0, Error(err, InsertErrorCode, "", "dbs.files.Insert")
 	}
-	return nil
+	return r.FILE_ID, nil
 }
 
 // Validate implementation of Files

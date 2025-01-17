@@ -111,13 +111,13 @@ func (r *Scripts) Update(tx *sql.Tx) error {
 }
 
 // Insert implementation of Scripts
-func (r *Scripts) Insert(tx *sql.Tx) error {
+func (r *Scripts) Insert(tx *sql.Tx) (int64, error) {
 	var err error
 	if r.SCRIPT_ID == 0 {
 		scriptID, err := getNextId(tx, "scripts", "script_id")
 		if err != nil {
 			log.Println("unable to get scriptID", err)
-			return Error(err, ParametersErrorCode, "", "dbs.scripts.Insert")
+			return 0, Error(err, ParametersErrorCode, "", "dbs.scripts.Insert")
 		}
 		r.SCRIPT_ID = scriptID
 	}
@@ -126,7 +126,7 @@ func (r *Scripts) Insert(tx *sql.Tx) error {
 	err = r.Validate()
 	if err != nil {
 		log.Println("unable to validate record", err)
-		return Error(err, ValidateErrorCode, "", "dbs.scripts.Insert")
+		return 0, Error(err, ValidateErrorCode, "", "dbs.scripts.Insert")
 	}
 	// get SQL statement from static area
 	stm := getSQL("insert_script")
@@ -149,9 +149,9 @@ func (r *Scripts) Insert(tx *sql.Tx) error {
 		if Verbose > 0 {
 			log.Println("unable to insert scripts, error", err)
 		}
-		return Error(err, InsertErrorCode, "", "dbs.scripts.Insert")
+		return 0, Error(err, InsertErrorCode, "", "dbs.scripts.Insert")
 	}
-	return nil
+	return r.SCRIPT_ID, nil
 }
 
 // Validate implementation of Scripts

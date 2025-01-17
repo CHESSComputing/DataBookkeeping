@@ -76,13 +76,13 @@ func (r *OsInfo) Update(tx *sql.Tx) error {
 }
 
 // Insert implementation of OsInfo
-func (r *OsInfo) Insert(tx *sql.Tx) error {
+func (r *OsInfo) Insert(tx *sql.Tx) (int64, error) {
 	var err error
 	if r.OS_ID == 0 {
 		osinfoID, err := getNextId(tx, "osinfo", "os_id")
 		if err != nil {
 			log.Println("unable to get osinfoID", err)
-			return Error(err, ParametersErrorCode, "", "dbs.osinfo.Insert")
+			return 0, Error(err, ParametersErrorCode, "", "dbs.osinfo.Insert")
 		}
 		r.OS_ID = osinfoID
 	}
@@ -91,7 +91,7 @@ func (r *OsInfo) Insert(tx *sql.Tx) error {
 	err = r.Validate()
 	if err != nil {
 		log.Println("unable to validate record", err)
-		return Error(err, ValidateErrorCode, "", "dbs.osinfo.Insert")
+		return 0, Error(err, ValidateErrorCode, "", "dbs.osinfo.Insert")
 	}
 	// get SQL statement from static area
 	stm := getSQL("insert_osinfo")
@@ -114,9 +114,9 @@ func (r *OsInfo) Insert(tx *sql.Tx) error {
 		if Verbose > 0 {
 			log.Println("unable to insert osinfo, error", err)
 		}
-		return Error(err, InsertErrorCode, "", "dbs.osinfo.Insert")
+		return 0, Error(err, InsertErrorCode, "", "dbs.osinfo.Insert")
 	}
-	return nil
+	return r.OS_ID, nil
 }
 
 // Validate implementation of OsInfo

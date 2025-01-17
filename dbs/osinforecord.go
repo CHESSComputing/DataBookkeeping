@@ -2,7 +2,6 @@ package dbs
 
 import (
 	"database/sql"
-	"log"
 
 	lexicon "github.com/CHESSComputing/golib/lexicon"
 )
@@ -17,16 +16,8 @@ type OsInfoRecord struct {
 // Insert API
 func (o *OsInfoRecord) Insert(tx *sql.Tx) (int64, error) {
 	r := OsInfo{NAME: o.Name, VERSION: o.Version, KERNEL: o.Kernel}
-	if r.OS_ID == 0 {
-		id, err := getNextId(tx, "osinfo", "os_id")
-		if err != nil {
-			log.Println("unable to get osinfo id", err)
-			return 0, Error(err, ParametersErrorCode, "", "dbs.osinfo.Insert")
-		}
-		r.OS_ID = id
-	}
-	err := r.Insert(tx)
-	return r.OS_ID, err
+	oid, err := r.Insert(tx)
+	return oid, err
 }
 
 // Validate implementation of OsInfoRecord

@@ -74,13 +74,13 @@ func (r *Sites) Update(tx *sql.Tx) error {
 }
 
 // Insert implementation of Sites
-func (r *Sites) Insert(tx *sql.Tx) error {
+func (r *Sites) Insert(tx *sql.Tx) (int64, error) {
 	var err error
 	if r.SITE_ID == 0 {
 		siteID, err := getNextId(tx, "sites", "site_id")
 		if err != nil {
 			log.Println("unable to get siteID", err)
-			return Error(err, ParametersErrorCode, "", "dbs.sites.Insert")
+			return 0, Error(err, ParametersErrorCode, "", "dbs.sites.Insert")
 		}
 		r.SITE_ID = siteID
 	}
@@ -89,7 +89,7 @@ func (r *Sites) Insert(tx *sql.Tx) error {
 	err = r.Validate()
 	if err != nil {
 		log.Println("unable to validate record", err)
-		return Error(err, ValidateErrorCode, "", "dbs.sites.Insert")
+		return 0, Error(err, ValidateErrorCode, "", "dbs.sites.Insert")
 	}
 	// get SQL statement from static area
 	stm := getSQL("insert_site")
@@ -110,9 +110,9 @@ func (r *Sites) Insert(tx *sql.Tx) error {
 		if Verbose > 0 {
 			log.Println("unable to insert sites, error", err)
 		}
-		return Error(err, InsertErrorCode, "", "dbs.sites.Insert")
+		return 0, Error(err, InsertErrorCode, "", "dbs.sites.Insert")
 	}
-	return nil
+	return r.SITE_ID, nil
 }
 
 // Validate implementation of Sites

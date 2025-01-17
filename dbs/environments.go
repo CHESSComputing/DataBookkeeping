@@ -112,13 +112,13 @@ func (r *Environments) Update(tx *sql.Tx) error {
 }
 
 // Insert implementation of Environments
-func (r *Environments) Insert(tx *sql.Tx) error {
+func (r *Environments) Insert(tx *sql.Tx) (int64, error) {
 	var err error
 	if r.ENVIRONMENT_ID == 0 {
 		environmentID, err := getNextId(tx, "environments", "environment_id")
 		if err != nil {
 			log.Println("unable to get environmentID", err)
-			return Error(err, ParametersErrorCode, "", "dbs.environments.Insert")
+			return 0, Error(err, ParametersErrorCode, "", "dbs.environments.Insert")
 		}
 		r.ENVIRONMENT_ID = environmentID
 	}
@@ -127,7 +127,7 @@ func (r *Environments) Insert(tx *sql.Tx) error {
 	err = r.Validate()
 	if err != nil {
 		log.Println("unable to validate record", err)
-		return Error(err, ValidateErrorCode, "", "dbs.environments.Insert")
+		return 0, Error(err, ValidateErrorCode, "", "dbs.environments.Insert")
 	}
 	// get SQL statement from static area
 	stm := getSQL("insert_environment")
@@ -151,9 +151,9 @@ func (r *Environments) Insert(tx *sql.Tx) error {
 		if Verbose > 0 {
 			log.Println("unable to insert environments, error", err)
 		}
-		return Error(err, InsertErrorCode, "", "dbs.environments.Insert")
+		return 0, Error(err, InsertErrorCode, "", "dbs.environments.Insert")
 	}
-	return nil
+	return r.ENVIRONMENT_ID, nil
 }
 
 // Validate implementation of Environments

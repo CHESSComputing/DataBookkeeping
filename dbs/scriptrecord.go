@@ -2,7 +2,6 @@ package dbs
 
 import (
 	"database/sql"
-	"log"
 
 	lexicon "github.com/CHESSComputing/golib/lexicon"
 )
@@ -17,14 +16,6 @@ type ScriptRecord struct {
 // Insert API
 func (e *ScriptRecord) Insert(tx *sql.Tx) (int64, error) {
 	r := Scripts{NAME: e.Name, OPTIONS: e.Options}
-	if r.SCRIPT_ID == 0 {
-		id, err := getNextId(tx, "scripts", "script_id")
-		if err != nil {
-			log.Println("unable to get script id", err)
-			return 0, Error(err, ParametersErrorCode, "", "dbs.script.Insert")
-		}
-		r.SCRIPT_ID = id
-	}
 	// identify parent script id if parent is present
 	if e.Parent != "" {
 		parent_script_id, err := GetID(tx, "scripts", "script_id", "name", e.Parent)
@@ -34,8 +25,8 @@ func (e *ScriptRecord) Insert(tx *sql.Tx) (int64, error) {
 			return 0, err
 		}
 	}
-	err := r.Insert(tx)
-	return r.SCRIPT_ID, err
+	sid, err := r.Insert(tx)
+	return sid, err
 }
 
 // Validate implementation of ScriptRecord

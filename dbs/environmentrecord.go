@@ -20,14 +20,7 @@ type EnvironmentRecord struct {
 // Insert API
 func (e *EnvironmentRecord) Insert(tx *sql.Tx) (int64, error) {
 	r := Environments{NAME: e.Name, VERSION: e.Version, DETAILS: e.Details}
-	if r.ENVIRONMENT_ID == 0 {
-		id, err := getNextId(tx, "environments", "environment_id")
-		if err != nil {
-			log.Println("unable to get environment id", err)
-			return 0, Error(err, ParametersErrorCode, "", "dbs.environment.Insert")
-		}
-		r.ENVIRONMENT_ID = id
-	}
+
 	// identify parent script id if parent is present
 	if e.Parent != "" {
 		parent_environment_id, err := GetID(tx, "environments", "environment_id", "name", e.Parent)
@@ -37,8 +30,21 @@ func (e *EnvironmentRecord) Insert(tx *sql.Tx) (int64, error) {
 			return 0, err
 		}
 	}
-	err := r.Insert(tx)
-	return r.ENVIRONMENT_ID, err
+
+	// insert env record
+	eid, err := r.Insert(tx)
+
+	// insert packages if they are provided
+	for _, pkg := range e.Packages {
+		p := Packages{NAME: pkg.Name, VERSION: pkg.Version}
+		pid, err := p.Insert(tx)
+		if err != nil {
+			return 0, Error(err, ParametersErrorCode, "", "dbs.environment.Insert")
+		}
+		// TODO: insert many-to-many relationship between env and packages
+		log.Printf("TODO: insert many-to-many relationship between env %d and packages %d", eid, pid)
+	}
+	return eid, err
 }
 
 // Validate implementation of EnvironmentRecord

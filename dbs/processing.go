@@ -77,13 +77,13 @@ func (r *Processing) Update(tx *sql.Tx) error {
 }
 
 // Insert implementation of Processing
-func (r *Processing) Insert(tx *sql.Tx) error {
+func (r *Processing) Insert(tx *sql.Tx) (int64, error) {
 	var err error
 	if r.PROCESSING_ID == 0 {
 		processingID, err := getNextId(tx, "processing", "processing_id")
 		if err != nil {
 			log.Println("unable to get processingID", err)
-			return Error(err, ParametersErrorCode, "", "dbs.processing.Insert")
+			return 0, Error(err, ParametersErrorCode, "", "dbs.processing.Insert")
 		}
 		r.PROCESSING_ID = processingID
 	}
@@ -92,7 +92,7 @@ func (r *Processing) Insert(tx *sql.Tx) error {
 	err = r.Validate()
 	if err != nil {
 		log.Println("unable to validate record", err)
-		return Error(err, ValidateErrorCode, "", "dbs.processing.Insert")
+		return 0, Error(err, ValidateErrorCode, "", "dbs.processing.Insert")
 	}
 	// get SQL statement from static area
 	stm := getSQL("insert_processing")
@@ -116,9 +116,9 @@ func (r *Processing) Insert(tx *sql.Tx) error {
 		if Verbose > 0 {
 			log.Println("unable to insert processing, error", err)
 		}
-		return Error(err, InsertErrorCode, "", "dbs.processing.Insert")
+		return 0, Error(err, InsertErrorCode, "", "dbs.processing.Insert")
 	}
-	return nil
+	return r.PROCESSING_ID, nil
 }
 
 // Validate implementation of Processing

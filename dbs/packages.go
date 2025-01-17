@@ -110,13 +110,13 @@ func (r *Packages) Update(tx *sql.Tx) error {
 }
 
 // Insert implementation of Packages
-func (r *Packages) Insert(tx *sql.Tx) error {
+func (r *Packages) Insert(tx *sql.Tx) (int64, error) {
 	var err error
 	if r.PACKAGE_ID == 0 {
 		packageID, err := getNextId(tx, "packages", "package_id")
 		if err != nil {
 			log.Println("unable to get packageID", err)
-			return Error(err, ParametersErrorCode, "", "dbs.packages.Insert")
+			return 0, Error(err, ParametersErrorCode, "", "dbs.packages.Insert")
 		}
 		r.PACKAGE_ID = packageID
 	}
@@ -125,7 +125,7 @@ func (r *Packages) Insert(tx *sql.Tx) error {
 	err = r.Validate()
 	if err != nil {
 		log.Println("unable to validate record", err)
-		return Error(err, ValidateErrorCode, "", "dbs.packages.Insert")
+		return 0, Error(err, ValidateErrorCode, "", "dbs.packages.Insert")
 	}
 	// get SQL statement from static area
 	stm := getSQL("insert_package")
@@ -147,9 +147,9 @@ func (r *Packages) Insert(tx *sql.Tx) error {
 		if Verbose > 0 {
 			log.Println("unable to insert packages, error", err)
 		}
-		return Error(err, InsertErrorCode, "", "dbs.packages.Insert")
+		return 0, Error(err, InsertErrorCode, "", "dbs.packages.Insert")
 	}
-	return nil
+	return r.PACKAGE_ID, nil
 }
 
 // Validate implementation of Packages

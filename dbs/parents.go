@@ -104,7 +104,7 @@ func (a *API) InsertParent() error {
 		DATASET_ID: datasetId,
 	}
 	log.Printf("### insertParent %+v", record)
-	err = record.Insert(tx)
+	_, err = record.Insert(tx)
 	if err != nil {
 		return err
 	}
@@ -129,13 +129,13 @@ func (r *Parents) Update(tx *sql.Tx) error {
 }
 
 // Insert implementation of Parents
-func (r *Parents) Insert(tx *sql.Tx) error {
+func (r *Parents) Insert(tx *sql.Tx) (int64, error) {
 	var err error
 	if r.PARENT_ID == 0 {
 		parentID, err := getNextId(tx, "parents", "parent_id")
 		if err != nil {
 			log.Println("unable to get parentID", err)
-			return Error(err, ParametersErrorCode, "", "dbs.parents.Insert")
+			return 0, Error(err, ParametersErrorCode, "", "dbs.parents.Insert")
 		}
 		r.PARENT_ID = parentID
 	}
@@ -144,7 +144,7 @@ func (r *Parents) Insert(tx *sql.Tx) error {
 	err = r.Validate()
 	if err != nil {
 		log.Println("unable to validate record", err)
-		return Error(err, ValidateErrorCode, "", "dbs.parents.Insert")
+		return 0, Error(err, ValidateErrorCode, "", "dbs.parents.Insert")
 	}
 	// get SQL statement from static area
 	stm := getSQL("insert_parent")
@@ -165,9 +165,9 @@ func (r *Parents) Insert(tx *sql.Tx) error {
 		if Verbose > 0 {
 			log.Println("unable to insert parents, error", err)
 		}
-		return Error(err, InsertErrorCode, "", "dbs.parents.Insert")
+		return 0, Error(err, InsertErrorCode, "", "dbs.parents.Insert")
 	}
-	return nil
+	return r.PARENT_ID, nil
 }
 
 // Validate implementation of Parents

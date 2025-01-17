@@ -75,13 +75,13 @@ func (r *Buckets) Update(tx *sql.Tx) error {
 }
 
 // Insert implementation of Buckets
-func (r *Buckets) Insert(tx *sql.Tx) error {
+func (r *Buckets) Insert(tx *sql.Tx) (int64, error) {
 	var err error
 	if r.BUCKET_ID == 0 {
 		bucketID, err := getNextId(tx, "buckets", "bucket_id")
 		if err != nil {
 			log.Println("unable to get bucketID", err)
-			return Error(err, ParametersErrorCode, "", "dbs.buckets.Insert")
+			return 0, Error(err, ParametersErrorCode, "", "dbs.buckets.Insert")
 		}
 		r.BUCKET_ID = bucketID
 	}
@@ -90,7 +90,7 @@ func (r *Buckets) Insert(tx *sql.Tx) error {
 	err = r.Validate()
 	if err != nil {
 		log.Println("unable to validate record", err)
-		return Error(err, ValidateErrorCode, "", "dbs.buckets.Insert")
+		return 0, Error(err, ValidateErrorCode, "", "dbs.buckets.Insert")
 	}
 	// get SQL statement from static area
 	stm := getSQL("insert_bucket")
@@ -112,9 +112,9 @@ func (r *Buckets) Insert(tx *sql.Tx) error {
 		if Verbose > 0 {
 			log.Println("unable to insert buckets, error", err)
 		}
-		return Error(err, InsertErrorCode, "", "dbs.buckets.Insert")
+		return 0, Error(err, InsertErrorCode, "", "dbs.buckets.Insert")
 	}
-	return nil
+	return r.BUCKET_ID, nil
 }
 
 // Validate implementation of Buckets
