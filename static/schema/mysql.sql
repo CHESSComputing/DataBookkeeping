@@ -1,9 +1,6 @@
 CREATE TABLE processing (
     processing_id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
     processing VARCHAR(255) NOT NULL UNIQUE,
-    environment_id BIGINT REFERENCES environments(environment_id) ON UPDATE CASCADE ON DELETE SET NULL,
-    os_id BIGINT REFERENCES osinfo(os_id) ON UPDATE CASCADE ON DELETE SET NULL,
-    script_id BIGINT REFERENCES scripts(script_id) ON UPDATE CASCADE ON DELETE SET NULL,
     create_at INTEGER,
     create_by VARCHAR(255),
     modify_at INTEGER,
@@ -43,6 +40,7 @@ CREATE TABLE datasets (
     did VARCHAR(255) NOT NULL UNIQUE,
     site_id BIGINT REFERENCES sites(site_id) ON UPDATE CASCADE,
     processing_id BIGINT REFERENCES processing(processing_id) ON UPDATE CASCADE,
+    os_id BIGINT REFERENCES osinfo(osinfo_id) ON UPDATE CASCADE,
     parent_id BIGINT REFERENCES parents(parent_id) ON UPDATE CASCADE,
     create_at INTEGER,
     create_by VARCHAR(255),
@@ -131,6 +129,16 @@ CREATE TABLE dataset_environments (
     PRIMARY KEY (dataset_id, environment_id),  -- Prevents duplicate dataset-environment combinations
     FOREIGN KEY (dataset_id) REFERENCES datasets(dataset_id) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (environment_id) REFERENCES files(environment_id) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
+-- dataset may have many scripts, and one script can be associated
+-- with different datasets
+CREATE TABLE dataset_scripts (
+    dataset_id INTEGER NOT NULL,
+    script_id INTEGER NOT NULL,
+    PRIMARY KEY (dataset_id, script_id),  -- Prevents duplicate dataset-script combinations
+    FOREIGN KEY (dataset_id) REFERENCES datasets(dataset_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (script_id) REFERENCES files(script_id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
 -- environment can have multiple python packages and a given package may be

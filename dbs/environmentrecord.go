@@ -12,7 +12,7 @@ type EnvironmentRecord struct {
 	Version  string          `json:"version"`
 	Details  string          `json:"details"`
 	Parent   string          `json:"parent_environment",omitempty`
-	OsInfo   string          `json:"osinfo",omitempty`
+	OSName   string          `json:"os_name",omitempty`
 	Packages []PackageRecord `json:"packages",omitempty`
 }
 
@@ -30,9 +30,9 @@ func (e *EnvironmentRecord) Insert(tx *sql.Tx) (int64, error) {
 		}
 	}
 
-	// find out osinfo id from given OsInfo
-	if e.OsInfo != "" {
-		os_id, err := GetID(tx, "osinfo", "os_id", "name", e.OsInfo)
+	// find out osinfo id from given OSName
+	if e.OSName != "" {
+		os_id, err := GetID(tx, "osinfo", "os_id", "name", e.OSName)
 		if err == nil {
 			r.OS_ID = os_id
 		} else {

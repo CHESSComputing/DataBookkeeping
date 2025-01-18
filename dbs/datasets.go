@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"strings"
 
 	lexicon "github.com/CHESSComputing/golib/lexicon"
 	"github.com/CHESSComputing/golib/utils"
@@ -17,18 +18,16 @@ import (
 
 // Datasets represents Datasets DBS DB table
 type Datasets struct {
-	DATASET_ID     int64  `json:"dataset_id"`
-	DID            string `json:"did" validate:"required"`
-	SITE_ID        int64  `json:"site_id" validate:"required",number`
-	PROCESSING_ID  int64  `json:"processing_id" validate:"required",number`
-	ENVIRONMENT_ID int64  `json:"environment_id" validate:"required",number`
-	OSINFO_ID      int64  `json:"osinfo_id" validate:"required",number`
-	SCRIPT_ID      int64  `json:"script_id" validate:"required",number`
-	PARENT_ID      int64  `json:"parent_id" validate:"required",number`
-	CREATE_AT      int64  `json:"create_at" validate:"required,number"`
-	CREATE_BY      string `json:"create_by" validate:"required"`
-	MODIFY_AT      int64  `json:"modify_at" validate:"required,number"`
-	MODIFY_BY      string `json:"modify_by" validate:"required"`
+	DATASET_ID    int64  `json:"dataset_id"`
+	DID           string `json:"did" validate:"required"`
+	SITE_ID       int64  `json:"site_id" validate:"required",number`
+	PROCESSING_ID int64  `json:"processing_id" validate:"required",number`
+	OSINFO_ID     int64  `json:"osinfo_id" validate:"required",number`
+	PARENT_ID     int64  `json:"parent_id" validate:"required",number`
+	CREATE_AT     int64  `json:"create_at" validate:"required,number"`
+	CREATE_BY     string `json:"create_by" validate:"required"`
+	MODIFY_AT     int64  `json:"modify_at" validate:"required,number"`
+	MODIFY_BY     string `json:"modify_by" validate:"required"`
 }
 
 // Datasets API
@@ -136,6 +135,7 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 	}
 	defer tx.Rollback()
 	var siteId, processingId, parentId, datasetId, environmentId, osId, scriptId, fileId int64
+	var envIds []int64
 
 	// insert site info
 	if rec.Site != "" {
@@ -151,25 +151,46 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 	record.SITE_ID = siteId
 
 	// insert os info
-	osId, err = rec.OsInfo.Insert(tx)
-	if err != nil {
-		return err
+	if rec.OsInfo.Name != "" {
+		osId, err = GetID(tx, "osinfo", "os_id", "name", rec.OsInfo.Name)
+		if err != nil || osId == 0 {
+			osId, err = rec.OsInfo.Insert(tx)
+			if err != nil {
+				return err
+			}
+		}
+		record.OSINFO_ID = osId
+	} else {
+		// osinfo must be present
+		return errors.New("no osinfo is provided")
 	}
-	record.OSINFO_ID = osId
 
 	// insert environment info
-	environmentId, err = rec.Environment.Insert(tx)
-	if err != nil {
-		return err
+	for _, env := range rec.Environments {
+		if env.Name != "" {
+			environmentId, err = GetID(tx, "environments", "environment_id", "name", env.Name)
+			if err != nil || environmentId == 0 {
+				environmentId, err = env.Insert(tx)
+				if err != nil {
+					return err
+				}
+				envIds = append(envIds, environmentId)
+			}
+		}
 	}
-	record.ENVIRONMENT_ID = environmentId
 
 	// insert script info
-	scriptId, err = rec.Script.Insert(tx)
-	if err != nil {
-		return err
+	if rec.Script.Name != "" {
+		scriptId, err = GetID(tx, "scripts", "script_id", "name", rec.Script.Name)
+		if err != nil || scriptId == 0 {
+			scriptId, err = rec.Script.Insert(tx)
+			if err != nil {
+				return err
+			}
+		}
+	} else {
+		return errors.New("no script info is provide")
 	}
-	record.SCRIPT_ID = scriptId
 
 	// insert processing info
 	if rec.Processing == "" {
@@ -178,10 +199,7 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 	processingId, err = GetID(tx, "processing", "processing_id", "processing", rec.Processing)
 	if err != nil || processingId == 0 {
 		processing := Processing{
-			PROCESSING:     rec.Processing,
-			OS_ID:          osId,
-			ENVIRONMENT_ID: environmentId,
-			SCRIPT_ID:      scriptId,
+			PROCESSING: rec.Processing,
 		}
 		processingId, err = processing.Insert(tx)
 		if err != nil {
@@ -203,15 +221,23 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 	}
 	record.DATASET_ID = datasetId
 
-	err = InsertManyToMany(tx, "insert_dataset_environment", datasetId, environmentId)
-	if err != nil {
+	// insert dataset-environments relationships
+	for _, envId := range envIds {
+		err = InsertManyToMany(tx, "insert_dataset_environment", datasetId, envId)
+		if err != nil && !strings.Contains(err.Error(), "UNIQUE") {
+			return err
+		}
+	}
+	// insert dataset-scripts relationships
+	err = InsertManyToMany(tx, "insert_dataset_script", datasetId, scriptId)
+	if err != nil && !strings.Contains(err.Error(), "UNIQUE") {
 		return err
 	}
 
 	// perform update of dataset record
-	if err = record.Update(tx); err != nil {
-		return err
-	}
+	//     if err = record.Update(tx); err != nil {
+	//         return err
+	//     }
 
 	// insert parent info
 	if rec.Parent != "" {
@@ -252,7 +278,7 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 			log.Printf("File %+v already exist", file)
 		}
 		err = InsertManyToMany(tx, "insert_dataset_file", datasetId, fileId, "input")
-		if err != nil {
+		if err != nil && !strings.Contains(err.Error(), "UNIQUE") {
 			return err
 		}
 	}

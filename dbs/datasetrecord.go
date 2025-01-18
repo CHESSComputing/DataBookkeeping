@@ -4,16 +4,16 @@ import lexicon "github.com/CHESSComputing/golib/lexicon"
 
 // DatasetRecord represents input dataset record from HTTP request
 type DatasetRecord struct {
-	Did         string            `json:"did" validate:"required"`
-	Buckets     []string          `json:"buckets" validate:"required"`
-	Site        string            `json:"site" validate:"required"`
-	Processing  string            `json:"processing" validate:"required"`
-	Parent      string            `json:"parent_did" validate:"required"`
-	InputFiles  []string          `json:"input_files" validate:"required"`
-	OutputFiles []string          `json:"output_files" validate:"required"`
-	Environment EnvironmentRecord `json:"environment",omitempty`
-	OsInfo      OsInfoRecord      `json:"osinfo",omitempty`
-	Script      ScriptRecord      `json:"script",omitempty`
+	Did          string              `json:"did" validate:"required"`
+	Buckets      []string            `json:"buckets" validate:"required"`
+	Site         string              `json:"site" validate:"required"`
+	Processing   string              `json:"processing" validate:"required"`
+	Parent       string              `json:"parent_did" validate:"required"`
+	InputFiles   []string            `json:"input_files" validate:"required"`
+	OutputFiles  []string            `json:"output_files" validate:"required"`
+	Environments []EnvironmentRecord `json:"environments"`
+	OsInfo       OsInfoRecord        `json:"osinfo"`
+	Script       ScriptRecord        `json:"script"`
 }
 
 // Validate implementation of DatasetRecord
@@ -54,17 +54,19 @@ func (r *DatasetRecord) Validate() error {
 	if err := lexicon.CheckPattern("osinfo_kernel", r.OsInfo.Kernel); err != nil {
 		return Error(err, ValidateErrorCode, "fail osinfo.name validation", "dbs.DatasetRecord.Validate")
 	}
-	if err := lexicon.CheckPattern("env_name", r.Environment.Name); err != nil {
-		return Error(err, ValidateErrorCode, "fail env.Name validation", "dbs.DatasetRecord.Validate")
-	}
-	if err := lexicon.CheckPattern("env_version", r.Environment.Version); err != nil {
-		return Error(err, ValidateErrorCode, "fail env.Version validation", "dbs.DatasetRecord.Validate")
-	}
-	if err := lexicon.CheckPattern("env_details", r.Environment.Details); err != nil {
-		return Error(err, ValidateErrorCode, "fail env.Details validation", "dbs.DatasetRecord.Validate")
-	}
-	if err := lexicon.CheckPattern("env_parent", r.Environment.Parent); err != nil {
-		return Error(err, ValidateErrorCode, "fail env.Parent validation", "dbs.DatasetRecord.Validate")
+	for _, env := range r.Environments {
+		if err := lexicon.CheckPattern("env_name", env.Name); err != nil {
+			return Error(err, ValidateErrorCode, "fail env.Name validation", "dbs.DatasetRecord.Validate")
+		}
+		if err := lexicon.CheckPattern("env_version", env.Version); err != nil {
+			return Error(err, ValidateErrorCode, "fail env.Version validation", "dbs.DatasetRecord.Validate")
+		}
+		if err := lexicon.CheckPattern("env_details", env.Details); err != nil {
+			return Error(err, ValidateErrorCode, "fail env.Details validation", "dbs.DatasetRecord.Validate")
+		}
+		if err := lexicon.CheckPattern("env_parent", env.Parent); err != nil {
+			return Error(err, ValidateErrorCode, "fail env.Parent validation", "dbs.DatasetRecord.Validate")
+		}
 	}
 	if err := lexicon.CheckPattern("script_name", r.Script.Name); err != nil {
 		return Error(err, ValidateErrorCode, "fail script.Name validation", "dbs.DatasetRecord.Validate")

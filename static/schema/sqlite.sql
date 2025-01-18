@@ -3,9 +3,6 @@
 create TABLE processing (
     processing_id INTEGER PRIMARY KEY AUTOINCREMENT,
     processing VARCHAR(255) NOT NULL UNIQUE,
-    environment_id INTEGER REFERENCES environments(environment_id) ON UPDATE CASCADE,
-    os_id INTEGER REFERENCES osinfo(os_id) ON UPDATE CASCADE,
-    script_id INTEGER REFERENCES scripts(script_id) ON UPDATE CASCADE,
     create_at INTEGER,
     create_by VARCHAR(255),
     modify_at INTEGER,
@@ -40,7 +37,8 @@ create TABLE datasets (
     dataset_id INTEGER PRIMARY KEY AUTOINCREMENT,
     did VARCHAR(255) NOT NULL UNIQUE,
     site_id INTEGER REFERENCES sites(site_id) ON UPDATE CASCADE,
-    processing_id INTEGER REFERENCES processingS(processing_id) ON UPDATE CASCADE,
+    processing_id INTEGER REFERENCES processing(processing_id) ON UPDATE CASCADE,
+    os_id INTEGER REFERENCES osinfo(osinfo_id) ON UPDATE CASCADE,
     parent_id INTEGER REFERENCES parents(parent_id) ON UPDATE CASCADE,
     create_at INTEGER,
     create_by VARCHAR(255),
@@ -124,6 +122,16 @@ CREATE TABLE dataset_environments (
     FOREIGN KEY (environment_id) REFERENCES files(environment_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+-- dataset may have many scripts, and one script can be associated
+-- with different datasets
+CREATE TABLE dataset_scripts (
+    dataset_id INTEGER NOT NULL,
+    script_id INTEGER NOT NULL,
+    PRIMARY KEY (dataset_id, script_id),  -- Prevents duplicate dataset-script combinations
+    FOREIGN KEY (dataset_id) REFERENCES datasets(dataset_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (script_id) REFERENCES files(script_id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 -- environment can have multiple python packages and a given package may be
 -- presented in different environments
 CREATE TABLE environment_packages (
@@ -133,3 +141,4 @@ CREATE TABLE environment_packages (
     FOREIGN KEY (environment_id) REFERENCES environments(environment_id) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (package_id) REFERENCES packages(package_id) ON DELETE CASCADE ON UPDATE CASCADE
 );
+

@@ -17,15 +17,12 @@ import (
 
 // Processing represents Processing DBS DB table
 type Processing struct {
-	PROCESSING_ID  int64  `json:"processing_id"`
-	PROCESSING     string `json:"processing" validate:"required"`
-	ENVIRONMENT_ID int64  `json:"environment_id"`
-	OS_ID          int64  `json:"os_id"`
-	SCRIPT_ID      int64  `json:"script_id"`
-	CREATE_AT      int64  `json:"create_at"`
-	CREATE_BY      string `json:"create_by"`
-	MODIFY_AT      int64  `json:"modify_at"`
-	MODIFY_BY      string `json:"modify_by"`
+	PROCESSING_ID int64  `json:"processing_id"`
+	PROCESSING    string `json:"processing" validate:"required"`
+	CREATE_AT     int64  `json:"create_at"`
+	CREATE_BY     string `json:"create_by"`
+	MODIFY_AT     int64  `json:"modify_at"`
+	MODIFY_BY     string `json:"modify_by"`
 }
 
 // Processing DBS API
@@ -105,9 +102,6 @@ func (r *Processing) Insert(tx *sql.Tx) (int64, error) {
 		stm,
 		r.PROCESSING_ID,
 		r.PROCESSING,
-		r.ENVIRONMENT_ID,
-		r.OS_ID,
-		r.SCRIPT_ID,
 		r.CREATE_AT,
 		r.CREATE_BY,
 		r.MODIFY_AT,

@@ -15,7 +15,7 @@
          "/x/y/z/file3.png"
        ],
        "osinfo": {"name": "linux-cc7", "kernel": "1-2-3", "version": "cc7-123"},
-       "environment": {"name": "conda-123", "version": "version", "details": "details"},
+       "environments": [{"name": "conda-123", "version": "version", "details": "details"}],
        "script": {"name": "myscript", "options": "-m -p"},
        "processing": "glibc",
        "site": "Cornell"
@@ -104,7 +104,7 @@
          "/x/y/z/file3.png"
        ],
        "osinfo": {"name": "linux-cc7", "kernel": "1-2-3", "version": "cc7-123"},
-       "environment": {"name": "conda-123", "version": "version", "details": "details"},
+       "environments": [{"name": "conda-123", "version": "version", "details": "details"}],
        "script": {"name": "myscript", "options": "-m -p"},
        "processing": "",
        "site": "Cornell"
@@ -153,7 +153,7 @@
          "/x/y/z/file3.png"
        ],
        "osinfo": {"name": "linux-cc7", "kernel": "1-2-3", "version": "cc7-123"},
-       "environment": {"name": "conda-123", "version": "version", "details": "details"},
+       "environments": [{"name": "conda-123", "version": "version", "details": "details"}],
        "processing": "",
        "site": "Cornell"
      },
@@ -176,7 +176,7 @@
          "/x/y/z/file2.png",
          "/x/y/z/file3.png"
        ],
-       "environment": {"name": "conda-123", "version": "version", "details": "details"},
+       "environments": [{"name": "conda-123", "version": "version", "details": "details"}],
        "script": {"name": "myscript", "options": "-m -p"},
        "processing": "glibc",
        "site": "Cornell"

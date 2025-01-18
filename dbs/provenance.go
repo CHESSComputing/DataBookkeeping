@@ -41,6 +41,7 @@ func (a *API) GetProvenance() error {
 		return Error(err, LoadErrorCode, "fail to load select_provenance sql template", "dbs.datasets.Datasets")
 	}
 	stm = WhereClause(stm, conds)
+	stm = fmt.Sprintf("%s ORDER BY d.dataset_id, e.environment_id, pk.package_id", stm)
 
 	tx, err := DB.Begin()
 	if err != nil {
@@ -54,59 +55,63 @@ func (a *API) GetProvenance() error {
 	}
 	defer rows.Close()
 
+	log.Println("SQL", stm, args)
+
 	// Process results
-	provenance := DatasetRecord{}
-	provenance.Buckets = []string{}
-	provenance.InputFiles = []string{}
-	provenance.OutputFiles = []string{}
-	provenance.Environment.Packages = []PackageRecord{}
+	var provenance DatasetRecord
+	//     provenance := DatasetRecord{}
+	//     provenance.Buckets = []string{}
+	//     provenance.InputFiles = []string{}
+	//     provenance.OutputFiles = []string{}
 
 	// keep map of unique packages
-	packageSet := make(map[string]struct{}) // Acts as a unique set
+	envMap := make(map[int]*EnvironmentRecord)  // Store environments by environment_id
+	pkgMap := make(map[int]map[string]struct{}) // Track unique packages per environment
 
 	for rows.Next() {
-		var parentDID sql.NullString
-		var fileType sql.NullString
-		var fileName sql.NullString
-		var bucketName sql.NullString
-		var parentEnv sql.NullString
-		var parentScript sql.NullString
-		var packageName sql.NullString
-		var packageVersion sql.NullString
+		var did, processing, osName, osKernel, osVersion string
+		var parentDID, fileType, fileName, bucketName sql.NullString
+		var site, scriptName, scriptOptions sql.NullString
+		var parentEnvName, parentScript, parentScriptName, packageName, packageVersion sql.NullString
+		var envName, envVersion, envDetails, envOSName sql.NullString
+		var envID int
 
 		// Scan row into variables
-		err := rows.Scan(
-			&provenance.Did,
-			&parentDID,
-			&provenance.Processing,
-			&provenance.OsInfo.Name,
-			&provenance.OsInfo.Kernel,
-			&provenance.OsInfo.Version,
-			&provenance.Environment.Name,
-			&provenance.Environment.Version,
-			&provenance.Environment.Details,
-			&parentEnv,
-			&provenance.Environment.OsInfo,
-			&packageName,
-			&packageVersion,
-			&provenance.Script.Name,
-			&provenance.Script.Options,
-			&parentScript,
-			&provenance.Site,
-			&fileName,
-			&fileType,
-			&bucketName,
+		err := rows.Scan(&did, &parentDID, &processing, &osName, &osKernel, &osVersion,
+			&envID, &envName, &envVersion, &envDetails, &parentEnvName, &envOSName,
+			&packageName, &packageVersion,
+			&scriptName, &scriptOptions, &parentScript,
+			&site, &fileName, &fileType, &bucketName,
 		)
 		if err != nil {
 			return err
+		}
+		// Initialize provenance record if first row
+		if provenance.Did == "" {
+			provenance = DatasetRecord{
+				Did:        did,
+				Processing: processing,
+				OsInfo: OsInfoRecord{
+					Name:    osName,
+					Kernel:  osKernel,
+					Version: osVersion,
+				},
+				Environments: []EnvironmentRecord{},
+				Site:         site.String,
+				Script: ScriptRecord{
+					Name:    scriptName.String,
+					Options: scriptOptions.String,
+					Parent:  parentScriptName.String,
+				},
+				InputFiles:  []string{},
+				OutputFiles: []string{},
+				Buckets:     []string{},
+			}
 		}
 
 		// Handle nullable values
 		if parentDID.Valid {
 			provenance.Parent = parentDID.String
-		}
-		if parentEnv.Valid {
-			provenance.Environment.Parent = parentEnv.String
 		}
 		if parentScript.Valid {
 			provenance.Script.Parent = parentScript.String
@@ -126,32 +131,44 @@ func (a *API) GetProvenance() error {
 			provenance.Buckets = append(provenance.Buckets, bucketName.String)
 		}
 
-		// Collect packages
-		if provenance.Environment.Packages == nil {
-			provenance.Environment.Packages = []PackageRecord{}
+		// Handle environments
+		if envOSName.Valid {
+			osName = envOSName.String
 		}
-		/*
-			if packageName.Valid && packageVersion.Valid {
-				provenance.Environment.Packages = append(provenance.Environment.Packages, PackageRecord{
-					Name:    packageName.String,
-					Version: packageVersion.String,
-				})
+		if _, exists := envMap[envID]; !exists {
+			envMap[envID] = &EnvironmentRecord{
+				Name:     envName.String,
+				Version:  envVersion.String,
+				Details:  envDetails.String,
+				Parent:   parentEnvName.String,
+				OSName:   osName,
+				Packages: []PackageRecord{},
 			}
-		*/
+			pkgMap[envID] = make(map[string]struct{}) // Track unique packages
+		}
 
 		// Check if the package is already in the set before adding
 		if packageName.Valid && packageVersion.Valid {
 			pkgKey := packageName.String + "|" + packageVersion.String
-			if _, exists := packageSet[pkgKey]; !exists {
-				provenance.Environment.Packages = append(provenance.Environment.Packages, PackageRecord{
+			if _, exists := pkgMap[envID][pkgKey]; !exists {
+				envMap[envID].Packages = append(envMap[envID].Packages, PackageRecord{
 					Name:    packageName.String,
 					Version: packageVersion.String,
 				})
-				packageSet[pkgKey] = struct{}{} // Mark as added
+				pkgMap[envID][pkgKey] = struct{}{}
 			}
 		}
 
 	}
+
+	// Convert environments map to slice
+	for _, env := range envMap {
+		provenance.Environments = append(provenance.Environments, *env)
+	}
+
+	// get rid of duplicates in files
+	provenance.InputFiles = UniqueList(provenance.InputFiles)
+	provenance.OutputFiles = UniqueList(provenance.OutputFiles)
 
 	// Convert to JSON
 	jsonOutput, err := json.MarshalIndent(provenance, "", "  ")

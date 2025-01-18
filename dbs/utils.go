@@ -116,3 +116,18 @@ func CastInt64(val interface{}) (int64, error) {
 	msg := fmt.Sprintf("wrong data type for %v type %T", val, val)
 	return 0, errors.New(msg)
 }
+
+// UniqueList removes duplicates from a slice and returns a new slice with unique elements.
+func UniqueList(input []string) []string {
+	seen := make(map[string]bool)
+	var result []string
+
+	for _, item := range input {
+		if !seen[item] {
+			seen[item] = true
+			result = append(result, item)
+		}
+	}
+
+	return result
+}
