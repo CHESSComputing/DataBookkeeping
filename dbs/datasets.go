@@ -134,7 +134,7 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 		return Error(err, TransactionErrorCode, "", "dbs.insertRecord")
 	}
 	defer tx.Rollback()
-	var siteId, processingId, parentId, datasetId, environmentId, osId, scriptId, fileId int64
+	var siteId, processingId, parentId, datasetId, osId, scriptId, fileId, bucketId int64
 	var envIds []int64
 
 	// insert site info
@@ -168,14 +168,18 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 	// insert environment info
 	for _, env := range rec.Environments {
 		if env.Name != "" {
-			environmentId, err = GetID(tx, "environments", "environment_id", "name", env.Name)
+			environmentId, err := GetID(tx, "environments", "environment_id", "name", env.Name)
 			if err != nil || environmentId == 0 {
 				environmentId, err = env.Insert(tx)
 				if err != nil {
 					return err
 				}
-				envIds = append(envIds, environmentId)
 			}
+			if environmentId == 0 {
+				msg := fmt.Sprintf("unable to obtain environment id for %s", env.Name)
+				return errors.New(msg)
+			}
+			envIds = append(envIds, environmentId)
 		}
 	}
 
@@ -234,48 +238,54 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 		return err
 	}
 
-	// perform update of dataset record
-	//     if err = record.Update(tx); err != nil {
-	//         return err
-	//     }
-
 	// insert parent info
 	if rec.Parent != "" {
 		parentId, err = GetID(tx, "datasets", "dataset_id", "did", rec.Parent)
 		if err != nil {
 			return err
 		}
-		parent := Parents{PARENT_ID: parentId, DATASET_ID: datasetId}
-		parentId, err = parent.Insert(tx)
-		if err != nil {
-			return err
+		if parentId == 0 {
+			parent := Parents{PARENT_ID: parentId, DATASET_ID: datasetId}
+			parentId, err = parent.Insert(tx)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	record.PARENT_ID = parentId
 
 	// insert all buckets
 	for _, b := range rec.Buckets {
-		bucket := Buckets{
-			BUCKET:     b,
-			DATASET_ID: datasetId,
-		}
-		if _, err = bucket.Insert(tx); err != nil {
-			log.Printf("Bucket %+v already exist", bucket)
+		bucketId, err = GetID(tx, "buckets", "bucket_id", "bucket", b)
+		if err != nil || bucketId == 0 {
+			bucket := Buckets{
+				BUCKET:     b,
+				DATASET_ID: datasetId,
+			}
+			if _, err = bucket.Insert(tx); err != nil {
+				log.Printf("Bucket %+v already exist", bucket)
+			}
 		}
 	}
 
 	// insert all input files
 	for _, f := range rec.InputFiles {
-		file := Files{
-			FILE:          f,
-			IS_FILE_VALID: 1, // by default all files are valid
-			DATASET_ID:    datasetId,
-			CREATE_BY:     record.CREATE_BY,
-			MODIFY_BY:     record.CREATE_BY,
-		}
-		fileId, err = file.Insert(tx)
+		fileId, err = GetID(tx, "files", "file_id", "file", f)
 		if err != nil {
-			log.Printf("File %+v already exist", file)
+			file := Files{
+				FILE:          f,
+				IS_FILE_VALID: 1, // by default all files are valid
+				CREATE_BY:     record.CREATE_BY,
+				MODIFY_BY:     record.CREATE_BY,
+			}
+			fileId, err = file.Insert(tx)
+			if err != nil {
+				log.Printf("File %+v already exist", file)
+			}
+		}
+		if fileId == 0 {
+			msg := fmt.Sprintf("unable to find file %s", f)
+			return errors.New(msg)
 		}
 		err = InsertManyToMany(tx, "insert_dataset_file", datasetId, fileId, "input")
 		if err != nil && !strings.Contains(err.Error(), "UNIQUE") {
@@ -285,19 +295,25 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 
 	// insert all output files
 	for _, f := range rec.OutputFiles {
-		file := Files{
-			FILE:          f,
-			IS_FILE_VALID: 1, // by default all files are valid
-			DATASET_ID:    datasetId,
-			CREATE_BY:     record.CREATE_BY,
-			MODIFY_BY:     record.CREATE_BY,
-		}
-		fileId, err = file.Insert(tx)
+		fileId, err = GetID(tx, "files", "file_id", "file", f)
 		if err != nil {
-			log.Printf("File %+v already exist", file)
+			file := Files{
+				FILE:          f,
+				IS_FILE_VALID: 1, // by default all files are valid
+				CREATE_BY:     record.CREATE_BY,
+				MODIFY_BY:     record.CREATE_BY,
+			}
+			fileId, err = file.Insert(tx)
+			if err != nil {
+				log.Printf("File %+v already exist", file)
+			}
+		}
+		if fileId == 0 {
+			msg := fmt.Sprintf("unable to find file %s", f)
+			return errors.New(msg)
 		}
 		err = InsertManyToMany(tx, "insert_dataset_file", datasetId, fileId, "output")
-		if err != nil {
+		if err != nil && !strings.Contains(err.Error(), "UNIQUE") {
 			return err
 		}
 	}
