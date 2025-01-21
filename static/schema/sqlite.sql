@@ -49,7 +49,6 @@ create TABLE files (
     file_id INTEGER PRIMARY KEY AUTOINCREMENT,
     file VARCHAR(255) NOT NULL UNIQUE,
     is_file_valid INTEGER DEFAULT 1,
-    dataset_id INTEGER REFERENCES datasets(dataset_id) ON UPDATE CASCADE,
     create_at INTEGER,
     create_by VARCHAR(255),
     modify_at INTEGER,
@@ -103,7 +102,7 @@ CREATE TABLE scripts (
 
 -- dataset may have input and output files, and file can be present in
 -- different datasets
-CREATE TABLE dataset_files (
+CREATE TABLE datasets_files (
     dataset_id INTEGER NOT NULL,
     file_id INTEGER NOT NULL,
     file_type TEXT,
@@ -114,7 +113,7 @@ CREATE TABLE dataset_files (
 
 -- dataset may have many environments, and one environment can be associated
 -- with different datasets
-CREATE TABLE dataset_environments (
+CREATE TABLE datasets_environments (
     dataset_id INTEGER NOT NULL,
     environment_id INTEGER NOT NULL,
     PRIMARY KEY (dataset_id, environment_id),  -- Prevents duplicate dataset-environment combinations
@@ -124,7 +123,7 @@ CREATE TABLE dataset_environments (
 
 -- dataset may have many scripts, and one script can be associated
 -- with different datasets
-CREATE TABLE dataset_scripts (
+CREATE TABLE datasets_scripts (
     dataset_id INTEGER NOT NULL,
     script_id INTEGER NOT NULL,
     PRIMARY KEY (dataset_id, script_id),  -- Prevents duplicate dataset-script combinations
@@ -134,7 +133,7 @@ CREATE TABLE dataset_scripts (
 
 -- environment can have multiple python packages and a given package may be
 -- presented in different environments
-CREATE TABLE environment_packages (
+CREATE TABLE environments_packages (
     environment_id INTEGER NOT NULL,
     package_id INTEGER NOT NULL,
     PRIMARY KEY (environment_id, package_id),

@@ -11,6 +11,6 @@ SELECT
     E.modify_at
 FROM datasets D
 LEFT JOIN processing PR on PR.processing_id=D.processing_id
-LEFT JOIN dataset_environments DE ON D.dataset_id = DE.dataset_id
+LEFT JOIN datasets_environments DE ON D.dataset_id = DE.dataset_id
 LEFT JOIN environments E ON DE.environment_id = E.environment_id
 LEFT JOIN environments PE ON E.parent_environment_id = PE.environment_id

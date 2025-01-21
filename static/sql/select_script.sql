@@ -10,6 +10,6 @@ SELECT
     S.modify_at
 FROM datasets D
 LEFT JOIN processing PR on PR.processing_id=D.processing_id
-LEFT JOIN dataset_scripts DS ON D.dataset_id = DS.dataset_id
+LEFT JOIN datasets_scripts DS ON D.dataset_id = DS.dataset_id
 LEFT JOIN scripts S ON DS.script_id = S.script_id
 LEFT JOIN scripts PS ON S.parent_script_id = PS.script_id
