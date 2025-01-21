@@ -1,6 +1,5 @@
 SELECT 
     d.did AS dataset_did, 
-    pd.did AS parent_did,
     p.processing,
     o.name AS os_name,
     o.kernel AS os_kernel,
@@ -21,7 +20,6 @@ SELECT
     df.file_type,
     b.bucket
 FROM datasets d
-LEFT JOIN datasets pd ON d.parent_id = pd.dataset_id
 LEFT JOIN processing p ON d.processing_id = p.processing_id
 LEFT JOIN sites s ON d.site_id = s.site_id
 LEFT JOIN datasets_files df ON d.dataset_id = df.dataset_id

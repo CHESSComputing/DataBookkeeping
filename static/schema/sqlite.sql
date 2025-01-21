@@ -39,7 +39,6 @@ create TABLE datasets (
     site_id INTEGER REFERENCES sites(site_id) ON UPDATE CASCADE,
     processing_id INTEGER REFERENCES processing(processing_id) ON UPDATE CASCADE,
     os_id INTEGER REFERENCES osinfo(osinfo_id) ON UPDATE CASCADE,
-    parent_id INTEGER REFERENCES parents(parent_id) ON UPDATE CASCADE,
     create_at INTEGER,
     create_by VARCHAR(255),
     modify_at INTEGER,

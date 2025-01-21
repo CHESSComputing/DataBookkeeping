@@ -11,6 +11,48 @@ import (
 )
 
 //gocyclo:ignore
+func (a *API) GetParentDID(did string) (string, error) {
+	var args []interface{}
+	var conds []string
+	tmpl := make(map[string]any)
+	tmpl["Owner"] = DBOWNER
+	// get SQL statement from static area
+	stm, err := LoadTemplateSQL("select_parent_did", tmpl)
+	if err != nil {
+		return "", Error(err, LoadErrorCode, "fail to load select_parent_did sql template", "dbs.provenance.GetParentDID")
+	}
+	stm = WhereClause(stm, conds)
+
+	tx, err := DB.Begin()
+	if err != nil {
+		return "", Error(err, TransactionErrorCode, "fail to get DB transaction", "dbs.provenance.GetProvenance")
+	}
+	defer tx.Rollback()
+	rows, err := tx.Query(stm, args...)
+
+	if err != nil {
+		return "", err
+	}
+	defer rows.Close()
+
+	log.Println("QUERY:\n", stm, args)
+
+	var parentDID sql.NullString
+	for rows.Next() {
+		err := rows.Scan(&did, &parentDID)
+		if err != nil {
+			return "", err
+		}
+		break
+	}
+	if parentDID.Valid {
+		return parentDID.String, nil
+	}
+	msg := fmt.Sprintf("parent for did %s is not found", did)
+	return "", errors.New(msg)
+}
+
+//gocyclo:ignore
 func (a *API) GetProvenance() error {
 	if Verbose > 1 {
 		log.Printf("provenance params %+v", a.Params)
@@ -29,9 +71,11 @@ func (a *API) GetProvenance() error {
 
 	}
 
+	var dataset_did string
 	if val, ok := a.Params["did"]; ok {
 		if val != "" {
 			conds, args = AddParam("did", "d.did", a.Params, conds, args)
+			dataset_did = fmt.Sprintf("%v", val)
 		}
 	} else {
 		msg := fmt.Sprintf("/provenance API requires did input, got %+v\n", a.Params)
@@ -67,16 +111,24 @@ func (a *API) GetProvenance() error {
 	envMap := make(map[int]*EnvironmentRecord)  // Store environments by environment_id
 	pkgMap := make(map[int]map[string]struct{}) // Track unique packages per environment
 
+	// find parent did
+	parentDID, err := a.GetParentDID(dataset_did)
+	if err != nil {
+		log.Println("WARNING:", err)
+	}
+	log.Println("##### PARENT", parentDID, dataset_did)
+
+	// main query
 	for rows.Next() {
 		var did, processing, osName, osKernel, osVersion string
-		var parentDID, fileType, fileName, bucketName sql.NullString
+		var fileType, fileName, bucketName sql.NullString
 		var site, scriptName, scriptOptions sql.NullString
 		var parentEnvName, parentScript, parentScriptName, packageName, packageVersion sql.NullString
 		var envName, envVersion, envDetails, envOSName sql.NullString
 		var envID int
 
 		// Scan row into variables
-		err := rows.Scan(&did, &parentDID, &processing, &osName, &osKernel, &osVersion,
+		err := rows.Scan(&did, &processing, &osName, &osKernel, &osVersion,
 			&envID, &envName, &envVersion, &envDetails, &parentEnvName, &envOSName,
 			&packageName, &packageVersion,
 			&scriptName, &scriptOptions, &parentScript,
@@ -89,6 +141,7 @@ func (a *API) GetProvenance() error {
 		if provenance.Did == "" {
 			provenance = DatasetRecord{
 				Did:        did,
+				Parent:     parentDID,
 				Processing: processing,
 				OsInfo: OsInfoRecord{
 					Name:    osName,
@@ -109,9 +162,6 @@ func (a *API) GetProvenance() error {
 		}
 
 		// Handle nullable values
-		if parentDID.Valid {
-			provenance.Parent = parentDID.String
-		}
 		if parentScript.Valid {
 			provenance.Script.Parent = parentScript.String
 		}

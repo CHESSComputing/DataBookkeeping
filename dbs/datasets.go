@@ -23,7 +23,6 @@ type Datasets struct {
 	SITE_ID       int64  `json:"site_id" validate:"required",number`
 	PROCESSING_ID int64  `json:"processing_id" validate:"required",number`
 	OSINFO_ID     int64  `json:"osinfo_id" validate:"required",number`
-	PARENT_ID     int64  `json:"parent_id" validate:"required",number`
 	CREATE_AT     int64  `json:"create_at" validate:"required,number"`
 	CREATE_BY     string `json:"create_by" validate:"required"`
 	MODIFY_AT     int64  `json:"modify_at" validate:"required,number"`
@@ -134,7 +133,7 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 		return Error(err, TransactionErrorCode, "", "dbs.insertRecord")
 	}
 	defer tx.Rollback()
-	var siteId, processingId, parentId, datasetId, osId, scriptId, fileId, bucketId int64
+	var siteId, processingId, datasetId, osId, scriptId, fileId, bucketId int64
 	var envIds []int64
 
 	// insert site info
@@ -216,7 +215,6 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 	datasetId, err = GetID(tx, "datasets", "dataset_id", "did", rec.Did)
 	if err != nil {
 		record.SITE_ID = siteId
-		record.PARENT_ID = parentId
 		record.PROCESSING_ID = processingId
 		datasetId, err = record.Insert(tx)
 		if err != nil {
@@ -240,19 +238,22 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 
 	// insert parent info
 	if rec.Parent != "" {
-		parentId, err = GetID(tx, "datasets", "dataset_id", "did", rec.Parent)
+		// look-up parent_id for given did name (rec.Parent)
+		parentId, err := GetID(tx, "datasets", "dataset_id", "did", rec.Parent)
 		if err != nil {
 			return err
 		}
 		if parentId == 0 {
-			parent := Parents{PARENT_ID: parentId, DATASET_ID: datasetId}
-			parentId, err = parent.Insert(tx)
-			if err != nil {
-				return err
-			}
+			msg := fmt.Sprintf("no did found for did %s", rec.Parent)
+			return errors.New(msg)
+		}
+		// if not found we need to insert relation between parent id and dataset id
+		parent := Parents{PARENT_ID: parentId, DATASET_ID: datasetId}
+		parentId, err = parent.Insert(tx)
+		if err != nil {
+			return err
 		}
 	}
-	record.PARENT_ID = parentId
 
 	// insert all buckets
 	for _, b := range rec.Buckets {
@@ -353,7 +354,6 @@ func (r *Datasets) Update(tx *sql.Tx) error {
 		stm,
 		r.SITE_ID,
 		r.PROCESSING_ID,
-		r.PARENT_ID,
 		r.MODIFY_AT,
 		r.MODIFY_BY,
 		r.DATASET_ID,
@@ -403,7 +403,6 @@ func (r *Datasets) Insert(tx *sql.Tx) (int64, error) {
 		r.SITE_ID,
 		r.PROCESSING_ID,
 		r.OSINFO_ID,
-		r.PARENT_ID,
 		r.CREATE_AT,
 		r.CREATE_BY,
 		r.MODIFY_AT,
