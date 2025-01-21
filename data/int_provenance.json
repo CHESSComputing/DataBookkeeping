@@ -1,0 +1,85 @@
+[
+    {
+     "description": "test provenance insert API",
+     "method": "POST",
+     "endpoint": "/dataset",
+     "url": "/dataset",
+     "input": {
+          "buckets": [],
+          "input_files": [],
+          "output_files": ["/tmp/file1.png", "/tmp/file2.png"],
+          "parent_did": null,
+          "did": "/beamline=aaa/btr=bbb/cycle=ccc/sample_name=sss",
+          "processing": "glibc",
+          "osinfo": {"name": "linux-cc7", "kernel": "1-2-3", "version": "cc7-123"},
+          "environments": [
+              {"name": "conda-123", "version": "version", "details": "details",
+                  "parent_environment": null, "os_name": "linux-cc7",
+                  "packages": [
+                      {"name": "numpy", "version": "123"},
+                      {"name": "matplotlib", "version": "987"}
+                  ]
+              }
+          ],
+          "script": {"name": "myscript", "options": "-m -p", "parent_script": null},
+          "site": "Cornell"
+     },
+     "output": [],
+     "verbose": 0,
+     "code": 200
+    },
+    {
+     "description": "test provenance API with initial did",
+     "method": "GET",
+     "endpoint": "/provenance",
+     "url": "/provenance?did=/beamline=aaa/btr=bbb/cycle=ccc/sample_name=sss",
+     "input": {},
+     "output": ["conda-123", "/tmp/file1.png", "sample_name=sss"],
+     "verbose": 3,
+     "code": 200
+    },
+    {
+     "description": "test provenance insert API with parent dataset",
+     "method": "POST",
+     "endpoint": "/dataset",
+     "url": "/dataset",
+     "input": {
+          "parent_did": "/beamline=aaa/btr=bbb/cycle=ccc/sample_name=sss",
+          "did": "/beamline=aaa/btr=bbb/cycle=ccc/sample_name=sss/test=child",
+          "processing": "processing string, e.g. glibc-123-python-123",
+          "osinfo": {"name": "linux-cc7", "kernel": "1-2-3", "version": "cc7-123"},
+          "environments": [
+              {"name": "galaxy", "version": "version", "details": "details",
+                  "parent_environment": "conda-123", "os_name": "linux-cc7"},
+              {"name": "conda-123", "version": "version", "details": "details",
+                  "parent_environment": null, "os_name": "linux-cc7",
+                  "packages": [
+                      {"name": "numpy", "version": "123"},
+                      {"name": "matplotlib", "version": "987"}
+                  ]
+              }
+          ],
+          "script": {"name": "chap", "options": "-chap_options", "parent_script": "myscript"},
+          "input_files": ["/tmp/file1.png", "/tmp/file2.png"],
+          "output_files": ["/tmp/file1.png"],
+          "site": "Cornell",
+          "buckets": ["bucketABC"]
+     },
+     "output": [],
+     "verbose": 0,
+     "code": 200
+    },
+    {
+     "description": "test provenance API with parent did",
+     "method": "GET",
+     "endpoint": "/provenance",
+     "url": "/provenance?did=/beamline=aaa/btr=bbb/cycle=ccc/sample_name=sss/test=child",
+     "input": {},
+     "output": ["galaxy", "conda-123", "/tmp/file1.png", "bucketABC",
+         "\"parent_did\": \"/beamline=aaa/btr=bbb/cycle=ccc/sample_name=sss\"",
+         "\"parent_environment\": \"conda-123\""
+     ],
+     "verbose": 3,
+     "code": 200
+    }
+]
