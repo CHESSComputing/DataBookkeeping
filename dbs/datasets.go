@@ -402,6 +402,7 @@ func (r *Datasets) Insert(tx *sql.Tx) (int64, error) {
 		r.DID,
 		r.SITE_ID,
 		r.PROCESSING_ID,
+		r.OSINFO_ID,
 		r.PARENT_ID,
 		r.CREATE_AT,
 		r.CREATE_BY,
