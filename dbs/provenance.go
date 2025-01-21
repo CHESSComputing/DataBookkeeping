@@ -13,7 +13,7 @@ import (
 //gocyclo:ignore
 func (a *API) GetProvenance() error {
 	if Verbose > 1 {
-		log.Printf("datasets params %+v", a.Params)
+		log.Printf("provenance params %+v", a.Params)
 	}
 	var args []interface{}
 	var conds []string
@@ -33,6 +33,9 @@ func (a *API) GetProvenance() error {
 		if val != "" {
 			conds, args = AddParam("did", "d.did", a.Params, conds, args)
 		}
+	} else {
+		msg := fmt.Sprintf("/provenance API requires did input, got %+v\n", a.Params)
+		return errors.New(msg)
 	}
 
 	// get SQL statement from static area
@@ -55,14 +58,10 @@ func (a *API) GetProvenance() error {
 	}
 	defer rows.Close()
 
-	log.Println("SQL", stm, args)
+	log.Println("QUERY:\n", stm, args)
 
 	// Process results
 	var provenance DatasetRecord
-	//     provenance := DatasetRecord{}
-	//     provenance.Buckets = []string{}
-	//     provenance.InputFiles = []string{}
-	//     provenance.OutputFiles = []string{}
 
 	// keep map of unique packages
 	envMap := make(map[int]*EnvironmentRecord)  // Store environments by environment_id
@@ -172,7 +171,9 @@ func (a *API) GetProvenance() error {
 	provenance.Buckets = UniqueList(provenance.Buckets)
 
 	// Convert to JSON
-	jsonOutput, err := json.MarshalIndent(provenance, "", "  ")
+	var out []DatasetRecord
+	out = append(out, provenance)
+	jsonOutput, err := json.MarshalIndent(out, "", "  ")
 	if err == nil {
 		a.Writer.Write(jsonOutput)
 	}
