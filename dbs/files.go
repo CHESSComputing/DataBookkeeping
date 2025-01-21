@@ -21,7 +21,6 @@ type Files struct {
 	FILE_ID       int64  `json:"file_id"`
 	FILE          string `json:"file" validate:"required"`
 	IS_FILE_VALID int64  `json:"is_file_valid" validate:"number"`
-	DATASET_ID    int64  `json:"dataset_id" validate:"number,gt=0"`
 	CREATE_AT     int64  `json:"create_at" validate:"required,number,gt=0"`
 	CREATE_BY     string `json:"create_by" validate:"required"`
 	MODIFY_AT     int64  `json:"modify_at" validate:"required,number,gt=0"`
@@ -126,7 +125,6 @@ func (r *Files) Insert(tx *sql.Tx) (int64, error) {
 		r.FILE_ID,
 		r.FILE,
 		r.IS_FILE_VALID,
-		r.DATASET_ID,
 		r.CREATE_AT,
 		r.CREATE_BY,
 		r.MODIFY_AT,
