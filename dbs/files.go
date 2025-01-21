@@ -67,7 +67,7 @@ func (a *API) GetFile() error {
 	}
 
 	stm = WhereClause(stm, conds)
-	log.Println("QUERY:", stm, conds)
+	log.Println("QUERY:\n", stm, conds)
 
 	// use generic query API to fetch the results from DB
 	err = executeAll(a.Writer, a.Separator, stm, args...)
