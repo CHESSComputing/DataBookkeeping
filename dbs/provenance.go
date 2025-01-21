@@ -166,9 +166,10 @@ func (a *API) GetProvenance() error {
 		provenance.Environments = append(provenance.Environments, *env)
 	}
 
-	// get rid of duplicates in files
+	// get rid of duplicates
 	provenance.InputFiles = UniqueList(provenance.InputFiles)
 	provenance.OutputFiles = UniqueList(provenance.OutputFiles)
+	provenance.Buckets = UniqueList(provenance.Buckets)
 
 	// Convert to JSON
 	jsonOutput, err := json.MarshalIndent(provenance, "", "  ")
