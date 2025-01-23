@@ -9,11 +9,11 @@ type DatasetRecord struct {
 	Site         string              `json:"site" validate:"required"`
 	Processing   string              `json:"processing" validate:"required"`
 	Parent       string              `json:"parent_did" validate:"required"`
-	InputFiles   []string            `json:"input_files" validate:"required"`
-	OutputFiles  []string            `json:"output_files" validate:"required"`
+	InputFiles   []FileRecord        `json:"input_files" validate:"required"`
+	OutputFiles  []FileRecord        `json:"output_files" validate:"required"`
 	Environments []EnvironmentRecord `json:"environments"`
+	Scripts      []ScriptRecord      `json:"scripts"`
 	OsInfo       OsInfoRecord        `json:"osinfo"`
-	Script       ScriptRecord        `json:"script"`
 }
 
 // Validate implementation of DatasetRecord
@@ -36,12 +36,12 @@ func (r *DatasetRecord) Validate() error {
 		}
 	}
 	for _, f := range r.InputFiles {
-		if err := lexicon.CheckPattern("fail", f); err != nil {
+		if err := lexicon.CheckPattern("fail", f.Name); err != nil {
 			return Error(err, ValidateErrorCode, "fail file validation", "dbs.DatasetRecord.Validate")
 		}
 	}
 	for _, f := range r.OutputFiles {
-		if err := lexicon.CheckPattern("fail", f); err != nil {
+		if err := lexicon.CheckPattern("fail", f.Name); err != nil {
 			return Error(err, ValidateErrorCode, "fail file validation", "dbs.DatasetRecord.Validate")
 		}
 	}
@@ -68,14 +68,16 @@ func (r *DatasetRecord) Validate() error {
 			return Error(err, ValidateErrorCode, "fail env.Parent validation", "dbs.DatasetRecord.Validate")
 		}
 	}
-	if err := lexicon.CheckPattern("script_name", r.Script.Name); err != nil {
-		return Error(err, ValidateErrorCode, "fail script.Name validation", "dbs.DatasetRecord.Validate")
-	}
-	if err := lexicon.CheckPattern("script_options", r.Script.Options); err != nil {
-		return Error(err, ValidateErrorCode, "fail script.Options validation", "dbs.DatasetRecord.Validate")
-	}
-	if err := lexicon.CheckPattern("script_parent", r.Script.Parent); err != nil {
-		return Error(err, ValidateErrorCode, "fail script.Parent validation", "dbs.DatasetRecord.Validate")
+	for _, script := range r.Scripts {
+		if err := lexicon.CheckPattern("script_name", script.Name); err != nil {
+			return Error(err, ValidateErrorCode, "fail script.Name validation", "dbs.DatasetRecord.Validate")
+		}
+		if err := lexicon.CheckPattern("script_options", script.Options); err != nil {
+			return Error(err, ValidateErrorCode, "fail script.Options validation", "dbs.DatasetRecord.Validate")
+		}
+		if err := lexicon.CheckPattern("script_parent", script.Parent); err != nil {
+			return Error(err, ValidateErrorCode, "fail script.Parent validation", "dbs.DatasetRecord.Validate")
+		}
 	}
 	return nil
 }

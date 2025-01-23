@@ -7,7 +7,10 @@
      "input": {
           "buckets": [],
           "input_files": [],
-          "output_files": ["/tmp/file1.png", "/tmp/file2.png"],
+          "output_files": [
+              {"name": "/tmp/file1.png"},
+              {"name": "/tmp/file2.png"}
+          ],
           "parent_did": null,
           "did": "/beamline=aaa/btr=bbb/cycle=ccc/sample_name=sss",
           "processing": "glibc",
@@ -21,7 +24,7 @@
                   ]
               }
           ],
-          "script": {"name": "myscript", "options": "-m -p", "parent_script": null},
+          "scripts": [{"name": "myscript", "options": "-m -p", "parent_script": null}],
           "site": "Cornell"
      },
      "output": [],
@@ -59,9 +62,14 @@
                   ]
               }
           ],
-          "script": {"name": "chap", "options": "-chap_options", "parent_script": "myscript"},
-          "input_files": ["/tmp/file1.png", "/tmp/file2.png"],
-          "output_files": ["/tmp/file1.png"],
+          "scripts": [{"name": "chap", "options": "-chap_options", "parent_script": "myscript"}],
+          "input_files": [
+              {"name": "/tmp/file1.png"},
+              {"name": "/tmp/file2.png"}
+          ],
+          "output_files": [
+              {"name": "/tmp/file1.png"}
+          ],
           "site": "Cornell",
           "buckets": ["bucketABC"]
      },

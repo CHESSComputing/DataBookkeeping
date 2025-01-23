@@ -4,13 +4,13 @@
   ],
   "did": "/a/b/c",
   "files": [
-    "/a/b/c/file1.png",
-    "/a/b/c/file2.png",
-    "/a/b/c/file3.png"
+      {"name": "/a/b/c/file1.png"},
+      {"name": "/a/b/c/file2.png"},
+      {"name": "/a/b/c/file3.png"}
   ],
   "processing": "glibc",
   "osinfo": {"name": "linux-cc7", "kernel": "1-2-3", "version": "cc7-123"},
   "environments": [{"name": "conda-123", "version": "version", "details": "details"}],
-  "script": {"name": "myscript", "options": "-m -p"},
+  "scripts": [{"name": "myscript", "options": "-m -p"}],
   "site": "Cornell"
 }

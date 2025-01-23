@@ -10,9 +10,9 @@
        ],
        "did": "/xxx=1/yyy=aaa/zzz=1a",
        "input_files": [
-         "/x/y/z/file1.png",
-         "/x/y/z/file2.png",
-         "/x/y/z/file3.png"
+           {"name": "/x/y/z/file1.png"},
+           {"name": "/x/y/z/file2.png"},
+           {"name": "/x/y/z/file3.png"}
        ],
        "osinfo": {"name": "linux-cc7", "kernel": "1-2-3", "version": "cc7-123"},
        "environments": [{"name": "conda-123", "version": "version", "details": "details"}],
@@ -99,9 +99,9 @@
        ],
        "did": "/xxx=1/yyy=aaa/zzz=1a",
        "input_files": [
-         "/x/y/z/file1.png",
-         "/x/y/z/file2.png",
-         "/x/y/z/file3.png"
+           {"name": "/x/y/z/file1.png"},
+           {"name": "/x/y/z/file2.png"},
+           {"name": "/x/y/z/file3.png"}
        ],
        "osinfo": {"name": "linux-cc7", "kernel": "1-2-3", "version": "cc7-123"},
        "environments": [{"name": "conda-123", "version": "version", "details": "details"}],
@@ -124,9 +124,9 @@
        ],
        "did": "/xxx=1/yyy=aaa/zzz=1a",
        "input_files": [
-         "/x/y/z/file1.png",
-         "/x/y/z/file2.png",
-         "/x/y/z/file3.png"
+           {"name": "/x/y/z/file1.png"},
+           {"name": "/x/y/z/file2.png"},
+           {"name": "/x/y/z/file3.png"}
        ],
        "osinfo": {"name": "linux-cc7", "kernel": "1-2-3", "version": "cc7-123"},
        "script": {"name": "myscript", "options": "-m -p"},
@@ -148,9 +148,9 @@
        ],
        "did": "/xxx=1/yyy=aaa/zzz=1a",
        "input_files": [
-         "/x/y/z/file1.png",
-         "/x/y/z/file2.png",
-         "/x/y/z/file3.png"
+           {"name": "/x/y/z/file1.png"},
+           {"name": "/x/y/z/file2.png"},
+           {"name": "/x/y/z/file3.png"}
        ],
        "osinfo": {"name": "linux-cc7", "kernel": "1-2-3", "version": "cc7-123"},
        "environments": [{"name": "conda-123", "version": "version", "details": "details"}],
@@ -172,9 +172,9 @@
        ],
        "did": "/xxx=1/yyy=aaa/zzz=1a",
        "input_files": [
-         "/x/y/z/file1.png",
-         "/x/y/z/file2.png",
-         "/x/y/z/file3.png"
+           {"name": "/x/y/z/file1.png"},
+           {"name": "/x/y/z/file2.png"},
+           {"name": "/x/y/z/file3.png"}
        ],
        "environments": [{"name": "conda-123", "version": "version", "details": "details"}],
        "script": {"name": "myscript", "options": "-m -p"},

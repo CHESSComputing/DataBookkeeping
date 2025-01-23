@@ -50,6 +50,8 @@ CREATE TABLE datasets (
 CREATE TABLE files (
     file_id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
     file VARCHAR(255) NOT NULL UNIQUE,
+    checksum VARCHAR(255),
+    size INTEGER,
     is_file_valid INTEGER DEFAULT 1,
     create_at INTEGER,
     create_by VARCHAR(255),

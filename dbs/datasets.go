@@ -183,16 +183,18 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 	}
 
 	// insert script info
-	if rec.Script.Name != "" {
-		scriptId, err = GetID(tx, "scripts", "script_id", "name", rec.Script.Name)
-		if err != nil || scriptId == 0 {
-			scriptId, err = rec.Script.Insert(tx)
-			if err != nil {
-				return err
+	for _, script := range rec.Scripts {
+		if script.Name != "" {
+			scriptId, err = GetID(tx, "scripts", "script_id", "name", script.Name)
+			if err != nil || scriptId == 0 {
+				scriptId, err = script.Insert(tx)
+				if err != nil && !strings.Contains(err.Error(), "UNIQUE") {
+					return err
+				}
 			}
+		} else {
+			return errors.New("no script info is provide")
 		}
-	} else {
-		return errors.New("no script info is provide")
 	}
 
 	// insert processing info
@@ -271,21 +273,15 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 
 	// insert all input files
 	for _, f := range rec.InputFiles {
-		fileId, err = GetID(tx, "files", "file_id", "file", f)
+		fileId, err = GetID(tx, "files", "file_id", "file", f.Name)
 		if err != nil {
-			file := Files{
-				FILE:          f,
-				IS_FILE_VALID: 1, // by default all files are valid
-				CREATE_BY:     record.CREATE_BY,
-				MODIFY_BY:     record.CREATE_BY,
-			}
-			fileId, err = file.Insert(tx)
+			fileId, err = f.Insert(tx)
 			if err != nil {
-				log.Printf("File %+v already exist", file)
+				log.Printf("Fail to insert %+v, error %v ", f, err)
 			}
 		}
 		if fileId == 0 {
-			msg := fmt.Sprintf("unable to find file %s", f)
+			msg := fmt.Sprintf("unable to find input file %+v", f)
 			return errors.New(msg)
 		}
 		err = InsertManyToMany(tx, "insert_dataset_file", datasetId, fileId, "input")
@@ -296,21 +292,15 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 
 	// insert all output files
 	for _, f := range rec.OutputFiles {
-		fileId, err = GetID(tx, "files", "file_id", "file", f)
+		fileId, err = GetID(tx, "files", "file_id", "file", f.Name)
 		if err != nil {
-			file := Files{
-				FILE:          f,
-				IS_FILE_VALID: 1, // by default all files are valid
-				CREATE_BY:     record.CREATE_BY,
-				MODIFY_BY:     record.CREATE_BY,
-			}
-			fileId, err = file.Insert(tx)
+			fileId, err = f.Insert(tx)
 			if err != nil {
-				log.Printf("File %+v already exist", file)
+				log.Printf("Fail to insert %+v, error %v ", f, err)
 			}
 		}
 		if fileId == 0 {
-			msg := fmt.Sprintf("unable to find file %s", f)
+			msg := fmt.Sprintf("unable to find output file %+v", f)
 			return errors.New(msg)
 		}
 		err = InsertManyToMany(tx, "insert_dataset_file", datasetId, fileId, "output")

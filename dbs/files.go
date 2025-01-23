@@ -20,17 +20,13 @@ import (
 type Files struct {
 	FILE_ID       int64  `json:"file_id"`
 	FILE          string `json:"file" validate:"required"`
+	CHECKSUM      string `json:"checksum" validate`
+	SIZE          int64  `json:"size" validate:"number"`
 	IS_FILE_VALID int64  `json:"is_file_valid" validate:"number"`
 	CREATE_AT     int64  `json:"create_at" validate:"required,number,gt=0"`
 	CREATE_BY     string `json:"create_by" validate:"required"`
 	MODIFY_AT     int64  `json:"modify_at" validate:"required,number,gt=0"`
 	MODIFY_BY     string `json:"modify_by" validate:"required"`
-}
-
-// FileRecord represents input file record from HTTP request
-type FileRecord struct {
-	File string `json:"file" validate:"required"`
-	Did  string `json:"did" validate:"required"`
 }
 
 // Files DBS API
@@ -124,6 +120,8 @@ func (r *Files) Insert(tx *sql.Tx) (int64, error) {
 		stm,
 		r.FILE_ID,
 		r.FILE,
+		r.CHECKSUM,
+		r.SIZE,
 		r.IS_FILE_VALID,
 		r.CREATE_AT,
 		r.CREATE_BY,

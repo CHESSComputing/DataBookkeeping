@@ -110,6 +110,7 @@ func (a *API) GetProvenance() error {
 	// keep map of unique packages
 	envMap := make(map[int]*EnvironmentRecord)  // Store environments by environment_id
 	pkgMap := make(map[int]map[string]struct{}) // Track unique packages per environment
+	scriptMap := make(map[int]*ScriptRecord)    // Store scripts by script_id
 
 	// find parent did
 	parentDID, err := a.GetParentDID(dataset_did)
@@ -123,9 +124,9 @@ func (a *API) GetProvenance() error {
 		var did, processing, osName, osKernel, osVersion string
 		var fileType, fileName, bucketName sql.NullString
 		var site, scriptName, scriptOptions sql.NullString
-		var parentEnvName, parentScript, parentScriptName, packageName, packageVersion sql.NullString
+		var parentEnvName, parentScript, packageName, packageVersion sql.NullString
 		var envName, envVersion, envDetails, envOSName sql.NullString
-		var envID int
+		var envID, scriptID int
 
 		// Scan row into variables
 		err := rows.Scan(&did, &processing, &osName, &osKernel, &osVersion,
@@ -150,28 +151,20 @@ func (a *API) GetProvenance() error {
 				},
 				Environments: []EnvironmentRecord{},
 				Site:         site.String,
-				Script: ScriptRecord{
-					Name:    scriptName.String,
-					Options: scriptOptions.String,
-					Parent:  parentScriptName.String,
-				},
-				InputFiles:  []string{},
-				OutputFiles: []string{},
-				Buckets:     []string{},
+				Scripts:      []ScriptRecord{},
+				InputFiles:   []FileRecord{},
+				OutputFiles:  []FileRecord{},
+				Buckets:      []string{},
 			}
-		}
-
-		// Handle nullable values
-		if parentScript.Valid {
-			provenance.Script.Parent = parentScript.String
 		}
 
 		// Collect input/output files
 		if fileType.Valid && fileName.Valid {
+			f := FileRecord{Name: fileName.String}
 			if fileType.String == "input" {
-				provenance.InputFiles = append(provenance.InputFiles, fileName.String)
+				provenance.InputFiles = append(provenance.InputFiles, f)
 			} else if fileType.String == "output" {
-				provenance.OutputFiles = append(provenance.OutputFiles, fileName.String)
+				provenance.OutputFiles = append(provenance.OutputFiles, f)
 			}
 		}
 
@@ -180,10 +173,19 @@ func (a *API) GetProvenance() error {
 			provenance.Buckets = append(provenance.Buckets, bucketName.String)
 		}
 
-		// Handle environments
 		if envOSName.Valid {
 			osName = envOSName.String
 		}
+		// Handle scripts
+		if _, exists := scriptMap[scriptID]; !exists {
+			scriptMap[envID] = &ScriptRecord{
+				Name:    scriptName.String,
+				Options: scriptOptions.String,
+				Parent:  parentScript.String,
+			}
+		}
+
+		// Handle environments
 		if _, exists := envMap[envID]; !exists {
 			envMap[envID] = &EnvironmentRecord{
 				Name:     envName.String,
@@ -216,8 +218,8 @@ func (a *API) GetProvenance() error {
 	}
 
 	// get rid of duplicates
-	provenance.InputFiles = UniqueList(provenance.InputFiles)
-	provenance.OutputFiles = UniqueList(provenance.OutputFiles)
+	provenance.InputFiles = UniqueFileRecords(provenance.InputFiles)
+	provenance.OutputFiles = UniqueFileRecords(provenance.OutputFiles)
 	provenance.Buckets = UniqueList(provenance.Buckets)
 
 	// Convert to JSON
@@ -228,4 +230,19 @@ func (a *API) GetProvenance() error {
 		a.Writer.Write(jsonOutput)
 	}
 	return err
+}
+
+// UniqueFileRecords removes duplicates from a slice and returns a new slice with unique elements.
+func UniqueFileRecords(fileRecords []FileRecord) []FileRecord {
+	seen := make(map[string]bool)
+	var result []FileRecord
+
+	for _, f := range fileRecords {
+		if !seen[f.Name] {
+			seen[f.Name] = true
+			result = append(result, f)
+		}
+	}
+
+	return result
 }
