@@ -11,9 +11,9 @@ type EnvironmentRecord struct {
 	Name     string          `json:"name"`
 	Version  string          `json:"version"`
 	Details  string          `json:"details"`
-	Parent   string          `json:"parent_environment",omitempty`
-	OSName   string          `json:"os_name",omitempty`
-	Packages []PackageRecord `json:"packages",omitempty`
+	Parent   string          `json:"parent_environment"`
+	OSName   string          `json:"os_name"`
+	Packages []PackageRecord `json:"packages,omitempty"`
 }
 
 // Insert API

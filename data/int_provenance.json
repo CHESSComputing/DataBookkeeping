@@ -37,8 +37,9 @@
      "endpoint": "/provenance",
      "url": "/provenance?did=/beamline=aaa/btr=bbb/cycle=ccc/sample_name=sss",
      "input": {},
-     "output": ["conda-123", "/tmp/file1.png", "sample_name=sss"],
-     "verbose": 3,
+     "output": ["conda-123", "sample_name=sss"],
+     "verbose": 0,
+     "dump_response": true,
      "code": 200
     },
     {
@@ -62,7 +63,10 @@
                   ]
               }
           ],
-          "scripts": [{"name": "chap", "options": "-chap_options", "parent_script": "myscript"}],
+          "scripts": [
+              {"name": "reader", "options": "-reader_options", "parent_script": null, "order_idx": 1},
+              {"name": "chap", "options": "-chap_options", "parent_script": "myscript", "order_idx": 2}
+          ],
           "input_files": [
               {"name": "/tmp/file1.png"},
               {"name": "/tmp/file2.png"}
@@ -83,11 +87,12 @@
      "endpoint": "/provenance",
      "url": "/provenance?did=/beamline=aaa/btr=bbb/cycle=ccc/sample_name=sss/test=child",
      "input": {},
-     "output": ["galaxy", "conda-123", "/tmp/file1.png", "bucketABC",
+     "output": ["galaxy", "conda-123", "bucketABC",
          "\"parent_did\": \"/beamline=aaa/btr=bbb/cycle=ccc/sample_name=sss\"",
          "\"parent_environment\": \"conda-123\""
      ],
-     "verbose": 3,
+     "verbose": 0,
+     "dump_response": true,
      "code": 200
     }
 ]

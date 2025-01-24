@@ -19,6 +19,7 @@ import (
 type Scripts struct {
 	SCRIPT_ID        int64  `json:"script_id"`
 	NAME             string `json:"name" validate:"required"`
+	ORDER_IDX        int64  `json:"order_idx"`
 	OPTIONS          string `json:"options"`
 	PARENT_SCRIPT_ID int64  `json:"parent_script_id"`
 	CREATE_AT        int64  `json:"create_at"`
@@ -139,6 +140,7 @@ func (r *Scripts) Insert(tx *sql.Tx) (int64, error) {
 		stm,
 		r.SCRIPT_ID,
 		r.NAME,
+		r.ORDER_IDX,
 		r.OPTIONS,
 		r.PARENT_SCRIPT_ID,
 		r.CREATE_AT,

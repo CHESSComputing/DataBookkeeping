@@ -117,23 +117,22 @@ func (a *API) GetProvenance() error {
 	if err != nil {
 		log.Println("WARNING:", err)
 	}
-	log.Println("##### PARENT", parentDID, dataset_did)
 
 	// main query
 	for rows.Next() {
 		var did, processing, osName, osKernel, osVersion string
-		var fileType, fileName, bucketName sql.NullString
-		var site, scriptName, scriptOptions sql.NullString
+		var bucketName, site, scriptName, scriptOptions sql.NullString
 		var parentEnvName, parentScript, packageName, packageVersion sql.NullString
 		var envName, envVersion, envDetails, envOSName sql.NullString
 		var envID, scriptID int
+		var scriptOrderIdx int64
 
 		// Scan row into variables
 		err := rows.Scan(&did, &processing, &osName, &osKernel, &osVersion,
 			&envID, &envName, &envVersion, &envDetails, &parentEnvName, &envOSName,
 			&packageName, &packageVersion,
-			&scriptName, &scriptOptions, &parentScript,
-			&site, &fileName, &fileType, &bucketName,
+			&scriptID, &scriptName, &scriptOrderIdx, &scriptOptions, &parentScript,
+			&site, &bucketName,
 		)
 		if err != nil {
 			return err
@@ -152,19 +151,7 @@ func (a *API) GetProvenance() error {
 				Environments: []EnvironmentRecord{},
 				Site:         site.String,
 				Scripts:      []ScriptRecord{},
-				InputFiles:   []FileRecord{},
-				OutputFiles:  []FileRecord{},
 				Buckets:      []string{},
-			}
-		}
-
-		// Collect input/output files
-		if fileType.Valid && fileName.Valid {
-			f := FileRecord{Name: fileName.String}
-			if fileType.String == "input" {
-				provenance.InputFiles = append(provenance.InputFiles, f)
-			} else if fileType.String == "output" {
-				provenance.OutputFiles = append(provenance.OutputFiles, f)
 			}
 		}
 
@@ -178,10 +165,11 @@ func (a *API) GetProvenance() error {
 		}
 		// Handle scripts
 		if _, exists := scriptMap[scriptID]; !exists {
-			scriptMap[envID] = &ScriptRecord{
-				Name:    scriptName.String,
-				Options: scriptOptions.String,
-				Parent:  parentScript.String,
+			scriptMap[scriptID] = &ScriptRecord{
+				Name:     scriptName.String,
+				OrderIdx: scriptOrderIdx,
+				Options:  scriptOptions.String,
+				Parent:   parentScript.String,
 			}
 		}
 
@@ -212,14 +200,21 @@ func (a *API) GetProvenance() error {
 
 	}
 
-	// Convert environments map to slice
+	// Convert environments map to list of environments in provenance record
 	for _, env := range envMap {
 		provenance.Environments = append(provenance.Environments, *env)
 	}
+	// Convert scripts map to list of scripts in provenance record
+	smap := make(map[string]struct{})
+	for _, script := range scriptMap {
+		log.Printf("#### scriptMap entry %+v\n", script)
+		if _, exists := smap[script.Name]; !exists {
+			provenance.Scripts = append(provenance.Scripts, *script)
+			smap[script.Name] = struct{}{}
+		}
+	}
 
 	// get rid of duplicates
-	provenance.InputFiles = UniqueFileRecords(provenance.InputFiles)
-	provenance.OutputFiles = UniqueFileRecords(provenance.OutputFiles)
 	provenance.Buckets = UniqueList(provenance.Buckets)
 
 	// Convert to JSON

@@ -99,6 +99,7 @@ CREATE TABLE packages (
 CREATE TABLE scripts (
     script_id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,     -- Name of the script
+    order_idx INTEGER,
     options TEXT,                   -- Parameters used for the script
     parent_script_id INTEGER,
     create_at INTEGER,

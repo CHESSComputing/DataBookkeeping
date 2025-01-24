@@ -91,6 +91,7 @@ CREATE TABLE packages (
 CREATE TABLE scripts (
     script_id INTEGER PRIMARY KEY AUTOINCREMENT,
     name VARCHAR(255) NOT NULL,
+    order_idx INTEGER,
     options TEXT,
     parent_script_id INTEGER,
     create_at INTEGER,

@@ -9,8 +9,8 @@ type DatasetRecord struct {
 	Site         string              `json:"site" validate:"required"`
 	Processing   string              `json:"processing" validate:"required"`
 	Parent       string              `json:"parent_did" validate:"required"`
-	InputFiles   []FileRecord        `json:"input_files" validate:"required"`
-	OutputFiles  []FileRecord        `json:"output_files" validate:"required"`
+	InputFiles   []FileRecord        `json:"input_files,omitempty" validate:"required"`
+	OutputFiles  []FileRecord        `json:"output_files,omitempty" validate:"required"`
 	Environments []EnvironmentRecord `json:"environments"`
 	Scripts      []ScriptRecord      `json:"scripts"`
 	OsInfo       OsInfoRecord        `json:"osinfo"`

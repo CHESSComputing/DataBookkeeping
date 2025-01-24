@@ -8,14 +8,15 @@ import (
 
 // ScriptRecord represents script input data record
 type ScriptRecord struct {
-	Name    string `json:"name"`
-	Options string `json:"options"`
-	Parent  string `json:"parent_script",omitempty`
+	Name     string `json:"name"`
+	Options  string `json:"options"`
+	Parent   string `json:"parent_script"`
+	OrderIdx int64  `json:"order_idx"`
 }
 
 // Insert API
 func (e *ScriptRecord) Insert(tx *sql.Tx) (int64, error) {
-	r := Scripts{NAME: e.Name, OPTIONS: e.Options}
+	r := Scripts{NAME: e.Name, OPTIONS: e.Options, ORDER_IDX: e.OrderIdx}
 	// identify parent script id if parent is present
 	if e.Parent != "" {
 		parent_script_id, err := GetID(tx, "scripts", "script_id", "name", e.Parent)

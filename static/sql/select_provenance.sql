@@ -12,18 +12,16 @@ SELECT
     eo.name AS env_os_name,
     pk.name AS package_name,
     pk.version AS package_version,
+    sc.script_id,
     sc.name AS script_name,
+    sc.order_idx AS order_idx,
     sc.options AS script_options,
     ps.name AS parent_script_name,
     s.site AS site_name,
-    f.file,
-    df.file_type,
     b.bucket
 FROM datasets d
 LEFT JOIN processing p ON d.processing_id = p.processing_id
 LEFT JOIN sites s ON d.site_id = s.site_id
-LEFT JOIN datasets_files df ON d.dataset_id = df.dataset_id
-LEFT JOIN files f ON df.file_id = f.file_id
 LEFT JOIN datasets_environments de ON d.dataset_id = de.dataset_id
 LEFT JOIN environments e ON de.environment_id = e.environment_id
 LEFT JOIN environments pe ON e.parent_environment_id = pe.environment_id

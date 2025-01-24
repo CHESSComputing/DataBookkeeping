@@ -2,6 +2,7 @@ SELECT
     D.did,
     PR.processing,
     S.name AS script_name,
+    S.order_idx AS order_idx,
     S.options AS script_options,
     PS.name AS parent_script_name,
     S.create_by,

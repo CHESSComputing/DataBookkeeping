@@ -134,7 +134,7 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 	}
 	defer tx.Rollback()
 	var siteId, processingId, datasetId, osId, scriptId, fileId, bucketId int64
-	var envIds []int64
+	var envIds, scriptIds []int64
 
 	// insert site info
 	if rec.Site != "" {
@@ -192,6 +192,7 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 					return err
 				}
 			}
+			scriptIds = append(scriptIds, scriptId)
 		} else {
 			return errors.New("no script info is provide")
 		}
@@ -233,9 +234,11 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 		}
 	}
 	// insert dataset-scripts relationships
-	err = InsertManyToMany(tx, "insert_dataset_script", datasetId, scriptId)
-	if err != nil && !strings.Contains(err.Error(), "UNIQUE") {
-		return err
+	for _, sid := range scriptIds {
+		err = InsertManyToMany(tx, "insert_dataset_script", datasetId, sid)
+		if err != nil && !strings.Contains(err.Error(), "UNIQUE") {
+			return err
+		}
 	}
 
 	// insert parent info

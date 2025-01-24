@@ -14,15 +14,16 @@ import (
 
 // basic elements to define a test case
 type TestCase struct {
-	Description string   `json:"description"` // test case description
-	Method      string   `json:"method"`      // http method
-	Endpoint    string   `json:"endpoint"`    // url endpoint, optional
-	Url         string   `json:"url"`         // url parameters, optional
-	Input       any      `json:"input"`       // POST and PUT body, optional for GET request
-	Output      []string `json:"output"`      // expected response patterns
-	Code        int      `json:"code"`        // expected HTTP response code
-	Verbose     int      `json:"verbose"`     // verbosity level
-	Fail        bool     `json:"fail"`        // should test fail
+	Description  string   `json:"description"`   // test case description
+	Method       string   `json:"method"`        // http method
+	Endpoint     string   `json:"endpoint"`      // url endpoint, optional
+	Url          string   `json:"url"`           // url parameters, optional
+	Input        any      `json:"input"`         // POST and PUT body, optional for GET request
+	Output       []string `json:"output"`        // expected response patterns
+	Code         int      `json:"code"`          // expected HTTP response code
+	Verbose      int      `json:"verbose"`       // verbosity level
+	Fail         bool     `json:"fail"`          // should test fail
+	DumpResponse bool     `json:"dump_response"` // enable dump of the response
 }
 
 // run test workflow for a single endpoint
@@ -47,6 +48,10 @@ func runTestWorkflow(t *testing.T, v TestCase) {
 			} else {
 				fmt.Println("### body\n", body.String())
 			}
+		}
+		// dump response if necessary
+		if v.DumpResponse {
+			fmt.Printf("Server response:\n%+v\n", rr.Body.String())
 		}
 		// check response code
 		if rr.Code != v.Code {
