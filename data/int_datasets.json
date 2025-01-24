@@ -6,7 +6,7 @@
      "url": "/dataset",
      "input": {
        "buckets": [
-         "siteXYZ"
+           {"name": "siteXYZ"}
        ],
        "did": "/xxx=1/yyy=aaa/zzz=1a",
        "input_files": [
@@ -109,7 +109,7 @@
      "url": "/dataset",
      "input": {
        "buckets": [
-         "siteXYZ"
+           {"name": "siteXYZ"}
        ],
        "did": "/xxx=1/yyy=aaa/zzz=1a",
        "input_files": [
@@ -135,7 +135,7 @@
      "url": "/dataset",
      "input": {
        "buckets": [
-         "siteXYZ"
+           {"name": "siteXYZ"}
        ],
        "did": "/xxx=1/yyy=aaa/zzz=1a",
        "input_files": [
@@ -160,7 +160,7 @@
      "url": "/dataset",
      "input": {
        "buckets": [
-         "siteXYZ"
+           {"name": "siteXYZ"}
        ],
        "did": "/xxx=1/yyy=aaa/zzz=1a",
        "input_files": [
@@ -185,7 +185,7 @@
      "url": "/dataset",
      "input": {
        "buckets": [
-         "siteXYZ"
+           {"name": "siteXYZ"}
        ],
        "did": "/xxx=1/yyy=aaa/zzz=1a",
        "input_files": [

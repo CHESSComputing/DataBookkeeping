@@ -18,7 +18,9 @@ SELECT
     sc.options AS script_options,
     ps.name AS parent_script_name,
     s.site AS site_name,
-    b.bucket
+    b.bucket AS bucket_name,
+    b.uuid,
+    b.meta_data
 FROM datasets d
 LEFT JOIN processing p ON d.processing_id = p.processing_id
 LEFT JOIN sites s ON d.site_id = s.site_id

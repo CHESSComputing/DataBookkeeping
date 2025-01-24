@@ -10,9 +10,10 @@ Data Bookkeeping service
 
 #### public APIs
 - `/datasets` get all datasets
-- `/files` get all files
+- `/files` get files for a given did
 - `/dataset/*name` get dataset with given name
 - `/file/*name` get file with given name
+- `/provenance` get provenance information about given did
 
 #### Example
 Here are examples of GET HTTP requests
@@ -45,17 +46,34 @@ Here is an example of HTTP POST request
 ```
 # record.json
 {
-  "buckets": [
-    "bucketABC"
-  ],
-  "did": "/a/b/c",
-  "files": [
-    "/path/file1.png",
-    "/path/file2.png",
-    "/path/file3.png"
-  ],
-  "processing": "glibc",
-  "site": "Cornell"
+    "parent_did": "/beamline=aaa/btr=bbb/cycle=ccc/sample_name=sss",
+    "did": "/beamline=aaa/btr=bbb/cycle=ccc/sample_name=sss/test=child",
+    "processing": "processing string, e.g. glibc-123-python-123",
+    "osinfo": {"name": "linux-cc7", "kernel": "1-2-3", "version": "cc7-123"},
+    "environments": [
+      {"name": "galaxy", "version": "version", "details": "details",
+          "parent_environment": "conda-123", "os_name": "linux-cc7"},
+      {"name": "conda-123", "version": "version", "details": "details",
+          "parent_environment": null, "os_name": "linux-cc7",
+          "packages": [
+              {"name": "numpy", "version": "123"},
+              {"name": "matplotlib", "version": "987"}
+          ]
+      }
+    ],
+    "scripts": [
+      {"name": "reader", "options": "-reader_options", "parent_script": null, "order_idx": 1},
+      {"name": "chap", "options": "-chap_options", "parent_script": "myscript", "order_idx": 2}
+    ],
+    "input_files": [
+      {"name": "/tmp/file1.png"},
+      {"name": "/tmp/file2.png"}
+    ],
+    "output_files": [
+      {"name": "/tmp/file1.png"}
+    ],
+    "site": "Cornell",
+    "buckets": ["bucketABC"]
 }
 
 # inject new record
@@ -64,3 +82,6 @@ curl -v -X POST -H "Authorization: Bearer $token" \
     -d@./record.json \
     http://localhost:8310/dataset
 ```
+
+For more (and up-to-date examples) please see `data` integration area of this
+repository and look-up JSON input in `int_provenance.json` file.

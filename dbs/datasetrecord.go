@@ -5,7 +5,6 @@ import lexicon "github.com/CHESSComputing/golib/lexicon"
 // DatasetRecord represents input dataset record from HTTP request
 type DatasetRecord struct {
 	Did          string              `json:"did" validate:"required"`
-	Buckets      []string            `json:"buckets" validate:"required"`
 	Site         string              `json:"site" validate:"required"`
 	Processing   string              `json:"processing" validate:"required"`
 	Parent       string              `json:"parent_did" validate:"required"`
@@ -13,6 +12,7 @@ type DatasetRecord struct {
 	OutputFiles  []FileRecord        `json:"output_files,omitempty" validate:"required"`
 	Environments []EnvironmentRecord `json:"environments"`
 	Scripts      []ScriptRecord      `json:"scripts"`
+	Buckets      []BucketRecord      `json:"buckets"`
 	OsInfo       OsInfoRecord        `json:"osinfo"`
 }
 
@@ -31,7 +31,7 @@ func (r *DatasetRecord) Validate() error {
 		return Error(err, ValidateErrorCode, "fail dataset parent validation", "dbs.DatasetRecord.Validate")
 	}
 	for _, b := range r.Buckets {
-		if err := lexicon.CheckPattern("bucket", b); err != nil {
+		if err := lexicon.CheckPattern("bucket", b.Name); err != nil {
 			return Error(err, ValidateErrorCode, "fail bucket validation", "dbs.DatasetRecord.Validate")
 		}
 	}

@@ -19,6 +19,8 @@ import (
 type Buckets struct {
 	BUCKET_ID  int64  `json:"bucket_id"`
 	BUCKET     string `json:"bucket" validate:"required"`
+	UUID       string `json:"uuid"`
+	META_DATA  string `json:"meta_data"`
 	DATASET_ID int64  `json:"dataset_id" validate:"required"`
 	CREATE_AT  int64  `json:"create_at"`
 	CREATE_BY  string `json:"create_by"`
@@ -102,6 +104,8 @@ func (r *Buckets) Insert(tx *sql.Tx) (int64, error) {
 		stm,
 		r.BUCKET_ID,
 		r.BUCKET,
+		r.UUID,
+		r.META_DATA,
 		r.DATASET_ID,
 		r.CREATE_AT,
 		r.CREATE_BY,

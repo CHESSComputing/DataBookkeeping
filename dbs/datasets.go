@@ -256,10 +256,12 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 
 	// insert all buckets
 	for _, b := range rec.Buckets {
-		bucketId, err = GetID(tx, "buckets", "bucket_id", "bucket", b)
+		bucketId, err = GetID(tx, "buckets", "bucket_id", "bucket", b.Name)
 		if err != nil || bucketId == 0 {
 			bucket := Buckets{
-				BUCKET:     b,
+				BUCKET:     b.Name,
+				UUID:       b.UUID,
+				META_DATA:  b.MetaData,
 				DATASET_ID: datasetId,
 			}
 			if _, err = bucket.Insert(tx); err != nil {

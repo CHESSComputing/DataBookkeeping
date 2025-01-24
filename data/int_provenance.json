@@ -75,7 +75,7 @@
               {"name": "/tmp/file1.png"}
           ],
           "site": "Cornell",
-          "buckets": ["bucketABC"]
+          "buckets": [{"name":"bucketABC", "uuid": "123", "meta_data": "bucket-meta-data"}]
      },
      "output": [],
      "verbose": 0,

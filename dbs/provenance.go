@@ -121,7 +121,8 @@ func (a *API) GetProvenance() error {
 	// main query
 	for rows.Next() {
 		var did, processing, osName, osKernel, osVersion string
-		var bucketName, site, scriptName, scriptOptions sql.NullString
+		var bucketName, bucketUUID, bucketMetaData sql.NullString
+		var site, scriptName, scriptOptions sql.NullString
 		var parentEnvName, parentScript, packageName, packageVersion sql.NullString
 		var envName, envVersion, envDetails, envOSName sql.NullString
 		var envID, scriptID int
@@ -132,7 +133,7 @@ func (a *API) GetProvenance() error {
 			&envID, &envName, &envVersion, &envDetails, &parentEnvName, &envOSName,
 			&packageName, &packageVersion,
 			&scriptID, &scriptName, &scriptOrderIdx, &scriptOptions, &parentScript,
-			&site, &bucketName,
+			&site, &bucketName, &bucketUUID, &bucketMetaData,
 		)
 		if err != nil {
 			return err
@@ -151,14 +152,22 @@ func (a *API) GetProvenance() error {
 				Environments: []EnvironmentRecord{},
 				Site:         site.String,
 				Scripts:      []ScriptRecord{},
-				Buckets:      []string{},
+				Buckets:      []BucketRecord{},
 			}
 		}
 
 		// Collect buckets
+		b := BucketRecord{}
 		if bucketName.Valid {
-			provenance.Buckets = append(provenance.Buckets, bucketName.String)
+			b.Name = bucketName.String
 		}
+		if bucketUUID.Valid {
+			b.UUID = bucketUUID.String
+		}
+		if bucketMetaData.Valid {
+			b.MetaData = bucketMetaData.String
+		}
+		provenance.Buckets = append(provenance.Buckets, b)
 
 		if envOSName.Valid {
 			osName = envOSName.String
@@ -214,7 +223,7 @@ func (a *API) GetProvenance() error {
 	}
 
 	// get rid of duplicates
-	provenance.Buckets = UniqueList(provenance.Buckets)
+	provenance.Buckets = UniqueBucketRecords(provenance.Buckets)
 
 	// Convert to JSON
 	var out []DatasetRecord
@@ -226,15 +235,15 @@ func (a *API) GetProvenance() error {
 	return err
 }
 
-// UniqueFileRecords removes duplicates from a slice and returns a new slice with unique elements.
-func UniqueFileRecords(fileRecords []FileRecord) []FileRecord {
+// UniqueBucketRecords removes duplicates from a slice and returns a new slice with unique elements.
+func UniqueBucketRecords(bucketRecords []BucketRecord) []BucketRecord {
 	seen := make(map[string]bool)
-	var result []FileRecord
+	var result []BucketRecord
 
-	for _, f := range fileRecords {
-		if !seen[f.Name] {
-			seen[f.Name] = true
-			result = append(result, f)
+	for _, r := range bucketRecords {
+		if !seen[r.Name] {
+			seen[r.Name] = true
+			result = append(result, r)
 		}
 	}
 
