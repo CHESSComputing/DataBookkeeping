@@ -41,7 +41,7 @@ func (a *API) GetDataset() error {
 	tmpl := make(map[string]any)
 	tmpl["Owner"] = DBOWNER
 
-	allowed := []string{"did"}
+	allowed := []string{"did", "file", "script", "environment", "package", "site", "bucket", "osname", "processing"}
 	for k, _ := range a.Params {
 		if !utils.InList(k, allowed) {
 			msg := fmt.Sprintf("invalid parameter %s", k)
@@ -50,10 +50,41 @@ func (a *API) GetDataset() error {
 
 	}
 
-	if val, ok := a.Params["did"]; ok {
-		if val != "" {
-			conds, args = AddParam("did", "D.did", a.Params, conds, args)
-		}
+	// obtain conditions for provided parameter
+	if val, ok := a.Params["did"]; ok && val != "" {
+		conds, args = AddParam("did", "D.did", a.Params, conds, args)
+	}
+	if val, ok := a.Params["file"]; ok && val != "" {
+		conds, args = AddParam("file", "F.file", a.Params, conds, args)
+		tmpl["Files"] = true
+	}
+	if val, ok := a.Params["script"]; ok && val != "" {
+		conds, args = AddParam("script", "SC.name", a.Params, conds, args)
+		tmpl["Scripts"] = true
+	}
+	if val, ok := a.Params["environment"]; ok && val != "" {
+		conds, args = AddParam("environment", "E.name", a.Params, conds, args)
+		tmpl["Environments"] = true
+	}
+	if val, ok := a.Params["package"]; ok && val != "" {
+		conds, args = AddParam("package", "EP.name", a.Params, conds, args)
+		tmpl["Environments"] = true
+	}
+	if val, ok := a.Params["site"]; ok && val != "" {
+		conds, args = AddParam("site", "S.site", a.Params, conds, args)
+		tmpl["Sites"] = true
+	}
+	if val, ok := a.Params["bucket"]; ok && val != "" {
+		conds, args = AddParam("bucket", "B.bucket", a.Params, conds, args)
+		tmpl["Buckets"] = true
+	}
+	if val, ok := a.Params["processing"]; ok && val != "" {
+		conds, args = AddParam("processing", "PR.processing", a.Params, conds, args)
+		tmpl["Processing"] = true
+	}
+	if val, ok := a.Params["osname"]; ok && val != "" {
+		conds, args = AddParam("osname", "O.name", a.Params, conds, args)
+		tmpl["Osinfo"] = true
 	}
 
 	// get SQL statement from static area
