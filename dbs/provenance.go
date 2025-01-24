@@ -110,7 +110,7 @@ func (a *API) GetProvenance() error {
 	// keep map of unique packages
 	envMap := make(map[int]*EnvironmentRecord)  // Store environments by environment_id
 	pkgMap := make(map[int]map[string]struct{}) // Track unique packages per environment
-	scriptMap := make(map[int]*ScriptRecord)    // Store scripts by script_id
+	scriptMap := make(map[int64]*ScriptRecord)  // Store scripts by script_id
 
 	// find parent did
 	parentDID, err := a.GetParentDID(dataset_did)
@@ -125,8 +125,8 @@ func (a *API) GetProvenance() error {
 		var site, scriptName, scriptOptions sql.NullString
 		var parentEnvName, parentScript, packageName, packageVersion sql.NullString
 		var envName, envVersion, envDetails, envOSName sql.NullString
-		var envID, scriptID int
-		var scriptOrderIdx int64
+		var scriptID, scriptOrderIdx sql.NullInt64
+		var envID int
 
 		// Scan row into variables
 		err := rows.Scan(&did, &processing, &osName, &osKernel, &osVersion,
@@ -173,12 +173,16 @@ func (a *API) GetProvenance() error {
 			osName = envOSName.String
 		}
 		// Handle scripts
-		if _, exists := scriptMap[scriptID]; !exists {
-			scriptMap[scriptID] = &ScriptRecord{
-				Name:     scriptName.String,
-				OrderIdx: scriptOrderIdx,
-				Options:  scriptOptions.String,
-				Parent:   parentScript.String,
+		var sid int64
+		if scriptID.Valid {
+			sid = scriptID.Int64
+			if _, exists := scriptMap[sid]; !exists {
+				scriptMap[sid] = &ScriptRecord{
+					Name:     scriptName.String,
+					OrderIdx: scriptOrderIdx.Int64,
+					Options:  scriptOptions.String,
+					Parent:   parentScript.String,
+				}
 			}
 		}
 
