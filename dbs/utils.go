@@ -59,12 +59,16 @@ func PrintSQL(stm string, args []interface{}, msg string) {
 	} else {
 		log.Println("")
 	}
-	log.Printf("### SQL statement ###\n%s\n\n", stm)
+	if Verbose > 0 {
+		log.Printf("### SQL statement ###\n%s\n\n", stm)
+	}
 	var values string
 	for _, v := range args {
 		values = fmt.Sprintf("%s\t'%v'\n", values, v)
 	}
-	log.Printf("### SQL values ###\n%s\n", values)
+	if Verbose > 0 {
+		log.Printf("### SQL values ###\n%s\n", values)
+	}
 }
 
 // ListFiles lists files in a given directory

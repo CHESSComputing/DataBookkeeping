@@ -34,6 +34,16 @@
      "code": 200
     },
     {
+     "description": "test files GET API",
+     "method": "GET",
+     "endpoint": "/file",
+     "url": "/file?did=/xxx=1/yyy=aaa/zzz=1a",
+     "output": ["/x/y/z/file1.png", "/x/y/z/file3.png"],
+     "verbose": 0,
+     "dump_response": true,
+     "code": 200
+    },
+    {
      "description": "test dataset GET API did:/xxx=1/yyy=aaa/zzz=1a with wrong output bla=/xxx=1/yyy=a/zzz=1a",
      "method": "GET",
      "endpoint": "/dataset",
@@ -49,6 +59,7 @@
      "endpoint": "/dataset",
      "url": "/dataset?bla=/x/y/zzzz",
      "verbose": 0,
+     "fail": true,
      "code": 400
     },
     {
@@ -61,6 +72,7 @@
      },
      "output": [],
      "verbose": 0,
+     "fail": true,
      "code": 400
     },
     {
@@ -74,6 +86,7 @@
      },
      "output": [],
      "verbose": 0,
+     "fail": true,
      "code": 400
     },
     {
@@ -86,6 +99,7 @@
      },
      "output": [],
      "verbose": 0,
+     "fail": true,
      "code": 400
     },
     {
@@ -111,6 +125,7 @@
      },
      "output": [],
      "verbose": 0,
+     "fail": true,
      "code": 400
     },
     {
@@ -135,6 +150,7 @@
      },
      "output": [],
      "verbose": 0,
+     "fail": true,
      "code": 400
     },
     {
@@ -159,6 +175,7 @@
      },
      "output": [],
      "verbose": 0,
+     "fail": true,
      "code": 400
     },
     {
@@ -182,7 +199,8 @@
        "site": "Cornell"
      },
      "output": [],
-     "verbose": 1,
+     "verbose": 0,
+     "fail": true,
      "code": 400
     }
 ]

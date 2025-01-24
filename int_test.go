@@ -96,6 +96,9 @@ func runTestWorkflow(t *testing.T, v TestCase) {
 				}
 			}
 		}
+		if v.Fail {
+			t.Logf("The %s method to %s endpoint must fail with code %v\n", v.Method, v.Endpoint, v.Code)
+		}
 
 	})
 }
@@ -115,7 +118,7 @@ func TestIntegration(t *testing.T) {
 		if f.Name() == "README.md" {
 			continue
 		}
-		fmt.Println("run integration test with", f.Name())
+		fmt.Println("\n+++ run integration tests from", f.Name())
 		var testCases []TestCase
 		if !strings.HasPrefix(f.Name(), "int_") {
 			continue

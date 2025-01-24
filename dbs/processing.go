@@ -69,7 +69,6 @@ func (a *API) DeleteProcessing() error {
 
 // Update implementation of Processing
 func (r *Processing) Update(tx *sql.Tx) error {
-	log.Printf("### Update %+v", r)
 	return nil
 }
 

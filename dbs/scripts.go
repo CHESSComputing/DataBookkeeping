@@ -107,7 +107,6 @@ func (a *API) DeleteScript() error {
 
 // Update implementation of Scripts
 func (r *Scripts) Update(tx *sql.Tx) error {
-	log.Printf("### Update %+v", r)
 	return nil
 }
 

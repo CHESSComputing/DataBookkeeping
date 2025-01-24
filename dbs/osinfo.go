@@ -71,7 +71,6 @@ func (a *API) DeleteOsInfo() error {
 
 // Update implementation of OsInfo
 func (r *OsInfo) Update(tx *sql.Tx) error {
-	log.Printf("### Update %+v", r)
 	return nil
 }
 

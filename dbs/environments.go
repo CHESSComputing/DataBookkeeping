@@ -108,7 +108,6 @@ func (a *API) DeleteEnvironment() error {
 
 // Update implementation of Environments
 func (r *Environments) Update(tx *sql.Tx) error {
-	log.Printf("### Update %+v", r)
 	return nil
 }
 

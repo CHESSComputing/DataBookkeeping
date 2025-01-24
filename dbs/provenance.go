@@ -207,7 +207,6 @@ func (a *API) GetProvenance() error {
 	// Convert scripts map to list of scripts in provenance record
 	smap := make(map[string]struct{})
 	for _, script := range scriptMap {
-		log.Printf("#### scriptMap entry %+v\n", script)
 		if _, exists := smap[script.Name]; !exists {
 			provenance.Scripts = append(provenance.Scripts, *script)
 			smap[script.Name] = struct{}{}

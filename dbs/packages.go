@@ -105,7 +105,6 @@ func (a *API) DeletePackage() error {
 
 // Update implementation of Packages
 func (r *Packages) Update(tx *sql.Tx) error {
-	log.Printf("### Update %+v", r)
 	return nil
 }
 

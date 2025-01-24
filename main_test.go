@@ -58,7 +58,7 @@ func initDBS(dryRun bool, dburi string) *sql.DB {
 	dbsql := dbs.LoadSQL(dbowner)
 	dbs.DBSQL = dbsql
 	dbs.DBOWNER = dbowner
-	dbs.Verbose = 1
+	dbs.Verbose = 0
 	if dryRun {
 		dbs.DRYRUN = true
 	}

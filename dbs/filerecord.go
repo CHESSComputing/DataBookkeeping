@@ -20,7 +20,7 @@ func (r *FileRecord) Insert(tx *sql.Tx) (int64, error) {
 		FILE:          r.Name,
 		CHECKSUM:      r.Checksum,
 		SIZE:          r.Size,
-		IS_FILE_VALID: r.IsValid,
+		IS_FILE_VALID: 1, // when insert new file into always set is file valid to 1
 		CREATE_BY:     "Server",
 		CREATE_AT:     Date(),
 		MODIFY_BY:     "Server",

@@ -70,7 +70,6 @@ func (a *API) DeleteBucket() error {
 
 // Update implementation of Buckets
 func (r *Buckets) Update(tx *sql.Tx) error {
-	log.Printf("### Update %+v", r)
 	return nil
 }
 

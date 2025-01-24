@@ -69,7 +69,6 @@ func (a *API) DeleteSite() error {
 
 // Update implementation of Sites
 func (r *Sites) Update(tx *sql.Tx) error {
-	log.Printf("### Update %+v", r)
 	return nil
 }
 

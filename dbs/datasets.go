@@ -55,9 +55,6 @@ func (a *API) GetDataset() error {
 			conds, args = AddParam("did", "D.did", a.Params, conds, args)
 		}
 	}
-	if Verbose > 0 {
-		log.Println("### /dataset params", a.Params, conds, args)
-	}
 
 	// get SQL statement from static area
 	stm, err := LoadTemplateSQL("select_dataset", tmpl)
@@ -97,9 +94,6 @@ func (a *API) InsertDataset() error {
 		log.Println("reading data", string(data))
 		log.Println("fail to decode data", err)
 		return Error(err, UnmarshalErrorCode, "", "dbs.datasets.InsertDataset")
-	}
-	if Verbose > 0 {
-		log.Printf("### input DatasetRecord %+v", rec)
 	}
 	err = rec.Validate()
 	if err != nil {

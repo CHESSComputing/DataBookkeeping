@@ -82,7 +82,6 @@ func (a *API) InsertParent() error {
 		log.Println("fail to decode data", err)
 		return Error(err, UnmarshalErrorCode, "", "dbs.parents.InsertParent")
 	}
-	log.Printf("### input ParentRecord %+v", rec)
 	// find parent id and current did
 	tx, err := DB.Begin()
 	if err != nil {
@@ -103,7 +102,6 @@ func (a *API) InsertParent() error {
 		PARENT_ID:  parentId,
 		DATASET_ID: datasetId,
 	}
-	log.Printf("### insertParent %+v", record)
 	_, err = record.Insert(tx)
 	if err != nil {
 		return err
@@ -124,7 +122,6 @@ func (a *API) DeleteParent() error {
 
 // Update implementation of Parents
 func (r *Parents) Update(tx *sql.Tx) error {
-	log.Printf("### Update %+v", r)
 	return nil
 }
 

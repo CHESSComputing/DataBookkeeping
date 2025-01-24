@@ -51,8 +51,10 @@ func (a *API) GetFile() error {
 			conds, args = AddParam("did", "D.did", a.Params, conds, args)
 		}
 	}
-	if Verbose > 0 {
-		log.Println("### /file params", a.Params, conds, args)
+	if val, ok := a.Params["file_type"]; ok {
+		if val != "" {
+			conds, args = AddParam("file_type", "DF.file_type", a.Params, conds, args)
+		}
 	}
 
 	tmpl := make(map[string]any)
@@ -87,7 +89,6 @@ func (a *API) DeleteFile() error {
 
 // Update implementation of Files
 func (r *Files) Update(tx *sql.Tx) error {
-	log.Printf("### Update %+v", r)
 	return nil
 }
 
