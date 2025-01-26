@@ -94,32 +94,51 @@ type DBRecord interface {
 }
 
 // DBOperation performs transactional operation in database for provided record
-func DBOperation(op string, rec DBRecord, msg string) error {
+func DBOperation(op string, rec DBRecord, data []byte, msg string) error {
+	function := "dbs.DBOperation"
+	// unmarshal given payload data
+	err := json.Unmarshal(data, &rec)
+	if err != nil {
+		log.Println("payload data", string(data))
+		return Error(err, UnmarshalErrorCode, "fail to unmarshal payload data", function)
+	}
+
+	// validate our record
+	err = rec.Validate()
+	if err != nil {
+		return Error(err, ValidateErrorCode, "validation error", function)
+	}
+
 	// start transaction
 	tx, err := DB.Begin()
 	if err != nil {
-		return Error(err, TransactionErrorCode, "", msg)
+		return Error(err, TransactionErrorCode, msg, function)
 	}
 	defer tx.Rollback()
+
+	// perform database operation with our record
 	if op == "update" {
 		err = rec.Update(tx)
 		if err != nil {
-			return Error(err, UpdateErrorCode, "", msg)
+			return Error(err, UpdateErrorCode, msg, function)
 		}
 	} else if op == "delete" {
 		err = rec.Delete(tx)
 		if err != nil {
-			return Error(err, UpdateErrorCode, "", msg)
+			return Error(err, DeleteErrorCode, msg, function)
 		}
 	} else if op == "insert" {
 		_, err = rec.Insert(tx)
 		if err != nil {
-			return Error(err, UpdateErrorCode, "", msg)
+			return Error(err, InsertErrorCode, msg, function)
 		}
+	} else {
+		return Error(errors.New("unsupported DB operation"), UnsupportedOperationErrorCode, msg, function)
 	}
+
 	// commit all transactions
 	err = tx.Commit()
-	return err
+	return Error(err, CommitErrorCode, msg, function)
 }
 
 // DecodeValidatorError provides uniform error representation
