@@ -120,6 +120,11 @@ func (a *API) DeleteParent() error {
 	return nil
 }
 
+// Delete implementation of Parents
+func (r *Parents) Delete(tx *sql.Tx) error {
+	return nil
+}
+
 // Update implementation of Parents
 func (r *Parents) Update(tx *sql.Tx) error {
 	return nil

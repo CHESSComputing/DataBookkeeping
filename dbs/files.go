@@ -173,8 +173,14 @@ func (r *Files) Validate() error {
 
 // SetDefaults implements set defaults for Files
 func (r *Files) SetDefaults() {
+	if r.CREATE_BY == "" {
+		r.CREATE_BY = "Server"
+	}
 	if r.CREATE_AT == 0 {
 		r.CREATE_AT = Date()
+	}
+	if r.MODIFY_BY == "" {
+		r.MODIFY_BY = "Server"
 	}
 	if r.MODIFY_AT == 0 {
 		r.MODIFY_AT = Date()

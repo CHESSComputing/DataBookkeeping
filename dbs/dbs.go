@@ -90,7 +90,6 @@ type DBRecord interface {
 	Delete(tx *sql.Tx) error          // used to delete given record to DB
 	Validate() error                  // used to validate given record
 	SetDefaults()                     // used to set proper defaults for given record
-	// Decode(r io.Reader) error         // used to decode given record
 }
 
 // DBOperation performs transactional operation in database for provided record
