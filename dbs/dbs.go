@@ -90,7 +90,7 @@ type DBRecord interface {
 	Delete(tx *sql.Tx) error          // used to delete given record to DB
 	Validate() error                  // used to validate given record
 	SetDefaults()                     // used to set proper defaults for given record
-	Decode(r io.Reader) error         // used to decode given record
+	// Decode(r io.Reader) error         // used to decode given record
 }
 
 // DBOperation performs transactional operation in database for provided record
@@ -168,13 +168,36 @@ func Date() int64 {
 	return time.Now().Unix()
 }
 
+// helper function to decode record from a reader
+func decodeRecord(rec DBRecord, reader io.Reader) error {
+	function := "dbs.decodeRecord"
+	msg := ""
+	if reader == nil {
+		return Error(errors.New("empty reader"), ReaderErrorCode, msg, function)
+	}
+	// read payload data from a reader
+	data, err := io.ReadAll(reader)
+	if err != nil {
+		log.Println("fail to read data", err)
+		return Error(err, ReaderErrorCode, msg, function)
+	}
+	err = json.Unmarshal(data, &rec)
+
+	if err != nil {
+		log.Println("fail to decode data", err)
+		return Error(err, UnmarshalErrorCode, msg, function)
+	}
+	return nil
+}
+
 // helper function to insert DB record with given reader
 func insertRecord(rec DBRecord, r io.Reader) error {
-	err := rec.Decode(r)
+	function := "dbs.insertRecord"
+	err := decodeRecord(rec, r)
 	if err != nil {
 		msg := fmt.Sprintf("fail to decode record")
 		log.Println(msg)
-		return Error(err, DecodeErrorCode, msg, "dbs.insertRecord")
+		return Error(err, DecodeErrorCode, msg, function)
 	}
 	if Verbose > 2 {
 		log.Printf("insertRecord %+v", rec)
@@ -183,7 +206,7 @@ func insertRecord(rec DBRecord, r io.Reader) error {
 	// start transaction
 	tx, err := DB.Begin()
 	if err != nil {
-		return Error(err, TransactionErrorCode, "", "dbs.insertRecord")
+		return Error(err, TransactionErrorCode, "", function)
 	}
 	defer tx.Rollback()
 
@@ -195,7 +218,7 @@ func insertRecord(rec DBRecord, r io.Reader) error {
 	if err != nil {
 		msg := fmt.Sprintf("unable to insert %+v", rec)
 		log.Println(msg)
-		return Error(err, InsertErrorCode, "", "dbs.insertRecord")
+		return Error(err, InsertErrorCode, msg, function)
 	}
 
 	// commit transaction
@@ -204,7 +227,7 @@ func insertRecord(rec DBRecord, r io.Reader) error {
 	}
 	err = tx.Commit()
 	if err != nil {
-		return Error(err, CommitErrorCode, "", "dbs.insertRecord")
+		return Error(err, CommitErrorCode, "", function)
 	}
 	return nil
 }

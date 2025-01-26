@@ -187,22 +187,3 @@ func (r *Packages) SetDefaults() {
 		r.MODIFY_AT = Date()
 	}
 }
-
-// Decode implementation for Packages
-func (r *Packages) Decode(reader io.Reader) error {
-	// init record with given data record
-	data, err := io.ReadAll(reader)
-	if err != nil {
-		log.Println("fail to read data", err)
-		return Error(err, ReaderErrorCode, "", "dbs.packages.Decode")
-	}
-	err = json.Unmarshal(data, &r)
-
-	//     decoder := json.NewDecoder(r)
-	//     err := decoder.Decode(&rec)
-	if err != nil {
-		log.Println("fail to decode data", err)
-		return Error(err, UnmarshalErrorCode, "", "dbs.packages.Decode")
-	}
-	return nil
-}

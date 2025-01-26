@@ -198,22 +198,3 @@ func (r *Parents) SetDefaults() {
 		r.MODIFY_AT = Date()
 	}
 }
-
-// Decode implementation for Parents
-func (r *Parents) Decode(reader io.Reader) error {
-	// init record with given data record
-	data, err := io.ReadAll(reader)
-	if err != nil {
-		log.Println("fail to read data", err)
-		return Error(err, ReaderErrorCode, "", "dbs.parents.Decode")
-	}
-	err = json.Unmarshal(data, &r)
-
-	//     decoder := json.NewDecoder(r)
-	//     err := decoder.Decode(&rec)
-	if err != nil {
-		log.Printf("fail to decode data '%s', error %v", string(data), err)
-		return Error(err, UnmarshalErrorCode, "", "dbs.parents.Decode")
-	}
-	return nil
-}

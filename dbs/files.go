@@ -7,11 +7,9 @@ package dbs
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"io"
 	"log"
-	"strings"
 
 	lexicon "github.com/CHESSComputing/golib/lexicon"
 )
@@ -181,28 +179,4 @@ func (r *Files) SetDefaults() {
 	if r.MODIFY_AT == 0 {
 		r.MODIFY_AT = Date()
 	}
-}
-
-// Decode implementation for Files
-func (r *Files) Decode(reader io.Reader) error {
-	// init record with given data record
-	data, err := io.ReadAll(reader)
-	if err != nil {
-		log.Println("fail to read data", err)
-		return Error(err, ReaderErrorCode, "", "dbs.files.Decode")
-	}
-	err = json.Unmarshal(data, &r)
-
-	// check if is_file_valid was present in request, if not set it to 1
-	if !strings.Contains(string(data), "is_file_valid") {
-		r.IS_FILE_VALID = 1
-	}
-
-	//     decoder := json.NewDecoder(r)
-	//     err := decoder.Decode(&rec)
-	if err != nil {
-		log.Println("fail to decode data", err)
-		return Error(err, UnmarshalErrorCode, "", "dbs.files.Decode")
-	}
-	return nil
 }

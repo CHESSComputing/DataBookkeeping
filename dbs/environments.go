@@ -205,22 +205,3 @@ func (r *Environments) SetDefaults() {
 		r.MODIFY_AT = Date()
 	}
 }
-
-// Decode implementation for Environments
-func (r *Environments) Decode(reader io.Reader) error {
-	// init record with given data record
-	data, err := io.ReadAll(reader)
-	if err != nil {
-		log.Println("fail to read data", err)
-		return Error(err, ReaderErrorCode, "", "dbs.environments.Decode")
-	}
-	err = json.Unmarshal(data, &r)
-
-	//     decoder := json.NewDecoder(r)
-	//     err := decoder.Decode(&rec)
-	if err != nil {
-		log.Println("fail to decode data", err)
-		return Error(err, UnmarshalErrorCode, "", "dbs.environments.Decode")
-	}
-	return nil
-}

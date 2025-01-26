@@ -7,9 +7,7 @@ package dbs
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 
 	lexicon "github.com/CHESSComputing/golib/lexicon"
@@ -149,23 +147,4 @@ func (r *Processing) SetDefaults() {
 	if r.MODIFY_AT == 0 {
 		r.MODIFY_AT = Date()
 	}
-}
-
-// Decode implementation for Processing
-func (r *Processing) Decode(reader io.Reader) error {
-	// init record with given data record
-	data, err := io.ReadAll(reader)
-	if err != nil {
-		log.Println("fail to read data", err)
-		return Error(err, ReaderErrorCode, "", "dbs.processing.Decode")
-	}
-	err = json.Unmarshal(data, &r)
-
-	//     decoder := json.NewDecoder(r)
-	//     err := decoder.Decode(&rec)
-	if err != nil {
-		log.Println("fail to decode data", err)
-		return Error(err, UnmarshalErrorCode, "", "dbs.processing.Decode")
-	}
-	return nil
 }

@@ -493,25 +493,3 @@ func (r *Datasets) SetDefaults() {
 		r.MODIFY_AT = Date()
 	}
 }
-
-// Decode implementation for Datasets
-func (r *Datasets) Decode(reader io.Reader) error {
-	if reader == nil {
-		return nil
-	}
-	// init record with given data record
-	data, err := io.ReadAll(reader)
-	if err != nil {
-		log.Println("fail to read data", err)
-		return Error(err, ReaderErrorCode, "", "dbs.datasets.Decode")
-	}
-	err = json.Unmarshal(data, &r)
-
-	//     decoder := json.NewDecoder(r)
-	//     err := decoder.Decode(&rec)
-	if err != nil {
-		log.Println("fail to decode data", err)
-		return Error(err, UnmarshalErrorCode, "", "dbs.datasets.Decode")
-	}
-	return nil
-}
