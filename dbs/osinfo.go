@@ -62,15 +62,23 @@ func (a *API) InsertOsInfo() error {
 // UpdateOsInfo inserts osinfo record in DB
 func (a *API) UpdateOsInfo() error {
 	// extract payload from API and initialize osinfo attributes
-	r := &OsInfo{}
-	return DBOperation("update", r, "dbs.UpdateOsInfo")
+	data, err := io.ReadAll(a.Reader)
+	if err != nil {
+		return err
+	}
+	rec := &OsInfo{}
+	return DBOperation("update", rec, data, "dbs.UpdateOsInfo")
 }
 
 // DeleteOsInfo deletes osinfo record in DB
 func (a *API) DeleteOsInfo() error {
 	// extract payload from API and initialize osinfo attributes
-	r := &OsInfo{}
-	return DBOperation("delete", r, "dbs.DeleteOsInfo")
+	data, err := io.ReadAll(a.Reader)
+	if err != nil {
+		return err
+	}
+	rec := &OsInfo{}
+	return DBOperation("delete", rec, data, "dbs.DeleteOsInfo")
 }
 
 // Delete implementation of OsInfo

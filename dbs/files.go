@@ -82,14 +82,21 @@ func (a *API) InsertFile() error {
 }
 func (a *API) UpdateFile() error {
 	// extract payload from API and initialize file attributes
-	r := &Files{}
-	return DBOperation("update", r, "dbs.UpdateFile")
+	data, err := io.ReadAll(a.Reader)
+	if err != nil {
+		return err
+	}
+	rec := &Files{}
+	return DBOperation("update", rec, data, "dbs.UpdateFile")
 }
 func (a *API) DeleteFile() error {
-	return nil
 	// extract payload from API and initialize file attributes
-	r := &Files{}
-	return DBOperation("delete", r, "dbs.DeleteFile")
+	data, err := io.ReadAll(a.Reader)
+	if err != nil {
+		return err
+	}
+	rec := &Files{}
+	return DBOperation("delete", rec, data, "dbs.DeleteFile")
 }
 
 // Delete implementation of Files

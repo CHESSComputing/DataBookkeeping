@@ -346,15 +346,22 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 
 func (a *API) UpdateDataset() error {
 	// extract payload from API and initialize dataset attributes
-
-	r := &Datasets{}
-	return DBOperation("update", r, "dbs.UpdateDatset")
+	data, err := io.ReadAll(a.Reader)
+	if err != nil {
+		return err
+	}
+	rec := &Datasets{}
+	return DBOperation("update", rec, data, "dbs.UpdateDatset")
 }
 func (a *API) DeleteDataset() error {
 	// extract payload from API and initialize dataset attributes
+	data, err := io.ReadAll(a.Reader)
+	if err != nil {
+		return err
+	}
 
-	r := &Datasets{}
-	return DBOperation("delete", r, "dbs.DeleteDatset")
+	rec := &Datasets{}
+	return DBOperation("delete", rec, data, "dbs.DeleteDatset")
 }
 
 // Delete implementation of Datasets

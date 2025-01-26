@@ -38,46 +38,47 @@ var InvalidRequestErr = errors.New("invalid request error")
 
 // DBS Error codes provides static representation of DBS errors, they cover 1xx range
 const (
-	GenericErrorCode        = iota + 100 // generic DBS error
-	DatabaseErrorCode                    // 101 database error
-	TransactionErrorCode                 // 102 transaction error
-	QueryErrorCode                       // 103 query error
-	RowsScanErrorCode                    // 104 row scan error
-	SessionErrorCode                     // 105 db session error
-	CommitErrorCode                      // 106 db commit error
-	ParseErrorCode                       // 107 parser error
-	LoadErrorCode                        // 108 loading error, e.g. load template
-	GetIDErrorCode                       // 109 get id db error
-	InsertErrorCode                      // 110 db insert error
-	UpdateErrorCode                      // 111 update error
-	DeleteErrorCode                      // 112 error error
-	LastInsertErrorCode                  // 113 db last insert error
-	ValidateErrorCode                    // 114 validation error
-	PatternErrorCode                     // 115 pattern error
-	DecodeErrorCode                      // 116 decode error
-	EncodeErrorCode                      // 117 encode error
-	ContentTypeErrorCode                 // 118 content type error
-	ParametersErrorCode                  // 119 parameters error
-	NotImplementedApiCode                // 120 not implemented API error
-	ReaderErrorCode                      // 121 io reader error
-	WriterErrorCode                      // 122 io writer error
-	UnmarshalErrorCode                   // 123 json unmarshal error
-	MarshalErrorCode                     // 124 marshal error
-	HttpRequestErrorCode                 // 125 HTTP request error
-	MigrationErrorCode                   // 126 Migration error
-	RemoveErrorCode                      // 127 remove error
-	InvalidRequestErrorCode              // 128 invalid request error
-	PackagesErrorCode                    // 129 packages error code
-	ManyToManyErrorCode                  // 130 many-to-many insertion error code
-	DatasetErrorCode                     // 131 dataset error code
-	EnvironmentsErrorCode                // 132 environments error code
-	FilesErrorCode                       // 133 files error code
-	OsInfoErrorCode                      // 134 osinfo error code
-	ParentsErrorCode                     // 135 parents error code
-	ProcessingErrorCode                  // 136 processing error code
-	ScriptsErrorCode                     // 137 scripts error code
-	SitesErrorCode                       // 138 sites error code
-	LastAvailableErrorCode               // last available DBS error code
+	GenericErrorCode              = iota + 100 // generic DBS error
+	DatabaseErrorCode                          // 101 database error
+	TransactionErrorCode                       // 102 transaction error
+	QueryErrorCode                             // 103 query error
+	RowsScanErrorCode                          // 104 row scan error
+	SessionErrorCode                           // 105 db session error
+	CommitErrorCode                            // 106 db commit error
+	ParseErrorCode                             // 107 parser error
+	LoadErrorCode                              // 108 loading error, e.g. load template
+	GetIDErrorCode                             // 109 get id db error
+	InsertErrorCode                            // 110 db insert error
+	UpdateErrorCode                            // 111 update error
+	DeleteErrorCode                            // 112 error error
+	LastInsertErrorCode                        // 113 db last insert error
+	ValidateErrorCode                          // 114 validation error
+	PatternErrorCode                           // 115 pattern error
+	DecodeErrorCode                            // 116 decode error
+	EncodeErrorCode                            // 117 encode error
+	ContentTypeErrorCode                       // 118 content type error
+	ParametersErrorCode                        // 119 parameters error
+	NotImplementedApiCode                      // 120 not implemented API error
+	ReaderErrorCode                            // 121 io reader error
+	WriterErrorCode                            // 122 io writer error
+	UnmarshalErrorCode                         // 123 json unmarshal error
+	MarshalErrorCode                           // 124 marshal error
+	HttpRequestErrorCode                       // 125 HTTP request error
+	MigrationErrorCode                         // 126 Migration error
+	RemoveErrorCode                            // 127 remove error
+	InvalidRequestErrorCode                    // 128 invalid request error
+	PackagesErrorCode                          // 129 packages error code
+	ManyToManyErrorCode                        // 130 many-to-many insertion error code
+	DatasetErrorCode                           // 131 dataset error code
+	EnvironmentsErrorCode                      // 132 environments error code
+	FilesErrorCode                             // 133 files error code
+	OsInfoErrorCode                            // 134 osinfo error code
+	ParentsErrorCode                           // 135 parents error code
+	ProcessingErrorCode                        // 136 processing error code
+	ScriptsErrorCode                           // 137 scripts error code
+	SitesErrorCode                             // 138 sites error code
+	UnsupportedOperationErrorCode              // 140 unsupported operation error code
+	LastAvailableErrorCode                     // last available DBS error code
 )
 
 // DBSError represents common structure for DBS errors

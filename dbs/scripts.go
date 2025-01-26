@@ -98,15 +98,23 @@ func (a *API) InsertScript() error {
 // UpdateScript inserts script record in DB
 func (a *API) UpdateScript() error {
 	// extract payload from API and initialize script attributes
-	r := &Scripts{}
-	return DBOperation("update", r, "dbs.UpdateeScript")
+	data, err := io.ReadAll(a.Reader)
+	if err != nil {
+		return err
+	}
+	rec := &Scripts{}
+	return DBOperation("update", rec, data, "dbs.UpdateeScript")
 }
 
 // DeleteScript deletes script record in DB
 func (a *API) DeleteScript() error {
 	// extract payload from API and initialize script attributes
-	r := &Scripts{}
-	return DBOperation("delete", r, "dbs.DeleteScript")
+	data, err := io.ReadAll(a.Reader)
+	if err != nil {
+		return err
+	}
+	rec := &Scripts{}
+	return DBOperation("delete", rec, data, "dbs.DeleteScript")
 }
 
 // Delete implementation of Scripts

@@ -99,15 +99,23 @@ func (a *API) InsertEnvironment() error {
 // UpdateEnvironment inserts environment record in DB
 func (a *API) UpdateEnvironment() error {
 	// extract payload from API and initialize environment attributes
-	r := &Environments{}
-	return DBOperation("update", r, "dbs.UpdateEnvironment")
+	data, err := io.ReadAll(a.Reader)
+	if err != nil {
+		return err
+	}
+	rec := &Environments{}
+	return DBOperation("update", rec, data, "dbs.UpdateEnvironment")
 }
 
 // DeleteEnvironment deletes environment record in DB
 func (a *API) DeleteEnvironment() error {
 	// extract payload from API and initialize environment attributes
-	r := &Environments{}
-	return DBOperation("delete", r, "dbs.DeleteEnvironment")
+	data, err := io.ReadAll(a.Reader)
+	if err != nil {
+		return err
+	}
+	rec := &Environments{}
+	return DBOperation("delete", rec, data, "dbs.DeleteEnvironment")
 }
 
 // Delete implementation of Environments
