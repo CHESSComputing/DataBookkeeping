@@ -103,6 +103,11 @@ func (a *API) DeletePackage() error {
 	return nil
 }
 
+// Delete implementation of Packages
+func (r *Packages) Delete(tx *sql.Tx) error {
+	return nil
+}
+
 // Update implementation of Packages
 func (r *Packages) Update(tx *sql.Tx) error {
 	return nil

@@ -67,6 +67,11 @@ func (a *API) DeleteProcessing() error {
 	return nil
 }
 
+// Delete implementation of Processing
+func (r *Processing) Delete(tx *sql.Tx) error {
+	return nil
+}
+
 // Update implementation of Processing
 func (r *Processing) Update(tx *sql.Tx) error {
 	return nil

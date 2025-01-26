@@ -75,6 +75,11 @@ func (r *Buckets) Update(tx *sql.Tx) error {
 	return nil
 }
 
+// Delete implementation of Buckets
+func (r *Buckets) Delete(tx *sql.Tx) error {
+	return nil
+}
+
 // Insert implementation of Buckets
 func (r *Buckets) Insert(tx *sql.Tx) (int64, error) {
 	var err error

@@ -67,6 +67,11 @@ func (a *API) DeleteSite() error {
 	return nil
 }
 
+// Delete implementation of Sites
+func (r *Sites) Delete(tx *sql.Tx) error {
+	return nil
+}
+
 // Update implementation of Sites
 func (r *Sites) Update(tx *sql.Tx) error {
 	return nil

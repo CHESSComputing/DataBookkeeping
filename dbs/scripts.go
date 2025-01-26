@@ -97,11 +97,20 @@ func (a *API) InsertScript() error {
 
 // UpdateScript inserts script record in DB
 func (a *API) UpdateScript() error {
-	return nil
+	// extract payload from API and initialize script attributes
+	r := &Scripts{}
+	return DBOperation("update", r, "dbs.UpdateeScript")
 }
 
 // DeleteScript deletes script record in DB
 func (a *API) DeleteScript() error {
+	// extract payload from API and initialize script attributes
+	r := &Scripts{}
+	return DBOperation("delete", r, "dbs.DeleteScript")
+}
+
+// Delete implementation of Scripts
+func (r *Scripts) Delete(tx *sql.Tx) error {
 	return nil
 }
 

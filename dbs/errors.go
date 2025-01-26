@@ -50,32 +50,33 @@ const (
 	GetIDErrorCode                       // 109 get id db error
 	InsertErrorCode                      // 110 db insert error
 	UpdateErrorCode                      // 111 update error
-	LastInsertErrorCode                  // 112 db last insert error
-	ValidateErrorCode                    // 113 validation error
-	PatternErrorCode                     // 114 pattern error
-	DecodeErrorCode                      // 115 decode error
-	EncodeErrorCode                      // 116 encode error
-	ContentTypeErrorCode                 // 117 content type error
-	ParametersErrorCode                  // 118 parameters error
-	NotImplementedApiCode                // 119 not implemented API error
-	ReaderErrorCode                      // 120 io reader error
-	WriterErrorCode                      // 121 io writer error
-	UnmarshalErrorCode                   // 122 json unmarshal error
-	MarshalErrorCode                     // 123 marshal error
-	HttpRequestErrorCode                 // 124 HTTP request error
-	MigrationErrorCode                   // 125 Migration error
-	RemoveErrorCode                      // 126 remove error
-	InvalidRequestErrorCode              // 127 invalid request error
-	PackagesErrorCode                    // 128 packages error code
-	ManyToManyErrorCode                  // 129 many-to-many insertion error code
-	DatasetErrorCode                     // 130 dataset error code
-	EnvironmentsErrorCode                // 131 environments error code
-	FilesErrorCode                       // 132 files error code
-	OsInfoErrorCode                      // 133 osinfo error code
-	ParentsErrorCode                     // 134 parents error code
-	ProcessingErrorCode                  // 135 processing error code
-	ScriptsErrorCode                     // 136 scripts error code
-	SitesErrorCode                       // 136 sites error code
+	DeleteErrorCode                      // 112 error error
+	LastInsertErrorCode                  // 113 db last insert error
+	ValidateErrorCode                    // 114 validation error
+	PatternErrorCode                     // 115 pattern error
+	DecodeErrorCode                      // 116 decode error
+	EncodeErrorCode                      // 117 encode error
+	ContentTypeErrorCode                 // 118 content type error
+	ParametersErrorCode                  // 119 parameters error
+	NotImplementedApiCode                // 120 not implemented API error
+	ReaderErrorCode                      // 121 io reader error
+	WriterErrorCode                      // 122 io writer error
+	UnmarshalErrorCode                   // 123 json unmarshal error
+	MarshalErrorCode                     // 124 marshal error
+	HttpRequestErrorCode                 // 125 HTTP request error
+	MigrationErrorCode                   // 126 Migration error
+	RemoveErrorCode                      // 127 remove error
+	InvalidRequestErrorCode              // 128 invalid request error
+	PackagesErrorCode                    // 129 packages error code
+	ManyToManyErrorCode                  // 130 many-to-many insertion error code
+	DatasetErrorCode                     // 131 dataset error code
+	EnvironmentsErrorCode                // 132 environments error code
+	FilesErrorCode                       // 133 files error code
+	OsInfoErrorCode                      // 134 osinfo error code
+	ParentsErrorCode                     // 135 parents error code
+	ProcessingErrorCode                  // 136 processing error code
+	ScriptsErrorCode                     // 137 scripts error code
+	SitesErrorCode                       // 138 sites error code
 	LastAvailableErrorCode               // last available DBS error code
 )
 

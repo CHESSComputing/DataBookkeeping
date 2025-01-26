@@ -81,9 +81,19 @@ func (a *API) InsertFile() error {
 	return insertRecord(&Files{}, a.Reader)
 }
 func (a *API) UpdateFile() error {
-	return nil
+	// extract payload from API and initialize file attributes
+	r := &Files{}
+	return DBOperation("update", r, "dbs.UpdateFile")
 }
 func (a *API) DeleteFile() error {
+	return nil
+	// extract payload from API and initialize file attributes
+	r := &Files{}
+	return DBOperation("delete", r, "dbs.DeleteFile")
+}
+
+// Delete implementation of Files
+func (r *Files) Delete(tx *sql.Tx) error {
 	return nil
 }
 

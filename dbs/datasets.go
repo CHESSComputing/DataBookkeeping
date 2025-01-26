@@ -345,9 +345,20 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 }
 
 func (a *API) UpdateDataset() error {
-	return nil
+	// extract payload from API and initialize dataset attributes
+
+	r := &Datasets{}
+	return DBOperation("update", r, "dbs.UpdateDatset")
 }
 func (a *API) DeleteDataset() error {
+	// extract payload from API and initialize dataset attributes
+
+	r := &Datasets{}
+	return DBOperation("delete", r, "dbs.DeleteDatset")
+}
+
+// Delete implementation of Datasets
+func (r *Datasets) Delete(tx *sql.Tx) error {
 	return nil
 }
 
