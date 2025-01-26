@@ -87,9 +87,39 @@ var ConcurrentBulkBlocks bool
 type DBRecord interface {
 	Insert(tx *sql.Tx) (int64, error) // used to insert given record to DB
 	Update(tx *sql.Tx) error          // used to update given record to DB
+	Delete(tx *sql.Tx) error          // used to delete given record to DB
 	Validate() error                  // used to validate given record
 	SetDefaults()                     // used to set proper defaults for given record
 	Decode(r io.Reader) error         // used to decode given record
+}
+
+// DBOperation performs transactional operation in database for provided record
+func DBOperation(op string, rec DBRecord, msg string) error {
+	// start transaction
+	tx, err := DB.Begin()
+	if err != nil {
+		return Error(err, TransactionErrorCode, "", msg)
+	}
+	defer tx.Rollback()
+	if op == "update" {
+		err = rec.Update(tx)
+		if err != nil {
+			return Error(err, UpdateErrorCode, "", msg)
+		}
+	} else if op == "delete" {
+		err = rec.Delete(tx)
+		if err != nil {
+			return Error(err, UpdateErrorCode, "", msg)
+		}
+	} else if op == "insert" {
+		_, err = rec.Insert(tx)
+		if err != nil {
+			return Error(err, UpdateErrorCode, "", msg)
+		}
+	}
+	// commit all transactions
+	err = tx.Commit()
+	return err
 }
 
 // DecodeValidatorError provides uniform error representation
