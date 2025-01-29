@@ -61,6 +61,17 @@ CREATE TABLE files (
     modify_by VARCHAR(255)
 ) ENGINE=InnoDB;
 
+CREATE TABLE osinfo (
+    os_id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    version VARCHAR(255),
+    kernel VARCHAR(255),
+    create_at INTEGER,
+    create_by VARCHAR(255),
+    modify_at INTEGER,
+    modify_by VARCHAR(255)
+) ENGINE=InnoDB;
+
 CREATE TABLE environments (
     environment_id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -74,17 +85,6 @@ CREATE TABLE environments (
     modify_by VARCHAR(255),
     FOREIGN KEY (os_id) REFERENCES osinfo(os_id) ON DELETE SET NULL ON UPDATE CASCADE,
     FOREIGN KEY (parent_environment_id) REFERENCES environments(environment_id) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB;
-
-CREATE TABLE osinfo (
-    os_id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    version VARCHAR(255),
-    kernel VARCHAR(255),
-    create_at INTEGER,
-    create_by VARCHAR(255),
-    modify_at INTEGER,
-    modify_by VARCHAR(255)
 ) ENGINE=InnoDB;
 
 CREATE TABLE packages (
@@ -131,7 +131,7 @@ CREATE TABLE datasets_environments (
     environment_id INTEGER NOT NULL,
     PRIMARY KEY (dataset_id, environment_id),  -- Prevents duplicate dataset-environment combinations
     FOREIGN KEY (dataset_id) REFERENCES datasets(dataset_id) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (environment_id) REFERENCES files(environment_id) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (environment_id) REFERENCES environments(environment_id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
 -- dataset may have many scripts, and one script can be associated
@@ -141,7 +141,7 @@ CREATE TABLE datasets_scripts (
     script_id INTEGER NOT NULL,
     PRIMARY KEY (dataset_id, script_id),  -- Prevents duplicate dataset-script combinations
     FOREIGN KEY (dataset_id) REFERENCES datasets(dataset_id) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (script_id) REFERENCES files(script_id) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (script_id) REFERENCES scripts(script_id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
 -- environment can have multiple python packages and a given package may be
