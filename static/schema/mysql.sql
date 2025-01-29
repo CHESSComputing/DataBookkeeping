@@ -153,3 +153,14 @@ CREATE TABLE environments_packages (
     FOREIGN KEY (environment_id) REFERENCES environments(environment_id) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (package_id) REFERENCES packages(package_id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
+
+-- indexes
+CREATE INDEX idx_datasets_did ON datasets(did);
+CREATE INDEX idx_files_file ON files(file);
+CREATE INDEX idx_scripts_name ON scripts(name);
+CREATE INDEX idx_environments_name ON environments(name);
+CREATE INDEX idx_packages_name ON packages(name);
+CREATE INDEX idx_processing_name ON processing(processing);
+CREATE INDEX idx_osinfo_name ON osinfo(name);
+CREATE INDEX idx_osinfo_kernel ON osinfo(kernel);
+CREATE INDEX idx_osinfo_version ON osinfo(version);
