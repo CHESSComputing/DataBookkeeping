@@ -78,8 +78,7 @@ CREATE TABLE environments (
     create_by VARCHAR(255),
     modify_at INTEGER,
     modify_by VARCHAR(255),
-    FOREIGN KEY (os_id) REFERENCES osinfo(os_id) ON DELETE SET NULL ON UPDATE CASCADE,
-    FOREIGN KEY (parent_environment_id) REFERENCES environments(environment_id) ON DELETE SET NULL ON UPDATE CASCADE
+    FOREIGN KEY (os_id) REFERENCES osinfo(os_id) ON DELETE SET NULL ON UPDATE CASCADE
 );
 CREATE TABLE packages (
     package_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -99,8 +98,7 @@ CREATE TABLE scripts (
     create_at INTEGER,
     create_by VARCHAR(255),
     modify_at INTEGER,
-    modify_by VARCHAR(255),
-    FOREIGN KEY (parent_script_id) REFERENCES scripts(script_id) ON DELETE SET NULL ON UPDATE CASCADE
+    modify_by VARCHAR(255)
 );
 -- Many-to-many relationships
 
