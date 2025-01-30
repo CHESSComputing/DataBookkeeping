@@ -98,8 +98,8 @@
     {
      "description": "test files GET API",
      "method": "GET",
-     "endpoint": "/file",
-     "url": "/file?did=/beamline=aaa/btr=bbb/cycle=ccc/sample_name=sss/test=child",
+     "endpoint": "/files",
+     "url": "/files?did=/beamline=aaa/btr=bbb/cycle=ccc/sample_name=sss/test=child",
      "output": ["/tmp/file1.png", "/tmp/file2.png"],
      "verbose": 0,
      "dump_response": true,

@@ -1,6 +1,6 @@
 [
     {
-     "description": "test environment insert API",
+     "description": "test environment POST API",
      "method": "POST",
      "endpoint": "/environment",
      "url": "/environment",
@@ -12,7 +12,7 @@
      "code": 200
     },
     {
-     "description": "test environment insert API with parent environment",
+     "description": "test environment POST API with parent environment",
      "method": "POST",
      "endpoint": "/environment",
      "url": "/environment",
@@ -24,15 +24,14 @@
      "code": 200
     },
     {
-     "description": "test environment insert API with parent environment",
+     "description": "test environments GET API",
      "method": "GET",
-     "endpoint": "/environment",
-     "url": "/environment",
-     "input": {
-       "name": "environment2"
-     },
+     "endpoint": "/environments",
+     "url": "/environments",
+     "input": {},
      "output": [],
      "verbose": 0,
+     "dump_response": true,
      "code": 200
     }
 ]

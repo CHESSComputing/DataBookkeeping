@@ -83,15 +83,19 @@ func initServer() {
 	}
 	if router == nil {
 		routes := []server.Route{
-			server.Route{Method: "GET", Path: "/dataset", Handler: DatasetHandler, Authorized: false},
-			server.Route{Method: "POST", Path: "/dataset", Handler: DatasetHandler, Authorized: false},
-			server.Route{Method: "GET", Path: "/file", Handler: FileHandler, Authorized: false},
-			server.Route{Method: "POST", Path: "/file", Handler: FileHandler, Authorized: false},
-			server.Route{Method: "GET", Path: "/script", Handler: ScriptHandler, Authorized: false},
-			server.Route{Method: "POST", Path: "/script", Handler: ScriptHandler, Authorized: false},
-			server.Route{Method: "GET", Path: "/environment", Handler: EnvironmentHandler, Authorized: false},
-			server.Route{Method: "POST", Path: "/environment", Handler: EnvironmentHandler, Authorized: false},
+			// GET APIs for integration tests
+			server.Route{Method: "GET", Path: "/datasets", Handler: DatasetHandler, Authorized: false},
+			server.Route{Method: "GET", Path: "/files", Handler: FileHandler, Authorized: false},
+			server.Route{Method: "GET", Path: "/scripts", Handler: ScriptHandler, Authorized: false},
+			server.Route{Method: "GET", Path: "/packages", Handler: PackageHandler, Authorized: false},
+			server.Route{Method: "GET", Path: "/environments", Handler: EnvironmentHandler, Authorized: false},
 			server.Route{Method: "GET", Path: "/provenance", Handler: ProvenanceHandler, Authorized: false},
+
+			// POST APIs for integration tests
+			server.Route{Method: "POST", Path: "/dataset", Handler: DatasetHandler, Authorized: false},
+			server.Route{Method: "POST", Path: "/file", Handler: FileHandler, Authorized: false},
+			server.Route{Method: "POST", Path: "/script", Handler: ScriptHandler, Authorized: false},
+			server.Route{Method: "POST", Path: "/environment", Handler: EnvironmentHandler, Authorized: false},
 		}
 		router = server.Router(routes, nil, "static", srvConfig.Config.DataBookkeeping.WebServer)
 	}

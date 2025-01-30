@@ -26,13 +26,14 @@
     {
      "description": "test script insert API with parent script",
      "method": "GET",
-     "endpoint": "/script",
-     "url": "/script",
+     "endpoint": "/scripts",
+     "url": "/scripts",
      "input": {
        "name": "script2"
      },
      "output": [],
      "verbose": 0,
+     "dump_response": true,
      "code": 200
     }
 ]
