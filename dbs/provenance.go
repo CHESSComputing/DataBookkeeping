@@ -74,7 +74,7 @@ func (a *API) GetProvenance() error {
 	var dataset_did string
 	if val, ok := a.Params["did"]; ok {
 		if val != "" {
-			conds, args = AddParam("did", "d.did", a.Params, conds, args)
+			conds, args = AddParam("did", "D.did", a.Params, conds, args)
 			dataset_did = fmt.Sprintf("%v", val)
 		}
 	} else {
@@ -88,7 +88,7 @@ func (a *API) GetProvenance() error {
 		return Error(err, LoadErrorCode, "fail to load select_provenance sql template", "dbs.datasets.Datasets")
 	}
 	stm = WhereClause(stm, conds)
-	stm = fmt.Sprintf("%s ORDER BY d.dataset_id, e.environment_id, pk.package_id", stm)
+	stm = fmt.Sprintf("%s ORDER BY D.dataset_id, E.environment_id, PK.package_id", stm)
 
 	tx, err := DB.Begin()
 	if err != nil {
