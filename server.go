@@ -38,14 +38,14 @@ var Verbose int
 // helper function to setup our router
 func setupRouter() *gin.Engine {
 	routes := []server.Route{
-		// routes without authorization
+		// GET routes does not require authorization
+		// GET APIs should use plural name as for look-up of multiple records
+		// exception is osinfo
 		server.Route{Method: "GET", Path: "/datasets", Handler: DatasetHandler, Authorized: false},
-		server.Route{Method: "GET", Path: "/dataset", Handler: DatasetHandler, Authorized: false},
-		server.Route{Method: "GET", Path: "/dataset/*name", Handler: DatasetHandler, Authorized: false},
+		server.Route{Method: "GET", Path: "/datasets/*name", Handler: DatasetHandler, Authorized: false},
 
 		server.Route{Method: "GET", Path: "/files", Handler: FileHandler, Authorized: false},
-		server.Route{Method: "GET", Path: "/file", Handler: FileHandler, Authorized: false},
-		server.Route{Method: "GET", Path: "/file/*name", Handler: FileHandler, Authorized: false},
+		server.Route{Method: "GET", Path: "/files/*name", Handler: FileHandler, Authorized: false},
 
 		server.Route{Method: "GET", Path: "/parents", Handler: ParentHandler, Authorized: false},
 
@@ -53,12 +53,14 @@ func setupRouter() *gin.Engine {
 		server.Route{Method: "GET", Path: "/child", Handler: ChildHandler, Authorized: false},
 
 		server.Route{Method: "GET", Path: "/osinfo", Handler: OsinfoHandler, Authorized: false},
-		server.Route{Method: "GET", Path: "/environment", Handler: EnvironmentHandler, Authorized: false},
-		server.Route{Method: "GET", Path: "/script", Handler: ScriptHandler, Authorized: false},
+		server.Route{Method: "GET", Path: "/environments", Handler: EnvironmentHandler, Authorized: false},
+		server.Route{Method: "GET", Path: "/scripts", Handler: ScriptHandler, Authorized: false},
+		server.Route{Method: "GET", Path: "/packages", Handler: PackageHandler, Authorized: false},
 
 		server.Route{Method: "GET", Path: "/provenance", Handler: ProvenanceHandler, Authorized: false},
 
 		// authorized routes
+		// POST/PUT/DELETE routes should use single name as we operate with single record
 
 		// dataset routes
 		server.Route{Method: "POST", Path: "/dataset", Handler: DatasetHandler, Authorized: true, Scope: "write"},
