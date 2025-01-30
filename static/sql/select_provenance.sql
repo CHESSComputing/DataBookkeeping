@@ -1,37 +1,37 @@
 SELECT 
-    d.did AS dataset_did, 
-    p.processing,
-    o.name AS os_name,
-    o.kernel AS os_kernel,
-    o.version AS os_version,
-    e.environment_id,
-    e.name AS environment_name,
-    e.version AS environment_version, 
-    e.details AS environment_details,
-    pe.name AS parent_environment_name,
-    eo.name AS env_os_name,
-    pk.name AS package_name,
-    pk.version AS package_version,
-    sc.script_id,
-    sc.name AS script_name,
-    sc.order_idx AS order_idx,
-    sc.options AS script_options,
-    ps.name AS parent_script_name,
-    s.site AS site_name,
-    b.bucket AS bucket_name,
-    b.uuid,
-    b.meta_data
-FROM datasets d
-LEFT JOIN processing p ON d.processing_id = p.processing_id
-LEFT JOIN sites s ON d.site_id = s.site_id
-LEFT JOIN datasets_environments de ON d.dataset_id = de.dataset_id
-LEFT JOIN environments e ON de.environment_id = e.environment_id
-LEFT JOIN environments pe ON e.parent_environment_id = pe.environment_id
-LEFT JOIN osinfo o ON d.os_id = o.os_id
-LEFT JOIN environments eo ON e.os_id = eo.os_id
-LEFT JOIN datasets_scripts ds ON d.dataset_id = ds.dataset_id
-LEFT JOIN scripts sc ON ds.script_id = sc.script_id
-LEFT JOIN scripts ps ON sc.parent_script_id = ps.script_id
-LEFT JOIN environments_packages ep ON e.environment_id = ep.environment_id
-LEFT JOIN packages pk ON ep.package_id = pk.package_id
-LEFT JOIN buckets b ON b.dataset_id = d.dataset_id
+    D.did AS dataset_did, 
+    P.processing,
+    O.name AS os_name,
+    O.kernel AS os_kernel,
+    O.version AS os_version,
+    E.environment_id,
+    E.name AS environment_name,
+    E.version AS environment_version, 
+    E.details AS environment_details,
+    PE.name AS parent_environment_name,
+    EO.name AS env_os_name,
+    PK.name AS package_name,
+    PK.version AS package_version,
+    SC.script_id,
+    SC.name AS script_name,
+    SC.order_idx AS order_idx,
+    SC.options AS script_options,
+    PS.name AS parent_script_name,
+    S.site AS site_name,
+    B.bucket AS bucket_name,
+    B.uuid,
+    B.meta_data
+FROM datasets D
+LEFT JOIN processing P ON D.processing_id = P.processing_id
+LEFT JOIN sites S ON D.site_id = S.site_id
+LEFT JOIN datasets_environments DE ON D.dataset_id = DE.dataset_id
+LEFT JOIN environments E ON DE.environment_id = E.environment_id
+LEFT JOIN environments PE ON E.parent_environment_id = PE.environment_id
+LEFT JOIN osinfo O ON D.os_id = O.os_id
+LEFT JOIN environments EO ON E.os_id = EO.os_id
+LEFT JOIN datasets_scripts DS ON D.dataset_id = DS.dataset_id
+LEFT JOIN scripts SC ON DS.script_id = SC.script_id
+LEFT JOIN scripts PS ON SC.parent_script_id = PS.script_id
+LEFT JOIN environments_packages EP ON E.environment_id = EP.environment_id
+LEFT JOIN packages PK ON EP.package_id = PK.package_id
+LEFT JOIN buckets B ON B.dataset_id = D.dataset_id

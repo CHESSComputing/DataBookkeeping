@@ -1,4 +1,4 @@
-SELECT
+SELECT DISTINCT
     D.did,
     PR.processing,
     S.name AS script_name,

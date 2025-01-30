@@ -1,4 +1,4 @@
-SELECT
+SELECT DISTINCT
     D.did,
     PR.processing,
     E.name AS environment_name,

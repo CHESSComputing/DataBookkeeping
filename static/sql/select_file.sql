@@ -1,4 +1,4 @@
-SELECT
+SELECT DISTINCT
     D.did,
     F.file AS name,
     F.checksum,
