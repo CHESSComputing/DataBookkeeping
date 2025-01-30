@@ -53,6 +53,11 @@ func ScriptHandler(c *gin.Context) {
 	ApiHandler(c, "script")
 }
 
+// PackageHandler provides access to /script and /script/:name end-point
+func PackageHandler(c *gin.Context) {
+	ApiHandler(c, "package")
+}
+
 // DatasetHandler provides access to GET /datasets and /dataset/:name end-point
 func DatasetHandler(c *gin.Context) {
 	ApiHandler(c, "dataset")
@@ -227,6 +232,8 @@ func DBSGetHandler(c *gin.Context, a string) {
 		err = api.GetEnvironment()
 	} else if a == "script" {
 		err = api.GetScript()
+	} else if a == "package" {
+		err = api.GetPackage()
 	} else {
 		err = dbs.NotImplementedApiErr
 	}
