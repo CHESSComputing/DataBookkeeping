@@ -58,7 +58,10 @@ jobs:
         # https://stackoverflow.com/questions/71000707/docker-get-started-warning-the-requested-images-platform-linux-arm64-v8-doe
         # https://github.com/docker/for-mac/issues/6356
         # https://docs.docker.com/build/ci/github-actions/multi-platform/
-        docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/chesscomputing/databookkeeping:${{ steps.branch_name.outputs.SOURCE_TAG }} .
+        # docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/chesscomputing/databookkeeping:${{ steps.branch_name.outputs.SOURCE_TAG }} .
+        # build only on default (linux/amd64) platform as DBS needs C lib build
+        # and it fails on arm64 due to database bindings
+        docker buildx build --platform linux/amd64 -t ghcr.io/chesscomputing/databookkeeping:${{ steps.branch_name.outputs.SOURCE_TAG }} .
 
     - name: Login to ghcr.io registry
       uses: docker/login-action@v1.6.0
