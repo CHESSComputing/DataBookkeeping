@@ -74,9 +74,9 @@ func responseMsg(w http.ResponseWriter, r *http.Request, err error, code int) in
 
 	var dbsError *dbs.DBSError
 	if errors.As(err, &dbsError) {
-		log.Printf(dbsError.ErrorStacktrace())
+		log.Println(dbsError.ErrorStacktrace())
 	} else {
-		log.Printf(err.Error())
+		log.Println(err.Error())
 	}
 	// if we want to use JSON record output we'll use
 	//     data, _ := json.Marshal(rec)
