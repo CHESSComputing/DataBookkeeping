@@ -1,4 +1,4 @@
-SELECT
+SELECT DISTINCT
     D.did CHILD_DID,
     PDS.did,
     D.create_at,

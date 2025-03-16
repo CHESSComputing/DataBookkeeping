@@ -1,4 +1,4 @@
-SELECT 
+SELECT DISTINCT
     d.did AS dataset_did, 
     pd.did AS parent_did
 FROM parents p

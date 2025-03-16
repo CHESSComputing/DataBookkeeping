@@ -1,4 +1,4 @@
-SELECT 
+SELECT DISTINCT
     D.did AS dataset_did, 
     P.processing,
     O.name AS os_name,
