@@ -21,7 +21,11 @@ import (
 
 // helper function to initialize DBS for tests
 func initDBS(dryRun bool, dburi string) *sql.DB {
-	srvConfig.Init()
+	config := os.Getenv("FOXDEN_CONFIG")
+	if cobj, err := srvConfig.ParseConfig(config); err == nil {
+		srvConfig.Config = &cobj
+	}
+
 	// set server log file to stdout
 	srvConfig.Config.DataBookkeeping.LogFile = ""
 	// set log flags
