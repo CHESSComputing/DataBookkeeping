@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/CHESSComputing/golib/utils"
@@ -256,14 +257,22 @@ func UniqueBucketRecords(bucketRecords []BucketRecord) []BucketRecord {
 	return result
 }
 
+// helper function to convert user files into FileRecord list
 func userFiles(val any) []FileRecord {
 	var files []FileRecord
 	switch input := val.(type) {
+	case string:
+		for _, f := range strings.Split(input, " ") {
+			files = append(files, FileRecord{Name: strings.Trim(f, " ")})
+		}
 	case []string:
 		for _, f := range input {
 			files = append(files, FileRecord{Name: f})
 		}
-
+	case []any:
+		for _, f := range input {
+			files = append(files, FileRecord{Name: fmt.Sprintf("%v", f)})
+		}
 	}
 	return files
 }
