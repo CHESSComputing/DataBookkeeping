@@ -96,6 +96,7 @@ func initServer() {
 			server.Route{Method: "GET", Path: "/provenance", Handler: ProvenanceHandler, Authorized: false},
 
 			// POST APIs for integration tests
+			server.Route{Method: "POST", Path: "/provenance", Handler: ProvenanceHandler, Authorized: false},
 			server.Route{Method: "POST", Path: "/dataset", Handler: DatasetHandler, Authorized: false},
 			server.Route{Method: "POST", Path: "/file", Handler: FileHandler, Authorized: false},
 			server.Route{Method: "POST", Path: "/script", Handler: ScriptHandler, Authorized: false},

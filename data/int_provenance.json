@@ -96,6 +96,27 @@
      "code": 200
     },
     {
+     "description": "test provenance insert API with user based record",
+     "method": "POST",
+     "endpoint": "/provenance",
+     "url": "/provenance",
+     "input": {
+          "parent_did": "/beamline=aaa/btr=bbb/cycle=ccc/sample_name=sss",
+          "processing": "application",
+          "user": "test_user",
+          "input_files": [
+              "/tmp/file1.png",
+              "/tmp/file2.png"
+          ],
+          "output_files": [
+              "/tmp/file1.png"
+          ]
+     },
+     "verbose": 1,
+     "dump_response": true,
+     "code": 200
+    },
+    {
      "description": "test files GET API",
      "method": "GET",
      "endpoint": "/files",
