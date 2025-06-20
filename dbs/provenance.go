@@ -5,7 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"log"
+	"time"
 
 	"github.com/CHESSComputing/golib/utils"
 )
@@ -252,4 +254,104 @@ func UniqueBucketRecords(bucketRecords []BucketRecord) []BucketRecord {
 	}
 
 	return result
+}
+
+func userFiles(val any) []FileRecord {
+	var files []FileRecord
+	switch input := val.(type) {
+	case []string:
+		for _, f := range input {
+			files = append(files, FileRecord{Name: f})
+		}
+
+	}
+	return files
+}
+
+// InsertProvenance inserts provenance record into DB
+func (a *API) InsertProvenance() error {
+	// extract payload from API
+	data, err := io.ReadAll(a.Reader)
+	if err != nil {
+		return err
+	}
+	var userRecord map[string]any
+	err = json.Unmarshal(data, &userRecord)
+	if err != nil {
+		return err
+	}
+
+	// parameters for provenance record
+	var inputFiles, outputFiles []FileRecord
+	var user, did, parentDid, application, site string
+
+	// extract all possible values from input user record
+	if val, ok := userRecord["input_files"]; ok {
+		inputFiles = userFiles(val)
+	}
+	if val, ok := userRecord["output_files"]; ok {
+		outputFiles = userFiles(val)
+	}
+	if val, ok := userRecord["user"]; ok {
+		user = val.(string)
+	} else {
+		return errors.New("no user value found in user record")
+	}
+	if val, ok := userRecord["parent_did"]; ok {
+		parentDid = val.(string)
+		tstamp := time.Now().Format("20060102_150405")
+		did = fmt.Sprintf("%s/%s:%s", val, user, tstamp)
+	}
+	if val, ok := userRecord["did"]; ok {
+		did = val.(string)
+	}
+	if val, ok := userRecord["application"]; ok {
+		application = val.(string)
+	} else {
+		application = "N/A"
+	}
+	if val, ok := userRecord["site"]; ok {
+		site = val.(string)
+	} else {
+		site = "Cornell"
+	}
+
+	var buckets []BucketRecord
+	buckets = append(buckets, BucketRecord{Name: "UserBucket"})
+
+	var environments []EnvironmentRecord
+	environments = append(environments, EnvironmentRecord{Name: "UserEnvironment", Version: "N/A", Details: "N/A"})
+
+	var scripts []ScriptRecord
+	scripts = append(scripts, ScriptRecord{Name: "UserScript"})
+
+	osinfo := OsInfoRecord{Name: "UserInfo", Version: "N/A", Kernel: "N/A"}
+
+	rec := DatasetRecord{
+		Did:          did,
+		Site:         site,
+		Processing:   application,
+		Parent:       parentDid,
+		InputFiles:   inputFiles,
+		OutputFiles:  outputFiles,
+		Environments: environments,
+		Scripts:      scripts,
+		OsInfo:       osinfo,
+		Buckets:      buckets,
+	}
+	record := Datasets{
+		DID:       did,
+		CREATE_BY: user,
+		MODIFY_BY: user,
+	}
+	record.SetDefaults()
+	err = record.Validate()
+	if err != nil {
+		return Error(err, ValidateErrorCode, "validation error", "dbs.provenance.InsertProvenance")
+	}
+	err = insertParts(&rec, &record)
+	if err != nil {
+		return Error(err, DatasetErrorCode, "fail to insert parts of dataset", "dbs.provenance.insertRecord")
+	}
+	return nil
 }
