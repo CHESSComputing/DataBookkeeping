@@ -267,6 +267,8 @@ func DBSPostHandler(c *gin.Context, a string) {
 		err = api.InsertEnvironment()
 	} else if a == "script" {
 		err = api.InsertScript()
+	} else if a == "provenance" {
+		err = api.InsertProvenance()
 	} else {
 		err = dbs.NotImplementedApiErr
 	}

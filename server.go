@@ -61,6 +61,7 @@ func setupRouter() *gin.Engine {
 
 		// authorized routes
 		// POST/PUT/DELETE routes should use single name as we operate with single record
+		server.Route{Method: "POST", Path: "/provenance", Handler: ProvenanceHandler, Authorized: true, Scope: "write"},
 
 		// dataset routes
 		server.Route{Method: "POST", Path: "/dataset", Handler: DatasetHandler, Authorized: true, Scope: "write"},
