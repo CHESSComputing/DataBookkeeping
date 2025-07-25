@@ -43,6 +43,7 @@ CREATE TABLE datasets (
     site_id BIGINT REFERENCES sites(site_id) ON UPDATE CASCADE,
     processing_id BIGINT REFERENCES processing(processing_id) ON UPDATE CASCADE,
     os_id BIGINT REFERENCES osinfo(osinfo_id) ON UPDATE CASCADE,
+    config_id BIGINT REFERENCES configs(config_id) ON UPDATE CASCADE,
     create_at INTEGER,
     create_by VARCHAR(255),
     modify_at INTEGER,
@@ -109,6 +110,16 @@ CREATE TABLE scripts (
     modify_by VARCHAR(255)
 ) ENGINE=InnoDB;
 
+-- Configs
+CREATE TABLE configs (
+    config_id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    config TEXT,     -- Name of the config
+    create_at INTEGER,
+    create_by VARCHAR(255),
+    modify_at INTEGER,
+    modify_by VARCHAR(255)
+) ENGINE=InnoDB;
+
 -- Many-to-many relationships
 
 -- dataset may have input and output files, and file can be present in
@@ -140,6 +151,16 @@ CREATE TABLE datasets_scripts (
     PRIMARY KEY (dataset_id, script_id),  -- Prevents duplicate dataset-script combinations
     FOREIGN KEY (dataset_id) REFERENCES datasets(dataset_id) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (script_id) REFERENCES scripts(script_id) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
+-- dataset may have many configs, and one config can be associated
+-- with different datasets
+CREATE TABLE datasets_configs (
+    dataset_id INTEGER NOT NULL,
+    config_id INTEGER NOT NULL,
+    PRIMARY KEY (dataset_id, config_id),  -- Prevents duplicate dataset-config combinations
+    FOREIGN KEY (dataset_id) REFERENCES datasets(dataset_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (config_id) REFERENCES configs(config_id) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
 -- environment can have multiple python packages and a given package may be

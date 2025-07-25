@@ -20,6 +20,9 @@ LEFT JOIN packages PK ON EP.package_id = PK.package_id
 {{if .Osinfo}}
 LEFT JOIN osinfo O ON D.os_id = O.os_id
 {{end}}
+{{if .Config}}
+LEFT JOIN config C ON D.config_id = C.config_id
+{{end}}
 {{if .Scripts}}
 LEFT JOIN datasets_scripts DS ON D.dataset_id = DS.dataset_id
 LEFT JOIN scripts SC ON DS.script_id = SC.script_id

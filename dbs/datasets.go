@@ -23,6 +23,7 @@ type Datasets struct {
 	SITE_ID       int64  `json:"site_id" validate:"required",number`
 	PROCESSING_ID int64  `json:"processing_id" validate:"required",number`
 	OSINFO_ID     int64  `json:"osinfo_id" validate:"required",number`
+	CONFIG_ID     int64  `json:"config_id" validate:"number"`
 	CREATE_AT     int64  `json:"create_at" validate:"required,number"`
 	CREATE_BY     string `json:"create_by" validate:"required"`
 	MODIFY_AT     int64  `json:"modify_at" validate:"required,number"`
@@ -41,7 +42,7 @@ func (a *API) GetDataset() error {
 	tmpl := make(map[string]any)
 	tmpl["Owner"] = DBOWNER
 
-	allowed := []string{"did", "file", "script", "environment", "package", "site", "bucket", "osname", "processing"}
+	allowed := []string{"did", "file", "script", "environment", "package", "site", "bucket", "osname", "processing", "config"}
 	for k, _ := range a.Params {
 		if !utils.InList(k, allowed) {
 			msg := fmt.Sprintf("invalid parameter %s", k)
@@ -158,7 +159,7 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 		return Error(err, TransactionErrorCode, "", "dbs.insertRecord")
 	}
 	defer tx.Rollback()
-	var siteId, processingId, datasetId, osId, scriptId, fileId, bucketId int64
+	var siteId, processingId, datasetId, osId, scriptId, fileId, bucketId, configId int64
 	var envIds, scriptIds []int64
 
 	// insert site info
@@ -265,6 +266,14 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 			return err
 		}
 	}
+	// insert dataset-configs relationships
+	config := Config{CONFIG: rec.Config}
+	configId, err = config.Insert(tx)
+	err = InsertManyToMany(tx, "insert_dataset_config", datasetId, configId)
+	if err != nil && !strings.Contains(err.Error(), "UNIQUE") {
+		return err
+	}
+	record.CONFIG_ID = configId
 
 	// insert parent info
 	if rec.Parent != "" {
@@ -441,6 +450,7 @@ func (r *Datasets) Insert(tx *sql.Tx) (int64, error) {
 		r.SITE_ID,
 		r.PROCESSING_ID,
 		r.OSINFO_ID,
+		r.CONFIG_ID,
 		r.CREATE_AT,
 		r.CREATE_BY,
 		r.MODIFY_AT,

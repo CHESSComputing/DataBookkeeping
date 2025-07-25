@@ -293,6 +293,7 @@ func (a *API) InsertProvenance() error {
 	// parameters for provenance record
 	var inputFiles, outputFiles []FileRecord
 	var user, did, parentDid, application, site string
+	var config any
 
 	// extract all possible values from input user record
 	if val, ok := userRecord["input_files"]; ok {
@@ -324,6 +325,9 @@ func (a *API) InsertProvenance() error {
 	} else {
 		site = "Cornell"
 	}
+	if val, ok := userRecord["config"]; ok {
+		config = val
+	}
 
 	var buckets []BucketRecord
 	buckets = append(buckets, BucketRecord{Name: "UserBucket"})
@@ -347,6 +351,7 @@ func (a *API) InsertProvenance() error {
 		Scripts:      scripts,
 		OsInfo:       osinfo,
 		Buckets:      buckets,
+		Config:       config,
 	}
 	record := Datasets{
 		DID:       did,

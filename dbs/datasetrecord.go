@@ -18,6 +18,7 @@ type DatasetRecord struct {
 	Scripts      []ScriptRecord      `json:"scripts"`
 	Buckets      []BucketRecord      `json:"buckets"`
 	OsInfo       OsInfoRecord        `json:"osinfo"`
+	Config       any                 `json:"config"`
 }
 
 // Validate implementation of DatasetRecord

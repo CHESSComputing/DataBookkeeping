@@ -77,6 +77,7 @@ const (
 	ProcessingErrorCode                        // 136 processing error code
 	ScriptsErrorCode                           // 137 scripts error code
 	SitesErrorCode                             // 138 sites error code
+	ConfigsErrorCode                           // 139 configs error code
 	UnsupportedOperationErrorCode              // 140 unsupported operation error code
 	LastAvailableErrorCode                     // last available DBS error code
 )
