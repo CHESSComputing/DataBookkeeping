@@ -267,7 +267,7 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 		}
 	}
 	// insert dataset-configs relationships
-	config := Config{CONFIG: rec.Config}
+	config := Config{CONTENT: rec.Config}
 	configId, err = config.Insert(tx)
 	err = InsertManyToMany(tx, "insert_dataset_config", datasetId, configId)
 	if err != nil && !strings.Contains(err.Error(), "UNIQUE") {
