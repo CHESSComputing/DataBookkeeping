@@ -25,11 +25,47 @@
      "code": 200
     },
     {
+     "description": "test dataset insert API with config and did:/xxx=1/yyy=aaa/zzz=2a",
+     "method": "POST",
+     "endpoint": "/dataset",
+     "url": "/dataset",
+     "input": {
+       "buckets": [
+           {"name": "siteXYZ"}
+       ],
+       "did": "/xxx=1/yyy=aaa/zzz=2a",
+       "input_files": [
+           {"name": "/x/y/z/file1.png"},
+           {"name": "/x/y/z/file2.png"},
+           {"name": "/x/y/z/file3.png"}
+       ],
+       "osinfo": {"name": "linux-cc7", "kernel": "1-2-3", "version": "cc7-123"},
+       "environments": [{"name": "conda-123", "version": "version", "details": "details"}],
+       "script": {"name": "myscript", "options": "-m -p"},
+       "processing": "glibc",
+       "config": {"content": {"name": "bla", "field": 123}},
+       "site": "Cornell"
+     },
+     "output": [],
+     "verbose": 0,
+     "code": 200
+    },
+    {
      "description": "test dataset GET API did:/xxx=1/yyy=aaa/zzz=1a",
      "method": "GET",
      "endpoint": "/datasets",
      "url": "/datasets?did=%2Fxzz=1%wFyyy=aaa%2Fzzz=1a",
      "output": ["/xxx=1/yyy=aaa/zzz=1a"],
+     "verbose": 0,
+     "dump_response": true,
+     "code": 200
+    },
+    {
+     "description": "test configs GET API did:/xxx=1/yyy=aaa/zzz=2a",
+     "method": "GET",
+     "endpoint": "/configs",
+     "url": "/configs?did=/xxx=1/yyy=aaa/zzz=2a",
+     "output": ["bla", "field", "123"],
      "verbose": 0,
      "dump_response": true,
      "code": 200
