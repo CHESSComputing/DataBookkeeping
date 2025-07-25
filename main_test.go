@@ -91,6 +91,7 @@ func initServer() {
 			server.Route{Method: "GET", Path: "/datasets", Handler: DatasetHandler, Authorized: false},
 			server.Route{Method: "GET", Path: "/files", Handler: FileHandler, Authorized: false},
 			server.Route{Method: "GET", Path: "/scripts", Handler: ScriptHandler, Authorized: false},
+			server.Route{Method: "GET", Path: "/configs", Handler: ConfigHandler, Authorized: false},
 			server.Route{Method: "GET", Path: "/packages", Handler: PackageHandler, Authorized: false},
 			server.Route{Method: "GET", Path: "/environments", Handler: EnvironmentHandler, Authorized: false},
 			server.Route{Method: "GET", Path: "/provenance", Handler: ProvenanceHandler, Authorized: false},
@@ -100,6 +101,7 @@ func initServer() {
 			server.Route{Method: "POST", Path: "/dataset", Handler: DatasetHandler, Authorized: false},
 			server.Route{Method: "POST", Path: "/file", Handler: FileHandler, Authorized: false},
 			server.Route{Method: "POST", Path: "/script", Handler: ScriptHandler, Authorized: false},
+			server.Route{Method: "POST", Path: "/config", Handler: ConfigHandler, Authorized: false},
 			server.Route{Method: "POST", Path: "/environment", Handler: EnvironmentHandler, Authorized: false},
 		}
 		router = server.Router(routes, nil, "static", srvConfig.Config.DataBookkeeping.WebServer)
