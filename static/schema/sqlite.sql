@@ -103,7 +103,7 @@ CREATE TABLE scripts (
 );
 CREATE TABLE configs (
     config_id INTEGER PRIMARY KEY AUTOINCREMENT,
-    config TEXT,
+    content TEXT,
     create_at INTEGER,
     create_by VARCHAR(255),
     modify_at INTEGER,

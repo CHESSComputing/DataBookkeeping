@@ -113,7 +113,7 @@ CREATE TABLE scripts (
 -- Configs
 CREATE TABLE configs (
     config_id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    config TEXT,     -- Name of the config
+    content TEXT,
     create_at INTEGER,
     create_by VARCHAR(255),
     modify_at INTEGER,
