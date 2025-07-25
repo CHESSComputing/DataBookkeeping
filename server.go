@@ -56,6 +56,8 @@ func setupRouter() *gin.Engine {
 		server.Route{Method: "GET", Path: "/environments", Handler: EnvironmentHandler, Authorized: false},
 		server.Route{Method: "GET", Path: "/scripts", Handler: ScriptHandler, Authorized: false},
 		server.Route{Method: "GET", Path: "/packages", Handler: PackageHandler, Authorized: false},
+		server.Route{Method: "GET", Path: "/configs", Handler: ConfigHandler, Authorized: false},
+		server.Route{Method: "GET", Path: "/configs/*name", Handler: ConfigHandler, Authorized: false},
 
 		server.Route{Method: "GET", Path: "/provenance", Handler: ProvenanceHandler, Authorized: false},
 
@@ -92,6 +94,9 @@ func setupRouter() *gin.Engine {
 		server.Route{Method: "POST", Path: "/script", Handler: ScriptHandler, Authorized: true, Scope: "write"},
 		server.Route{Method: "PUT", Path: "/script", Handler: ScriptHandler, Authorized: true, Scope: "write"},
 		server.Route{Method: "DELETE", Path: "/script/*name", Handler: ScriptHandler, Authorized: true, Scope: "delete"},
+
+		// config routes
+		server.Route{Method: "POST", Path: "/config", Handler: ConfigHandler, Authorized: true, Scope: "write"},
 	}
 	r := server.Router(routes, nil, "static", srvConfig.Config.DataBookkeeping.WebServer)
 	return r
