@@ -38,22 +38,27 @@ func FileHandler(c *gin.Context) {
 	ApiHandler(c, "file")
 }
 
-// OsinfoHandler provides access to /osinfo and /osinfo/:name end-point
+// OsinfoHandler provides access to /osinfo end-point
 func OsinfoHandler(c *gin.Context) {
 	ApiHandler(c, "osinfo")
 }
 
-// EnvironmentHandler provides access to /environment and /environment/:name end-point
+// EnvironmentHandler provides access to /environments end-point
 func EnvironmentHandler(c *gin.Context) {
 	ApiHandler(c, "environment")
 }
 
-// ScriptHandler provides access to /script and /script/:name end-point
+// ScriptHandler provides access to /scripts end-point
 func ScriptHandler(c *gin.Context) {
 	ApiHandler(c, "script")
 }
 
-// PackageHandler provides access to /script and /script/:name end-point
+// ConfigHandler provides access to /configs end-point
+func ConfigHandler(c *gin.Context) {
+	ApiHandler(c, "config")
+}
+
+// PackageHandler provides access to /packages end-point
 func PackageHandler(c *gin.Context) {
 	ApiHandler(c, "package")
 }
@@ -232,6 +237,8 @@ func DBSGetHandler(c *gin.Context, a string) {
 		err = api.GetEnvironment()
 	} else if a == "script" {
 		err = api.GetScript()
+	} else if a == "config" {
+		err = api.GetConfig()
 	} else if a == "package" {
 		err = api.GetPackage()
 	} else {
@@ -267,6 +274,8 @@ func DBSPostHandler(c *gin.Context, a string) {
 		err = api.InsertEnvironment()
 	} else if a == "script" {
 		err = api.InsertScript()
+	} else if a == "config" {
+		err = api.InsertConfig()
 	} else if a == "provenance" {
 		err = api.InsertProvenance()
 	} else {
