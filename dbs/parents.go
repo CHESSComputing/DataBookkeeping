@@ -41,7 +41,7 @@ func (a *API) GetParent() error {
 
 	tmpl := make(map[string]any)
 	tmpl["Owner"] = DBOWNER
-	stm, err := LoadTemplateSQL("select_parent", tmpl)
+	stm, err := LoadTemplateSQL("select_parent_did", tmpl)
 	if err != nil {
 		return Error(err, LoadErrorCode, "", "dbs.parents.GetParent")
 	}
@@ -49,6 +49,8 @@ func (a *API) GetParent() error {
 		if val != "" {
 			conds, args = AddParam("did", "D.did", a.Params, conds, args)
 		}
+	} else {
+		return Error(err, QueryErrorCode, "no did is provided", "dbs.parents.GetParent")
 	}
 
 	stm = WhereClause(stm, conds)

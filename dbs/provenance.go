@@ -24,6 +24,10 @@ func (a *API) GetParentDID(did string) (string, error) {
 	if err != nil {
 		return "", Error(err, LoadErrorCode, "fail to load select_parent_did sql template", "dbs.provenance.GetParentDID")
 	}
+	if did != "" {
+		args = append(args, did)
+		conds = append(conds, "D.did = ?")
+	}
 	stm = WhereClause(stm, conds)
 
 	tx, err := DB.Begin()
