@@ -20,7 +20,8 @@ func (a *API) GetParentDID(did string) (string, error) {
 	tmpl := make(map[string]any)
 	tmpl["Owner"] = DBOWNER
 	// get SQL statement from static area
-	stm, err := LoadTemplateSQL("select_parent_did", tmpl)
+	//stm, err := LoadTemplateSQL("select_parent_did", tmpl)
+	stm, err := LoadTemplateSQL("select_parent", tmpl)
 	if err != nil {
 		return "", Error(err, LoadErrorCode, "fail to load select_parent_did sql template", "dbs.provenance.GetParentDID")
 	}

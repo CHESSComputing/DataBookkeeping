@@ -1,10 +1,10 @@
 SELECT DISTINCT
-    D.did,
-    PDS.did PARENT_DID,
-    PDS.create_at,
-    PDS.create_by,
-    PDS.modify_at,
-    PDS.modify_by
-FROM datasets D
-LEFT OUTER JOIN parents DSP ON DSP.DATASET_ID = D.DATASET_ID
-LEFT OUTER JOIN datasets PDS ON PDS.DATASET_ID = DSP.PARENT_ID
+    d.did,
+    pd.did AS parent_did,
+    pd.create_at,
+    pd.create_by,
+    pd.modify_at,
+    pd.modify_by
+FROM parents p
+LEFT JOIN datasets d ON p.dataset_id = d.dataset_id
+LEFT JOIN datasets pd ON p.parent_id = pd.dataset_id

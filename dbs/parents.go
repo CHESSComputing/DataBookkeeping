@@ -41,7 +41,8 @@ func (a *API) GetParent() error {
 
 	tmpl := make(map[string]any)
 	tmpl["Owner"] = DBOWNER
-	stm, err := LoadTemplateSQL("select_parent_did", tmpl)
+	//stm, err := LoadTemplateSQL("select_parent_did", tmpl)
+	stm, err := LoadTemplateSQL("select_parent", tmpl)
 	if err != nil {
 		return Error(err, LoadErrorCode, "", "dbs.parents.GetParent")
 	}
