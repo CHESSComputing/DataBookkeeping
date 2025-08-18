@@ -27,7 +27,7 @@ func (a *API) GetParentDID(did string) (string, error) {
 	}
 	if did != "" {
 		args = append(args, did)
-		conds = append(conds, "D.did = ?")
+		conds = append(conds, "d.did = ?")
 	}
 	stm = WhereClause(stm, conds)
 
@@ -46,8 +46,9 @@ func (a *API) GetParentDID(did string) (string, error) {
 	log.Println("QUERY:\n", stm, args)
 
 	var parentDID sql.NullString
+	var cat, cby, mat, mby any
 	for rows.Next() {
-		err := rows.Scan(&did, &parentDID)
+		err := rows.Scan(&did, &parentDID, &cat, &cby, &mat, &mby)
 		if err != nil {
 			return "", err
 		}
@@ -84,6 +85,8 @@ func (a *API) GetProvenance() error {
 		if val != "" {
 			conds, args = AddParam("did", "D.did", a.Params, conds, args)
 			dataset_did = fmt.Sprintf("%v", val)
+			dataset_did = strings.Replace(dataset_did, "[", "", -1)
+			dataset_did = strings.Replace(dataset_did, "]", "", -1)
 		}
 	} else {
 		msg := fmt.Sprintf("/provenance API requires did input, got %+v\n", a.Params)
