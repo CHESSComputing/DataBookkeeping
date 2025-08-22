@@ -13,6 +13,21 @@ import (
 	"github.com/CHESSComputing/golib/utils"
 )
 
+// ProvenanceRecord represent structure of provenance record
+type ProvenanceRecord struct {
+	Did          string
+	Site         string
+	Processing   string
+	ParentDid    string              `json:"parent_did"`
+	InputFiles   []FileRecord        `json:"input_files"`
+	OutputFiles  []FileRecord        `json:"output_files"`
+	Environments []EnvironmentRecord `json:"environments"`
+	Scripts      []ScriptRecord      `json:"scripts"`
+	OsInfo       OsInfoRecord        `json:"osinfo"`
+	Buckets      []BucketRecord      `json:"buckets"`
+	Config       ConfigRecord        `json:"config"`
+}
+
 //gocyclo:ignore
 func (a *API) GetParentDID(did string) (string, error) {
 	var args []interface{}
@@ -361,6 +376,9 @@ func (a *API) InsertProvenance() error {
 		Buckets:      buckets,
 		Config:       config,
 	}
+	if _, ok := userRecord["user_metadata"]; ok {
+		fillProvenanceFromUserMetadata(&rec, userRecord)
+	}
 	record := Datasets{
 		DID:       did,
 		CREATE_BY: user,
@@ -376,4 +394,77 @@ func (a *API) InsertProvenance() error {
 		return Error(err, DatasetErrorCode, "fail to insert parts of dataset", "dbs.provenance.insertRecord")
 	}
 	return nil
+}
+
+func fillProvenanceFromUserMetadata(rec *DatasetRecord, userRecord map[string]any) {
+	if Verbose > 1 {
+		log.Println("DEBUG: fill out provenance info from user metadata", userRecord)
+	}
+	// check if userRecord contains user_record part
+	urec, ok := userRecord["user_metadata"]
+	if !ok {
+		return
+	}
+	if Verbose > 1 {
+		log.Printf("DEBUG: urec=%v type=%T", urec, urec)
+	}
+	var mrec map[string]any
+	switch data := urec.(type) {
+	case map[string]any:
+		mrec = data
+	}
+	if len(mrec) == 0 {
+		return
+	}
+	if Verbose > 1 {
+		log.Println("DEBUG: mrec", mrec)
+	}
+	// try to extract from user_record metadata
+	prov, ok := mrec["metadata"]
+	if !ok {
+		return
+	}
+	if Verbose > 1 {
+		log.Printf("DEBUG: prov=%+v type=%T", prov, prov)
+	}
+	// try to map metadata into provenance record
+	var prec ProvenanceRecord
+	switch data := prov.(type) {
+	case map[string]any:
+		bytes, err := json.Marshal(data)
+		if err == nil {
+			if err := json.Unmarshal(bytes, &prec); err != nil {
+				log.Printf("WARNING: unable to map data %v to provenance record, error=%v", data, err)
+				return
+			}
+		}
+	case string:
+		if err := json.Unmarshal([]byte(data), &prec); err != nil {
+			log.Printf("WARNING: unable to map data %v to provenance record, error=%v", data, err)
+			return
+		}
+	}
+	if &prec != nil {
+		if Verbose > 1 {
+			log.Printf("DEBUG: succefully extrated provenance record %+v", prec)
+			log.Printf("DEBUG: will fill out provenance record %+v", rec)
+		}
+		rec.Processing = prec.Processing
+		rec.OsInfo = prec.OsInfo
+		rec.Environments = prec.Environments
+		rec.Scripts = prec.Scripts
+		if len(prec.InputFiles) > 0 {
+			for _, r := range prec.InputFiles {
+				rec.InputFiles = append(rec.InputFiles, r)
+			}
+		}
+		if len(prec.OutputFiles) > 0 {
+			for _, r := range prec.OutputFiles {
+				rec.OutputFiles = append(rec.OutputFiles, r)
+			}
+		}
+		if Verbose > 1 {
+			log.Printf("DEBUG: will fill out provenance record %+v", rec)
+		}
+	}
 }
