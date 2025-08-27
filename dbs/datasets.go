@@ -162,6 +162,11 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 	var siteId, processingId, datasetId, osId, scriptId, fileId, bucketId, configId int64
 	var envIds, scriptIds []int64
 
+	if Verbose > 0 {
+		log.Printf("user record %+v", rec)
+		log.Printf("table record %+v", record)
+	}
+
 	// insert site info
 	if rec.Site != "" {
 		siteId, err = GetID(tx, "sites", "site_id", "site", rec.Site)
