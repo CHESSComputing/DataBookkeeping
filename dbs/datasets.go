@@ -169,6 +169,9 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 
 	// insert site info
 	if rec.Site != "" {
+		if Verbose > 0 {
+			log.Printf("insert/look-up rec.Site %+v", rec.Site)
+		}
 		siteId, err = GetID(tx, "sites", "site_id", "site", rec.Site)
 		if err != nil || siteId == 0 {
 			site := Sites{SITE: rec.Site}
@@ -182,6 +185,9 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 
 	// insert os info
 	if rec.OsInfo.Name != "" {
+		if Verbose > 0 {
+			log.Printf("insert/look-up rec.OsInfo %+v", rec.OsInfo)
+		}
 		osId, err = GetID(tx, "osinfo", "os_id", "name", rec.OsInfo.Name)
 		if err != nil || osId == 0 {
 			osId, err = rec.OsInfo.Insert(tx)
@@ -198,6 +204,9 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 	// insert environment info
 	for _, env := range rec.Environments {
 		if env.Name != "" {
+			if Verbose > 0 {
+				log.Printf("insert/look-up record environement %+v", env)
+			}
 			environmentId, err := GetID(tx, "environments", "environment_id", "name", env.Name)
 			if err != nil || environmentId == 0 {
 				environmentId, err = env.Insert(tx)
@@ -216,6 +225,9 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 	// insert script info
 	for _, script := range rec.Scripts {
 		if script.Name != "" {
+			if Verbose > 0 {
+				log.Printf("insert/look-up record script %+v", script)
+			}
 			scriptId, err = GetID(tx, "scripts", "script_id", "name", script.Name)
 			if err != nil || scriptId == 0 {
 				scriptId, err = script.Insert(tx)
@@ -233,6 +245,9 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 	if rec.Processing == "" {
 		return errors.New("procesing part of provenance records is empty")
 	}
+	if Verbose > 0 {
+		log.Printf("insert/look-up record processing %+v", rec.Processing)
+	}
 	processingId, err = GetID(tx, "processing", "processing_id", "processing", rec.Processing)
 	if err != nil || processingId == 0 {
 		processing := Processing{
@@ -248,6 +263,9 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 	// insert dataset info
 	datasetId, err = GetID(tx, "datasets", "dataset_id", "did", rec.Did)
 	if err != nil {
+		if Verbose > 0 {
+			log.Printf("insert/look-up record dataset %+v", rec.Did)
+		}
 		record.SITE_ID = siteId
 		record.PROCESSING_ID = processingId
 		datasetId, err = record.Insert(tx)
