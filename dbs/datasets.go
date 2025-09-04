@@ -303,15 +303,20 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 		// look-up parent_id for given did name (rec.Parent)
 		parentId, err := GetID(tx, "datasets", "dataset_id", "did", rec.Parent)
 		if err != nil {
-			return err
+			// if we didn't find dataset id we will insert it
+			ds := Datasets{DID: rec.Parent}
+			parentId, err = ds.Insert(tx)
+			if err != nil {
+				return err
+			}
 		}
 		if parentId == 0 {
-			msg := fmt.Sprintf("no did found for did %s", rec.Parent)
+			msg := fmt.Sprintf("no dataset id found for did %s", rec.Parent)
 			return errors.New(msg)
 		}
-		// if not found we need to insert relation between parent id and dataset id
+		// insert relation between parent id and dataset id
 		parent := Parents{PARENT_ID: parentId, DATASET_ID: datasetId}
-		parentId, err = parent.Insert(tx)
+		_, err = parent.Insert(tx)
 		if err != nil {
 			return err
 		}

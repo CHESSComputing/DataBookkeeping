@@ -567,7 +567,7 @@ func GetID(tx *sql.Tx, table, id, attr string, val ...interface{}) (int64, error
 	err := tx.QueryRow(stm, val...).Scan(&tid)
 	if err != nil {
 		if Verbose > 1 {
-			log.Printf("fail to get id for %s, %v, error %v", stm, val, err)
+			log.Printf("fail to get id from %s, %v, error %v", stm, val, err)
 		}
 		return int64(tid), Error(err, QueryErrorCode, "", "dbs.GetID")
 	}
