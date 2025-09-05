@@ -147,22 +147,43 @@ func (a *API) GetProvenance() error {
 	// main query
 	for rows.Next() {
 		var did, processing, osName, osKernel, osVersion string
+		var didSql, processingSql, osNameSql, osKernelSql, osVersionSql sql.NullString
 		var bucketName, bucketUUID, bucketMetaData sql.NullString
 		var site, scriptName, scriptOptions sql.NullString
 		var parentEnvName, parentScript, packageName, packageVersion sql.NullString
 		var envName, envVersion, envDetails, envOSName sql.NullString
 		var scriptID, scriptOrderIdx sql.NullInt64
+		var envIDSql sql.NullInt32
 		var envID int
 
 		// Scan row into variables
-		err := rows.Scan(&did, &processing, &osName, &osKernel, &osVersion,
-			&envID, &envName, &envVersion, &envDetails, &parentEnvName, &envOSName,
+		err := rows.Scan(&didSql, &processingSql, &osNameSql, &osKernelSql, &osVersionSql,
+			&envIDSql, &envName, &envVersion, &envDetails, &parentEnvName, &envOSName,
 			&packageName, &packageVersion,
 			&scriptID, &scriptName, &scriptOrderIdx, &scriptOptions, &parentScript,
 			&site, &bucketName, &bucketUUID, &bucketMetaData,
 		)
 		if err != nil {
+			log.Println("ERROR: unable to scan rows", err)
 			return err
+		}
+		if didSql.Valid {
+			did = didSql.String
+		}
+		if envIDSql.Valid {
+			envID = int(envIDSql.Int32)
+		}
+		if processingSql.Valid {
+			processing = didSql.String
+		}
+		if osNameSql.Valid {
+			osName = didSql.String
+		}
+		if osKernelSql.Valid {
+			osKernel = didSql.String
+		}
+		if osVersionSql.Valid {
+			osVersion = didSql.String
 		}
 		// Initialize provenance record if first row
 		if provenance.Did == "" {
