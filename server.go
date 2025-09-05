@@ -41,62 +41,62 @@ func setupRouter() *gin.Engine {
 		// GET routes does not require authorization
 		// GET APIs should use plural name as for look-up of multiple records
 		// exception is osinfo
-		server.Route{Method: "GET", Path: "/datasets", Handler: DatasetHandler, Authorized: false},
-		server.Route{Method: "GET", Path: "/datasets/*name", Handler: DatasetHandler, Authorized: false},
+		{Method: "GET", Path: "/datasets", Handler: DatasetHandler, Authorized: false},
+		{Method: "GET", Path: "/datasets/*name", Handler: DatasetHandler, Authorized: false},
 
-		server.Route{Method: "GET", Path: "/files", Handler: FileHandler, Authorized: false},
-		server.Route{Method: "GET", Path: "/files/*name", Handler: FileHandler, Authorized: false},
+		{Method: "GET", Path: "/files", Handler: FileHandler, Authorized: false},
+		{Method: "GET", Path: "/files/*name", Handler: FileHandler, Authorized: false},
 
-		server.Route{Method: "GET", Path: "/parents", Handler: ParentHandler, Authorized: false},
+		{Method: "GET", Path: "/parents", Handler: ParentHandler, Authorized: false},
 
-		server.Route{Method: "GET", Path: "/children", Handler: ChildHandler, Authorized: false},
-		server.Route{Method: "GET", Path: "/child", Handler: ChildHandler, Authorized: false},
+		{Method: "GET", Path: "/children", Handler: ChildHandler, Authorized: false},
+		{Method: "GET", Path: "/child", Handler: ChildHandler, Authorized: false},
 
-		server.Route{Method: "GET", Path: "/osinfo", Handler: OsinfoHandler, Authorized: false},
-		server.Route{Method: "GET", Path: "/environments", Handler: EnvironmentHandler, Authorized: false},
-		server.Route{Method: "GET", Path: "/scripts", Handler: ScriptHandler, Authorized: false},
-		server.Route{Method: "GET", Path: "/packages", Handler: PackageHandler, Authorized: false},
-		server.Route{Method: "GET", Path: "/configs", Handler: ConfigHandler, Authorized: false},
-		server.Route{Method: "GET", Path: "/configs/*name", Handler: ConfigHandler, Authorized: false},
+		{Method: "GET", Path: "/osinfo", Handler: OsinfoHandler, Authorized: false},
+		{Method: "GET", Path: "/environments", Handler: EnvironmentHandler, Authorized: false},
+		{Method: "GET", Path: "/scripts", Handler: ScriptHandler, Authorized: false},
+		{Method: "GET", Path: "/packages", Handler: PackageHandler, Authorized: false},
+		{Method: "GET", Path: "/configs", Handler: ConfigHandler, Authorized: false},
+		{Method: "GET", Path: "/configs/*name", Handler: ConfigHandler, Authorized: false},
 
-		server.Route{Method: "GET", Path: "/provenance", Handler: ProvenanceHandler, Authorized: false},
+		{Method: "GET", Path: "/provenance", Handler: ProvenanceHandler, Authorized: false},
 
 		// authorized routes
 		// POST/PUT/DELETE routes should use single name as we operate with single record
-		server.Route{Method: "POST", Path: "/provenance", Handler: ProvenanceHandler, Authorized: true, Scope: "write"},
+		{Method: "POST", Path: "/provenance", Handler: ProvenanceHandler, Authorized: true, Scope: "write"},
 
 		// dataset routes
-		server.Route{Method: "POST", Path: "/dataset", Handler: DatasetHandler, Authorized: true, Scope: "write"},
-		server.Route{Method: "PUT", Path: "/dataset", Handler: DatasetHandler, Authorized: true, Scope: "write"},
-		server.Route{Method: "DELETE", Path: "/dataset/*name", Handler: DatasetHandler, Authorized: true, Scope: "delete"},
+		{Method: "POST", Path: "/dataset", Handler: DatasetHandler, Authorized: true, Scope: "write"},
+		{Method: "PUT", Path: "/dataset", Handler: DatasetHandler, Authorized: true, Scope: "write"},
+		{Method: "DELETE", Path: "/dataset/*name", Handler: DatasetHandler, Authorized: true, Scope: "delete"},
 
 		// file routes
-		server.Route{Method: "POST", Path: "/file", Handler: FileHandler, Authorized: true, Scope: "write"},
-		server.Route{Method: "PUT", Path: "/file", Handler: FileHandler, Authorized: true, Scope: "write"},
-		server.Route{Method: "DELETE", Path: "/file/*name", Handler: FileHandler, Authorized: true, Scope: "delete"},
+		{Method: "POST", Path: "/file", Handler: FileHandler, Authorized: true, Scope: "write"},
+		{Method: "PUT", Path: "/file", Handler: FileHandler, Authorized: true, Scope: "write"},
+		{Method: "DELETE", Path: "/file/*name", Handler: FileHandler, Authorized: true, Scope: "delete"},
 
 		// parent routes
-		server.Route{Method: "POST", Path: "/parent", Handler: ParentHandler, Authorized: true, Scope: "write"},
-		server.Route{Method: "PUT", Path: "/parent", Handler: ParentHandler, Authorized: true, Scope: "write"},
-		server.Route{Method: "DELETE", Path: "/parent/*name", Handler: ParentHandler, Authorized: true, Scope: "write"},
+		{Method: "POST", Path: "/parent", Handler: ParentHandler, Authorized: true, Scope: "write"},
+		{Method: "PUT", Path: "/parent", Handler: ParentHandler, Authorized: true, Scope: "write"},
+		{Method: "DELETE", Path: "/parent/*name", Handler: ParentHandler, Authorized: true, Scope: "write"},
 
 		// osinfo routes
-		server.Route{Method: "POST", Path: "/osinfo", Handler: OsinfoHandler, Authorized: true, Scope: "write"},
-		server.Route{Method: "PUT", Path: "/osinfo", Handler: OsinfoHandler, Authorized: true, Scope: "write"},
-		server.Route{Method: "DELETE", Path: "/osinfo/*name", Handler: OsinfoHandler, Authorized: true, Scope: "delete"},
+		{Method: "POST", Path: "/osinfo", Handler: OsinfoHandler, Authorized: true, Scope: "write"},
+		{Method: "PUT", Path: "/osinfo", Handler: OsinfoHandler, Authorized: true, Scope: "write"},
+		{Method: "DELETE", Path: "/osinfo/*name", Handler: OsinfoHandler, Authorized: true, Scope: "delete"},
 
 		// environment routes
-		server.Route{Method: "POST", Path: "/environment", Handler: EnvironmentHandler, Authorized: true, Scope: "write"},
-		server.Route{Method: "PUT", Path: "/environment", Handler: EnvironmentHandler, Authorized: true, Scope: "write"},
-		server.Route{Method: "DELETE", Path: "/environment/*name", Handler: EnvironmentHandler, Authorized: true, Scope: "delete"},
+		{Method: "POST", Path: "/environment", Handler: EnvironmentHandler, Authorized: true, Scope: "write"},
+		{Method: "PUT", Path: "/environment", Handler: EnvironmentHandler, Authorized: true, Scope: "write"},
+		{Method: "DELETE", Path: "/environment/*name", Handler: EnvironmentHandler, Authorized: true, Scope: "delete"},
 
 		// script routes
-		server.Route{Method: "POST", Path: "/script", Handler: ScriptHandler, Authorized: true, Scope: "write"},
-		server.Route{Method: "PUT", Path: "/script", Handler: ScriptHandler, Authorized: true, Scope: "write"},
-		server.Route{Method: "DELETE", Path: "/script/*name", Handler: ScriptHandler, Authorized: true, Scope: "delete"},
+		{Method: "POST", Path: "/script", Handler: ScriptHandler, Authorized: true, Scope: "write"},
+		{Method: "PUT", Path: "/script", Handler: ScriptHandler, Authorized: true, Scope: "write"},
+		{Method: "DELETE", Path: "/script/*name", Handler: ScriptHandler, Authorized: true, Scope: "delete"},
 
 		// config routes
-		server.Route{Method: "POST", Path: "/config", Handler: ConfigHandler, Authorized: true, Scope: "write"},
+		{Method: "POST", Path: "/config", Handler: ConfigHandler, Authorized: true, Scope: "write"},
 	}
 	r := server.Router(routes, nil, "static", srvConfig.Config.DataBookkeeping.WebServer)
 	return r
