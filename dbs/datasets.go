@@ -129,7 +129,8 @@ func (a *API) InsertDataset() error {
 	}
 	err = rec.Validate()
 	if err != nil {
-		return Error(err, ValidateErrorCode, "validation error", "dbs.datasets.InsertDataset")
+		msg := fmt.Sprintf("fail to insert dataset record %+v", string(data))
+		return Error(err, ValidateErrorCode, "validation error: "+msg, "dbs.datasets.InsertDataset")
 	}
 
 	// parse incoming DatasetRequest and insert relationships, e.g.
