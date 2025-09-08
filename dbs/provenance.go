@@ -15,9 +15,9 @@ import (
 
 // ProvenanceRecord represent structure of provenance record
 type ProvenanceRecord struct {
-	Did          string
-	Site         string
-	Processing   string
+	Did          string              `json:"did"`
+	Site         string              `json:"site"`
+	Processing   string              `json:"processing"`
 	ParentDid    string              `json:"parent_did"`
 	InputFiles   []FileRecord        `json:"input_files"`
 	OutputFiles  []FileRecord        `json:"output_files"`
