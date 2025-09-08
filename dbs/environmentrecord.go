@@ -36,7 +36,13 @@ func (e *EnvironmentRecord) Insert(tx *sql.Tx) (int64, error) {
 		if err == nil {
 			r.OS_ID = os_id
 		} else {
-			return 0, err
+			// if no os_name found in environment record we will try to insert it here
+			osRec := OsInfoRecord{Name: e.OSName, Version: "N/A", Kernel: "N/A"}
+			osId, err := osRec.Insert(tx)
+			if err != nil {
+				return 0, err
+			}
+			r.OS_ID = osId
 		}
 	}
 
