@@ -174,16 +174,16 @@ func (a *API) GetProvenance() error {
 			envID = int(envIDSql.Int32)
 		}
 		if processingSql.Valid {
-			processing = didSql.String
+			processing = processingSql.String
 		}
 		if osNameSql.Valid {
-			osName = didSql.String
+			osName = osNameSql.String
 		}
 		if osKernelSql.Valid {
-			osKernel = didSql.String
+			osKernel = osKernelSql.String
 		}
 		if osVersionSql.Valid {
-			osVersion = didSql.String
+			osVersion = osVersionSql.String
 		}
 		// Initialize provenance record if first row
 		if provenance.Did == "" {
