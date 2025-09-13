@@ -151,7 +151,7 @@ func (a *API) GetProvenance() error {
 		var bucketName, bucketUUID, bucketMetaData sql.NullString
 		var site, scriptName, scriptOptions sql.NullString
 		var parentEnvName, parentScript, packageName, packageVersion sql.NullString
-		var envName, envVersion, envDetails, envOSName sql.NullString
+		var envName, envVersion, envDetails, envOSName, config sql.NullString
 		var scriptID, scriptOrderIdx sql.NullInt64
 		var envIDSql sql.NullInt32
 		var envID int
@@ -161,7 +161,7 @@ func (a *API) GetProvenance() error {
 			&envIDSql, &envName, &envVersion, &envDetails, &parentEnvName, &envOSName,
 			&packageName, &packageVersion,
 			&scriptID, &scriptName, &scriptOrderIdx, &scriptOptions, &parentScript,
-			&site, &bucketName, &bucketUUID, &bucketMetaData,
+			&site, &config, &bucketName, &bucketUUID, &bucketMetaData,
 		)
 		if err != nil {
 			log.Println("ERROR: unable to scan rows", err)
@@ -201,6 +201,11 @@ func (a *API) GetProvenance() error {
 				Scripts:      []ScriptRecord{},
 				Buckets:      []BucketRecord{},
 			}
+		}
+
+		// config
+		if config.Valid {
+			provenance.Config = config.String
 		}
 
 		// Collect buckets
