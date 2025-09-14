@@ -14,6 +14,11 @@ type ScriptRecord struct {
 	OrderIdx int64  `json:"order_idx"`
 }
 
+// IsEmpty checks if given record is empty
+func (s *ScriptRecord) IsEmpty() bool {
+	return s.Name == "" && s.Options == "" && s.Parent == "" && s.OrderIdx == 0
+}
+
 // Insert API
 func (e *ScriptRecord) Insert(tx *sql.Tx) (int64, error) {
 	r := Scripts{NAME: e.Name, OPTIONS: e.Options, ORDER_IDX: e.OrderIdx}

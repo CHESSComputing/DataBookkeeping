@@ -13,6 +13,11 @@ type OsInfoRecord struct {
 	Kernel  string `json:"kernel"`
 }
 
+// IsEmpty checks if given record is empty
+func (o *OsInfoRecord) IsEmpty() bool {
+	return o.Name == "" && o.Version == "" && o.Kernel == ""
+}
+
 // Insert API
 func (o *OsInfoRecord) Insert(tx *sql.Tx) (int64, error) {
 	r := OsInfo{NAME: o.Name, VERSION: o.Version, KERNEL: o.Kernel}

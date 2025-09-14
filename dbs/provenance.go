@@ -28,6 +28,42 @@ type ProvenanceRecord struct {
 	Config       ConfigRecord        `json:"config"`
 }
 
+// IsEmpty checks if given record is empty
+func (p *ProvenanceRecord) IsEmpty() bool {
+	// we allow Did to be non-empty, everything else must be empty
+	if strings.TrimSpace(p.Site) != "" || strings.TrimSpace(p.Processing) != "" || strings.TrimSpace(p.ParentDid) != "" {
+		return false
+	}
+	if len(p.InputFiles) > 0 {
+		return false
+	}
+	if len(p.OutputFiles) > 0 {
+		return false
+	}
+	for _, env := range p.Environments {
+		if !env.IsEmpty() {
+			return false
+		}
+	}
+	for _, s := range p.Scripts {
+		if !s.IsEmpty() {
+			return false
+		}
+	}
+	if !p.OsInfo.IsEmpty() {
+		return false
+	}
+	for _, b := range p.Buckets {
+		if !b.IsEmpty() {
+			return false
+		}
+	}
+	if !p.Config.IsEmpty() {
+		return false
+	}
+	return true
+}
+
 //gocyclo:ignore
 func (a *API) GetParentDID(did string) (string, error) {
 	var args []interface{}

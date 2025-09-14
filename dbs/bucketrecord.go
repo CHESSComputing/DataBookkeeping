@@ -13,6 +13,11 @@ type BucketRecord struct {
 	MetaData string `json:"meta_data"`
 }
 
+// IsEmpty checks if given record is empty
+func (b *BucketRecord) IsEmpty() bool {
+	return b.Name == "" && b.UUID == "" && b.MetaData == ""
+}
+
 // Insert API
 func (e *BucketRecord) Insert(tx *sql.Tx) (int64, error) {
 	r := Buckets{BUCKET: e.Name, UUID: e.UUID, META_DATA: e.MetaData}

@@ -2,11 +2,17 @@ package dbs
 
 import (
 	"database/sql"
+	"fmt"
 )
 
 // ConfigRecord represent input config record
 type ConfigRecord struct {
 	Content any `json:"content"`
+}
+
+// IsEmpty checks if given record is empty
+func (c *ConfigRecord) IsEmpty() bool {
+	return c.Content == nil || fmt.Sprintf("%v", c.Content) == ""
 }
 
 // Insert API

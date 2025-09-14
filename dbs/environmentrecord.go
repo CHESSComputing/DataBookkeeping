@@ -16,6 +16,12 @@ type EnvironmentRecord struct {
 	Packages []PackageRecord `json:"packages,omitempty"`
 }
 
+// IsEmpty checks if given record is empty
+func (e *EnvironmentRecord) IsEmpty() bool {
+	return e.Name == "" && e.Version == "" && e.Details == "" &&
+		e.Parent == "" && e.OSName == "" && len(e.Packages) == 0
+}
+
 // Insert API
 func (e *EnvironmentRecord) Insert(tx *sql.Tx) (int64, error) {
 	r := Environments{NAME: e.Name, VERSION: e.Version, DETAILS: e.Details}
