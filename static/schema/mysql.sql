@@ -42,7 +42,7 @@ CREATE TABLE datasets (
     did VARCHAR(255) NOT NULL UNIQUE,
     site_id BIGINT REFERENCES sites(site_id) ON UPDATE CASCADE,
     processing_id BIGINT REFERENCES processing(processing_id) ON UPDATE CASCADE,
-    os_id BIGINT REFERENCES osinfo(osinfo_id) ON UPDATE CASCADE,
+    os_id BIGINT REFERENCES osinfo(os_id) ON UPDATE CASCADE,
     config_id BIGINT REFERENCES configs(config_id) ON UPDATE CASCADE,
     create_at INTEGER,
     create_by VARCHAR(255),

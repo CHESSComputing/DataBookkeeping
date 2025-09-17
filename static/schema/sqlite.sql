@@ -40,7 +40,7 @@ create TABLE datasets (
     did VARCHAR(255) NOT NULL UNIQUE,
     site_id INTEGER REFERENCES sites(site_id) ON UPDATE CASCADE,
     processing_id INTEGER REFERENCES processing(processing_id) ON UPDATE CASCADE,
-    os_id INTEGER REFERENCES osinfo(osinfo_id) ON UPDATE CASCADE,
+    os_id INTEGER REFERENCES osinfo(os_id) ON UPDATE CASCADE,
     config_id INTEGER REFERENCES configs(config_id) ON UPDATE CASCADE,
     create_at INTEGER,
     create_by VARCHAR(255),
