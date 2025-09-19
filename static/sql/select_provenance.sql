@@ -16,7 +16,7 @@ SELECT DISTINCT
     sc.name AS script_name,
     sc.order_idx AS order_idx,
     sc.options AS script_options,
-    PS.name AS parent_script_name,
+    ps.name AS parent_script_name,
     s.site AS site_name,
     c.content AS config_content,
     b.bucket AS bucket_name,
