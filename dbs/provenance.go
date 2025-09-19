@@ -134,7 +134,7 @@ func (a *API) GetProvenance() error {
 	var dataset_did string
 	if val, ok := a.Params["did"]; ok {
 		if val != "" {
-			conds, args = AddParam("did", "D.did", a.Params, conds, args)
+			conds, args = AddParam("did", "d.did", a.Params, conds, args)
 			dataset_did = fmt.Sprintf("%v", val)
 			dataset_did = strings.Replace(dataset_did, "[", "", -1)
 			dataset_did = strings.Replace(dataset_did, "]", "", -1)

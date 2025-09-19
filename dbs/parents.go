@@ -48,7 +48,7 @@ func (a *API) GetParent() error {
 	}
 	if val, ok := a.Params["did"]; ok {
 		if val != "" {
-			conds, args = AddParam("did", "D.did", a.Params, conds, args)
+			conds, args = AddParam("did", "d.did", a.Params, conds, args)
 		}
 	} else {
 		return Error(err, QueryErrorCode, "no did is provided", "dbs.parents.GetParent")

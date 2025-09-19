@@ -41,17 +41,17 @@ func (a *API) GetFile() error {
 	}
 	if val, ok := a.Params["file"]; ok {
 		if val != "" {
-			conds, args = AddParam("file", "F.file", a.Params, conds, args)
+			conds, args = AddParam("file", "f.file", a.Params, conds, args)
 		}
 	}
 	if val, ok := a.Params["did"]; ok {
 		if val != "" {
-			conds, args = AddParam("did", "D.did", a.Params, conds, args)
+			conds, args = AddParam("did", "d.did", a.Params, conds, args)
 		}
 	}
 	if val, ok := a.Params["file_type"]; ok {
 		if val != "" {
-			conds, args = AddParam("file_type", "DF.file_type", a.Params, conds, args)
+			conds, args = AddParam("file_type", "df.file_type", a.Params, conds, args)
 		}
 	}
 

@@ -53,38 +53,38 @@ func (a *API) GetDataset() error {
 
 	// obtain conditions for provided parameter
 	if val, ok := a.Params["did"]; ok && val != "" {
-		conds, args = AddParam("did", "D.did", a.Params, conds, args)
+		conds, args = AddParam("did", "d.did", a.Params, conds, args)
 	}
 	if val, ok := a.Params["file"]; ok && val != "" {
-		conds, args = AddParam("file", "F.file", a.Params, conds, args)
+		conds, args = AddParam("file", "f.file", a.Params, conds, args)
 		tmpl["Files"] = true
 	}
 	if val, ok := a.Params["script"]; ok && val != "" {
-		conds, args = AddParam("script", "SC.name", a.Params, conds, args)
+		conds, args = AddParam("script", "sc.name", a.Params, conds, args)
 		tmpl["Scripts"] = true
 	}
 	if val, ok := a.Params["environment"]; ok && val != "" {
-		conds, args = AddParam("environment", "E.name", a.Params, conds, args)
+		conds, args = AddParam("environment", "e.name", a.Params, conds, args)
 		tmpl["Environments"] = true
 	}
 	if val, ok := a.Params["package"]; ok && val != "" {
-		conds, args = AddParam("package", "EP.name", a.Params, conds, args)
+		conds, args = AddParam("package", "ep.name", a.Params, conds, args)
 		tmpl["Environments"] = true
 	}
 	if val, ok := a.Params["site"]; ok && val != "" {
-		conds, args = AddParam("site", "S.site", a.Params, conds, args)
+		conds, args = AddParam("site", "s.site", a.Params, conds, args)
 		tmpl["Sites"] = true
 	}
 	if val, ok := a.Params["bucket"]; ok && val != "" {
-		conds, args = AddParam("bucket", "B.bucket", a.Params, conds, args)
+		conds, args = AddParam("bucket", "b.bucket", a.Params, conds, args)
 		tmpl["Buckets"] = true
 	}
 	if val, ok := a.Params["processing"]; ok && val != "" {
-		conds, args = AddParam("processing", "PR.processing", a.Params, conds, args)
+		conds, args = AddParam("processing", "pr.processing", a.Params, conds, args)
 		tmpl["Processing"] = true
 	}
 	if val, ok := a.Params["osname"]; ok && val != "" {
-		conds, args = AddParam("osname", "O.name", a.Params, conds, args)
+		conds, args = AddParam("osname", "o.name", a.Params, conds, args)
 		tmpl["Osinfo"] = true
 	}
 

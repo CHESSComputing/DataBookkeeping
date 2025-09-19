@@ -1,16 +1,16 @@
 SELECT DISTINCT
-    D.did,
-    PR.processing,
-    S.name AS script_name,
-    S.order_idx AS order_idx,
-    S.options AS script_options,
-    PS.name AS parent_script_name,
-    S.create_by,
-    S.create_at,
-    S.modify_by,
-    S.modify_at
-FROM datasets D
-LEFT JOIN processing PR on PR.processing_id=D.processing_id
-LEFT JOIN datasets_scripts DS ON D.dataset_id = DS.dataset_id
-LEFT JOIN scripts S ON DS.script_id = S.script_id
-LEFT JOIN scripts PS ON S.parent_script_id = PS.script_id
+    d.did,
+    pr.processing,
+    s.name AS script_name,
+    s.order_idx AS order_idx,
+    s.options AS script_options,
+    ps.name AS parent_script_name,
+    s.create_by,
+    s.create_at,
+    s.modify_by,
+    s.modify_at
+FROM datasets d
+LEFT JOIN processing pr on pr.processing_id=d.processing_id
+LEFT JOIN datasets_scripts ds ON d.dataset_id = ds.dataset_id
+LEFT JOIN scripts s ON ds.script_id = s.script_id
+LEFT JOIN scripts ps ON s.parent_script_id = ps.script_id

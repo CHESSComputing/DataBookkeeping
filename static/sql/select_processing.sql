@@ -1,1 +1,1 @@
-SELECT * FROM processing P;
+SELECT * FROM processing p;

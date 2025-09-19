@@ -21,7 +21,7 @@ func (a *API) GetChild() error {
 	}
 	if val, ok := a.Params["did"]; ok {
 		if val != "" {
-			conds, args = AddParam("did", "PDS.did", a.Params, conds, args)
+			conds, args = AddParam("did", "pds.did", a.Params, conds, args)
 		}
 	}
 

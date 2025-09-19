@@ -1,11 +1,11 @@
 SELECT DISTINCT
-    D.did,
-    E.name AS environment_name,
-    PK.name AS package_name,
-    PK.version AS package_version
+    d.did,
+    e.name AS environment_name,
+    pk.name AS package_name,
+    pk.version AS package_version
 FROM datasets D
-LEFT JOIN datasets_environments DE ON D.dataset_id = DE.dataset_id
-LEFT JOIN environments E ON DE.environment_id = E.environment_id
-LEFT JOIN environments EO ON E.os_id = EO.os_id
-LEFT JOIN environments_packages EP ON E.environment_id = EP.environment_id
-LEFT JOIN packages PK ON EP.package_id = PK.package_id
+LEFT JOIN datasets_environments de ON d.dataset_id = de.dataset_id
+LEFT JOIN environments e ON de.environment_id = e.environment_id
+LEFT JOIN environments eo ON e.os_id = eo.os_id
+LEFT JOIN environments_packages ep ON e.environment_id = ep.environment_id
+LEFT JOIN packages pk ON ep.package_id = pk.package_id

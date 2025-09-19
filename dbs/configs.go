@@ -39,13 +39,11 @@ func (a *API) GetConfig() error {
 	if err != nil {
 		return Error(err, LoadErrorCode, "", "dbs.config.Config")
 	}
-	log.Printf("### a.Params=%+v", a.Params)
 	if val, ok := a.Params["did"]; ok && val != "" {
-		conds, args = AddParam("did", "D.did", a.Params, conds, args)
+		conds, args = AddParam("did", "d.did", a.Params, conds, args)
 	}
 
 	stm = WhereClause(stm, conds)
-	log.Printf("#### stm=%s conds=%v args=%v", stm, conds, args)
 
 	// use generic query API to fetch the results from DB
 	err = executeAll(a.Writer, a.Separator, stm, args...)
