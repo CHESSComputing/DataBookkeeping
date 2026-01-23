@@ -21,8 +21,8 @@ type Environments struct {
 	NAME                  string `json:"name" validate:"required"`
 	VERSION               string `json:"version" validate:"required"`
 	DETAILS               string `json:"details" validate:"required"`
-	OS_ID                 int64  `json:"os_id"`
-	PARENT_ENVIRONMENT_ID int64  `json:"parent_environment_id"`
+	OS_ID                 *int64 `json:"os_id"`
+	PARENT_ENVIRONMENT_ID *int64 `json:"parent_environment_id"`
 	CREATE_AT             int64  `json:"create_at"`
 	CREATE_BY             string `json:"create_by"`
 	MODIFY_AT             int64  `json:"modify_at"`

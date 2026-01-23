@@ -30,7 +30,11 @@ func (e *EnvironmentRecord) Insert(tx *sql.Tx) (int64, error) {
 	if e.Parent != "" {
 		parent_environment_id, err := GetID(tx, "environments", "environment_id", "name", e.Parent)
 		if err == nil {
-			r.PARENT_ENVIRONMENT_ID = parent_environment_id
+			if parent_environment_id != 0 {
+				r.PARENT_ENVIRONMENT_ID = &parent_environment_id
+			} else {
+				r.PARENT_ENVIRONMENT_ID = nil
+			}
 		} else {
 			return 0, err
 		}
@@ -40,15 +44,23 @@ func (e *EnvironmentRecord) Insert(tx *sql.Tx) (int64, error) {
 	if e.OSName != "" {
 		os_id, err := GetID(tx, "osinfo", "os_id", "name", e.OSName)
 		if err == nil {
-			r.OS_ID = os_id
+			if os_id != 0 {
+				r.OS_ID = &os_id
+			} else {
+				r.OS_ID = nil
+			}
 		} else {
 			// if no os_name found in environment record we will try to insert it here
 			osRec := OsInfoRecord{Name: e.OSName, Version: "N/A", Kernel: "N/A"}
-			osId, err := osRec.Insert(tx)
+			os_id, err := osRec.Insert(tx)
 			if err != nil {
 				return 0, err
 			}
-			r.OS_ID = osId
+			if os_id != 0 {
+				r.OS_ID = &os_id
+			} else {
+				r.OS_ID = nil
+			}
 		}
 	}
 
