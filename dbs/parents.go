@@ -107,7 +107,7 @@ func (a *API) InsertParent() error {
 	}
 	_, err = record.Insert(tx)
 	if err != nil {
-		return err
+		return fmt.Errorf("[DataBookkeeping.dbs.API.InsertParent] record.Insert error: %w", err)
 	}
 	err = tx.Commit()
 	return err

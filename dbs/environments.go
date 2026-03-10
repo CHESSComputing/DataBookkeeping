@@ -89,7 +89,7 @@ func (a *API) InsertEnvironment() error {
 	}
 	defer tx.Rollback()
 	if _, err := rec.Insert(tx); err != nil {
-		return err
+		return fmt.Errorf("[DataBookkeeping.dbs.API.InsertEnvironment] rec.Insert error: %w", err)
 	}
 
 	err = tx.Commit()
@@ -104,7 +104,7 @@ func (a *API) UpdateEnvironment() error {
 	// extract payload from API and initialize environment attributes
 	data, err := io.ReadAll(a.Reader)
 	if err != nil {
-		return err
+		return fmt.Errorf("[DataBookkeeping.dbs.API.UpdateEnvironment] io.ReadAll error: %w", err)
 	}
 	rec := &Environments{}
 	return DBOperation("update", rec, data, "dbs.UpdateEnvironment")
@@ -115,7 +115,7 @@ func (a *API) DeleteEnvironment() error {
 	// extract payload from API and initialize environment attributes
 	data, err := io.ReadAll(a.Reader)
 	if err != nil {
-		return err
+		return fmt.Errorf("[DataBookkeeping.dbs.API.DeleteEnvironment] io.ReadAll error: %w", err)
 	}
 	rec := &Environments{}
 	return DBOperation("delete", rec, data, "dbs.DeleteEnvironment")

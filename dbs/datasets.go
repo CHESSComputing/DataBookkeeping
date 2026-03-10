@@ -178,7 +178,7 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 			site := Sites{SITE: rec.Site}
 			siteId, err = site.Insert(tx)
 			if err != nil {
-				return err
+				return fmt.Errorf("[DataBookkeeping.dbs.insertParts] site.Insert error: %w", err)
 			}
 		}
 	}
@@ -193,7 +193,7 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 		if err != nil || osId == 0 {
 			osId, err = rec.OsInfo.Insert(tx)
 			if err != nil {
-				return err
+				return fmt.Errorf("[DataBookkeeping.dbs.insertParts] rec.OsInfo.Insert error: %w", err)
 			}
 		}
 		record.OSINFO_ID = osId
@@ -212,7 +212,7 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 			if err != nil || environmentId == 0 {
 				environmentId, err = env.Insert(tx)
 				if err != nil {
-					return err
+					return fmt.Errorf("[DataBookkeeping.dbs.insertParts] env.Insert error: %w", err)
 				}
 			}
 			if environmentId == 0 {
@@ -233,7 +233,7 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 			if err != nil || scriptId == 0 {
 				scriptId, err = script.Insert(tx)
 				if err != nil && !strings.Contains(err.Error(), "UNIQUE") {
-					return err
+					return fmt.Errorf("[DataBookkeeping.dbs.insertParts] script.Insert error: %w", err)
 				}
 			}
 			scriptIds = append(scriptIds, scriptId)
@@ -256,7 +256,7 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 		}
 		processingId, err = processing.Insert(tx)
 		if err != nil {
-			return err
+			return fmt.Errorf("[DataBookkeeping.dbs.insertParts] processing.Insert error: %w", err)
 		}
 	}
 	record.PROCESSING_ID = processingId
@@ -271,7 +271,7 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 		record.PROCESSING_ID = processingId
 		datasetId, err = record.Insert(tx)
 		if err != nil {
-			return err
+			return fmt.Errorf("[DataBookkeeping.dbs.insertParts] record.Insert error: %w", err)
 		}
 	}
 	record.DATASET_ID = datasetId
@@ -280,14 +280,14 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 	for _, envId := range envIds {
 		err = InsertManyToMany(tx, "insert_dataset_environment", datasetId, envId)
 		if err != nil && !strings.Contains(err.Error(), "UNIQUE") {
-			return err
+			return fmt.Errorf("[DataBookkeeping.dbs.insertParts] InsertManyToMany error: %w", err)
 		}
 	}
 	// insert dataset-scripts relationships
 	for _, sid := range scriptIds {
 		err = InsertManyToMany(tx, "insert_dataset_script", datasetId, sid)
 		if err != nil && !strings.Contains(err.Error(), "UNIQUE") {
-			return err
+			return fmt.Errorf("[DataBookkeeping.dbs.insertParts] InsertManyToMany error: %w", err)
 		}
 	}
 	// insert dataset-configs relationships
@@ -295,7 +295,7 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 	configId, err = config.Insert(tx)
 	err = InsertManyToMany(tx, "insert_dataset_config", datasetId, configId)
 	if err != nil && !strings.Contains(err.Error(), "UNIQUE") {
-		return err
+		return fmt.Errorf("[DataBookkeeping.dbs.insertParts] InsertManyToMany error: %w", err)
 	}
 	record.CONFIG_ID = configId
 
@@ -308,7 +308,7 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 			ds := Datasets{DID: rec.Parent}
 			parentId, err = ds.Insert(tx)
 			if err != nil {
-				return err
+				return fmt.Errorf("[DataBookkeeping.dbs.insertParts] ds.Insert error: %w", err)
 			}
 		}
 		if parentId == 0 {
@@ -319,7 +319,7 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 		parent := Parents{PARENT_ID: parentId, DATASET_ID: datasetId}
 		_, err = parent.Insert(tx)
 		if err != nil {
-			return err
+			return fmt.Errorf("[DataBookkeeping.dbs.insertParts] parent.Insert error: %w", err)
 		}
 	}
 
@@ -354,7 +354,7 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 		}
 		err = InsertManyToMany(tx, "insert_dataset_file", datasetId, fileId, "input")
 		if err != nil && !strings.Contains(err.Error(), "UNIQUE") {
-			return err
+			return fmt.Errorf("[DataBookkeeping.dbs.insertParts] InsertManyToMany error: %w", err)
 		}
 	}
 
@@ -373,7 +373,7 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 		}
 		err = InsertManyToMany(tx, "insert_dataset_file", datasetId, fileId, "output")
 		if err != nil && !strings.Contains(err.Error(), "UNIQUE") {
-			return err
+			return fmt.Errorf("[DataBookkeeping.dbs.insertParts] InsertManyToMany error: %w", err)
 		}
 	}
 
@@ -386,7 +386,7 @@ func (a *API) UpdateDataset() error {
 	// extract payload from API and initialize dataset attributes
 	data, err := io.ReadAll(a.Reader)
 	if err != nil {
-		return err
+		return fmt.Errorf("[DataBookkeeping.dbs.API.UpdateDataset] io.ReadAll error: %w", err)
 	}
 	rec := &Datasets{}
 	return DBOperation("update", rec, data, "dbs.UpdateDatset")
@@ -395,7 +395,7 @@ func (a *API) DeleteDataset() error {
 	// extract payload from API and initialize dataset attributes
 	data, err := io.ReadAll(a.Reader)
 	if err != nil {
-		return err
+		return fmt.Errorf("[DataBookkeeping.dbs.API.DeleteDataset] io.ReadAll error: %w", err)
 	}
 
 	rec := &Datasets{}

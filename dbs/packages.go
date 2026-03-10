@@ -86,7 +86,7 @@ func (a *API) InsertPackage() error {
 	}
 	defer tx.Rollback()
 	if _, err := rec.Insert(tx); err != nil {
-		return err
+		return fmt.Errorf("[DataBookkeeping.dbs.API.InsertPackage] rec.Insert error: %w", err)
 	}
 
 	err = tx.Commit()

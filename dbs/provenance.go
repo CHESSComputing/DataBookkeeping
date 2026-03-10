@@ -90,7 +90,7 @@ func (a *API) GetParentDID(did string) (string, error) {
 	rows, err := tx.Query(stm, args...)
 
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("[DataBookkeeping.dbs.API.GetParentDID] tx.Query error: %w", err)
 	}
 	defer rows.Close()
 
@@ -101,7 +101,7 @@ func (a *API) GetParentDID(did string) (string, error) {
 	for rows.Next() {
 		err := rows.Scan(&did, &parentDID, &cat, &cby, &mat, &mby)
 		if err != nil {
-			return "", err
+			return "", fmt.Errorf("[DataBookkeeping.dbs.API.GetParentDID] rows.Scan error: %w", err)
 		}
 		break
 	}
@@ -160,7 +160,7 @@ func (a *API) GetProvenance() error {
 	rows, err := tx.Query(stm, args...)
 
 	if err != nil {
-		return err
+		return fmt.Errorf("[DataBookkeeping.dbs.API.GetProvenance] tx.Query error: %w", err)
 	}
 	defer rows.Close()
 
@@ -367,12 +367,12 @@ func (a *API) InsertProvenance() error {
 	// extract payload from API
 	data, err := io.ReadAll(a.Reader)
 	if err != nil {
-		return err
+		return fmt.Errorf("[DataBookkeeping.dbs.API.InsertProvenance] io.ReadAll error: %w", err)
 	}
 	var userRecord map[string]any
 	err = json.Unmarshal(data, &userRecord)
 	if err != nil {
-		return err
+		return fmt.Errorf("[DataBookkeeping.dbs.API.InsertProvenance] json.Unmarshal error: %w", err)
 	}
 
 	// parameters for provenance record

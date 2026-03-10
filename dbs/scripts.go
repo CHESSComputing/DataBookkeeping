@@ -88,7 +88,7 @@ func (a *API) InsertScript() error {
 	}
 	defer tx.Rollback()
 	if _, err := rec.Insert(tx); err != nil {
-		return err
+		return fmt.Errorf("[DataBookkeeping.dbs.API.InsertScript] rec.Insert error: %w", err)
 	}
 
 	err = tx.Commit()
@@ -103,7 +103,7 @@ func (a *API) UpdateScript() error {
 	// extract payload from API and initialize script attributes
 	data, err := io.ReadAll(a.Reader)
 	if err != nil {
-		return err
+		return fmt.Errorf("[DataBookkeeping.dbs.API.UpdateScript] io.ReadAll error: %w", err)
 	}
 	rec := &Scripts{}
 	return DBOperation("update", rec, data, "dbs.UpdateeScript")
@@ -114,7 +114,7 @@ func (a *API) DeleteScript() error {
 	// extract payload from API and initialize script attributes
 	data, err := io.ReadAll(a.Reader)
 	if err != nil {
-		return err
+		return fmt.Errorf("[DataBookkeeping.dbs.API.DeleteScript] io.ReadAll error: %w", err)
 	}
 	rec := &Scripts{}
 	return DBOperation("delete", rec, data, "dbs.DeleteScript")

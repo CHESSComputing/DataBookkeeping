@@ -2,6 +2,7 @@ package dbs
 
 import (
 	"database/sql"
+	"fmt"
 
 	lexicon "github.com/CHESSComputing/golib/lexicon"
 )
@@ -54,7 +55,7 @@ func (e *EnvironmentRecord) Insert(tx *sql.Tx) (int64, error) {
 			osRec := OsInfoRecord{Name: e.OSName, Version: "N/A", Kernel: "N/A"}
 			os_id, err := osRec.Insert(tx)
 			if err != nil {
-				return 0, err
+				return 0, fmt.Errorf("[DataBookkeeping.dbs.EnvironmentRecord.Insert] osRec.Insert error: %w", err)
 			}
 			if os_id != 0 {
 				r.OS_ID = &os_id

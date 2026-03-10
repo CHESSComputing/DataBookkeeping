@@ -65,7 +65,7 @@ func (a *API) UpdateConfig() error {
 	// extract payload from API and initialize config attributes
 	data, err := io.ReadAll(a.Reader)
 	if err != nil {
-		return err
+		return fmt.Errorf("[DataBookkeeping.dbs.API.UpdateConfig] io.ReadAll error: %w", err)
 	}
 	rec := &Config{}
 	return DBOperation("update", rec, data, "dbs.UpdateConfig")
@@ -76,7 +76,7 @@ func (a *API) DeleteConfig() error {
 	// extract payload from API and initialize config attributes
 	data, err := io.ReadAll(a.Reader)
 	if err != nil {
-		return err
+		return fmt.Errorf("[DataBookkeeping.dbs.API.DeleteConfig] io.ReadAll error: %w", err)
 	}
 	rec := &Config{}
 	return DBOperation("delete", rec, data, "dbs.DeleteConfig")
@@ -185,7 +185,7 @@ func marshalForSQL(val any) (string, error) {
 	if kind == reflect.Map || kind == reflect.Slice || kind == reflect.Struct {
 		j, err := json.Marshal(val)
 		if err != nil {
-			return "", err
+			return "", fmt.Errorf("[DataBookkeeping.dbs.marshalForSQL] json.Marshal error: %w", err)
 		}
 		return strconv.Quote(string(j)), nil // wrap JSON string in SQL quotes
 	}
