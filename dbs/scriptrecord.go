@@ -28,11 +28,16 @@ func (e *ScriptRecord) Insert(tx *sql.Tx) (int64, error) {
 		if err == nil {
 			r.PARENT_SCRIPT_ID = parent_script_id
 		} else {
-			return 0, err
+			msg := "unable to get parent scripts id"
+			return 0, Error(err, ScriptsErrorCode, msg, "dbs.ScriptRecord.GetID")
 		}
 	}
 	sid, err := r.Insert(tx)
-	return sid, err
+	if err != nil {
+		msg := "unable to insert script record"
+		return sid, Error(err, PackagesErrorCode, msg, "dbs.ScriptRecord.Insert")
+	}
+	return sid, nil
 }
 
 // Validate implementation of ScriptRecord

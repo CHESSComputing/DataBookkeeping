@@ -86,14 +86,15 @@ func (a *API) InsertPackage() error {
 	}
 	defer tx.Rollback()
 	if _, err := rec.Insert(tx); err != nil {
-		return fmt.Errorf("[DataBookkeeping.dbs.API.InsertPackage] rec.Insert error: %w", err)
+		msg := "unable to insert package record"
+		return Error(err, InsertErrorCode, msg, "dbs.API.InsertPackage")
 	}
 
 	err = tx.Commit()
 	if err != nil {
 		return Error(err, CommitErrorCode, "", "dbs.InsertPackage")
 	}
-	return err
+	return nil
 }
 
 // UpdatePackage inserts package record in DB

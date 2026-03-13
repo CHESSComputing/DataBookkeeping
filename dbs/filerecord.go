@@ -33,7 +33,11 @@ func (r *FileRecord) Insert(tx *sql.Tx) (int64, error) {
 		MODIFY_AT:     Date(),
 	}
 	fid, err := f.Insert(tx)
-	return fid, err
+	if err != nil {
+		msg := "unable to insert file record"
+		return fid, Error(err, FilesErrorCode, msg, "dbs.FileRecord.Insert")
+	}
+	return fid, nil
 }
 
 // Validate implementation of FileRecord

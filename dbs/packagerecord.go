@@ -16,7 +16,8 @@ type PackageRecord struct {
 func (e *PackageRecord) Insert(tx *sql.Tx) (int64, error) {
 	r := Packages{NAME: e.Name, VERSION: e.Version}
 	pid, err := r.Insert(tx)
-	return pid, err
+	msg := "unable to insert packages record"
+	return pid, Error(err, PackagesErrorCode, msg, "dbs.PackageRecord.Insert")
 }
 
 // Validate implementation of PackageRecord

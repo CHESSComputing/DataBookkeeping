@@ -88,14 +88,15 @@ func (a *API) InsertScript() error {
 	}
 	defer tx.Rollback()
 	if _, err := rec.Insert(tx); err != nil {
-		return fmt.Errorf("[DataBookkeeping.dbs.API.InsertScript] rec.Insert error: %w", err)
+		msg := "unable to insert script record"
+		return Error(err, InsertErrorCode, msg, "dbs.API.InsertScript")
 	}
 
 	err = tx.Commit()
 	if err != nil {
 		return Error(err, CommitErrorCode, "", "dbs.InsertScript")
 	}
-	return err
+	return nil
 }
 
 // UpdateScript inserts script record in DB
@@ -103,7 +104,8 @@ func (a *API) UpdateScript() error {
 	// extract payload from API and initialize script attributes
 	data, err := io.ReadAll(a.Reader)
 	if err != nil {
-		return fmt.Errorf("[DataBookkeeping.dbs.API.UpdateScript] io.ReadAll error: %w", err)
+		msg := "unable to read from API reader"
+		return Error(err, ReaderErrorCode, msg, "dbs.API.UpdateScript")
 	}
 	rec := &Scripts{}
 	return DBOperation("update", rec, data, "dbs.UpdateeScript")
@@ -114,7 +116,8 @@ func (a *API) DeleteScript() error {
 	// extract payload from API and initialize script attributes
 	data, err := io.ReadAll(a.Reader)
 	if err != nil {
-		return fmt.Errorf("[DataBookkeeping.dbs.API.DeleteScript] io.ReadAll error: %w", err)
+		msg := "unable to read from API reader"
+		return Error(err, ReaderErrorCode, msg, "dbs.API.DeleteScript")
 	}
 	rec := &Scripts{}
 	return DBOperation("delete", rec, data, "dbs.DeleteScript")

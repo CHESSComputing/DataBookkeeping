@@ -178,7 +178,8 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 			site := Sites{SITE: rec.Site}
 			siteId, err = site.Insert(tx)
 			if err != nil {
-				return fmt.Errorf("[DataBookkeeping.dbs.insertParts] site.Insert error: %w", err)
+				msg := "unable to insert site record"
+				return Error(err, InsertErrorCode, msg, "dbs.insertParts")
 			}
 		}
 	}
@@ -193,7 +194,8 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 		if err != nil || osId == 0 {
 			osId, err = rec.OsInfo.Insert(tx)
 			if err != nil {
-				return fmt.Errorf("[DataBookkeeping.dbs.insertParts] rec.OsInfo.Insert error: %w", err)
+				msg := "unable to insert os info record"
+				return Error(err, InsertErrorCode, msg, "dbs.insertParts")
 			}
 		}
 		record.OSINFO_ID = osId
@@ -212,7 +214,8 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 			if err != nil || environmentId == 0 {
 				environmentId, err = env.Insert(tx)
 				if err != nil {
-					return fmt.Errorf("[DataBookkeeping.dbs.insertParts] env.Insert error: %w", err)
+					msg := "unable to insert environment record"
+					return Error(err, InsertErrorCode, msg, "dbs.insertParts")
 				}
 			}
 			if environmentId == 0 {
@@ -233,18 +236,21 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 			if err != nil || scriptId == 0 {
 				scriptId, err = script.Insert(tx)
 				if err != nil && !strings.Contains(err.Error(), "UNIQUE") {
-					return fmt.Errorf("[DataBookkeeping.dbs.insertParts] script.Insert error: %w", err)
+					msg := "unable to insert scripts record"
+					return Error(err, InsertErrorCode, msg, "dbs.insertParts")
 				}
 			}
 			scriptIds = append(scriptIds, scriptId)
 		} else {
-			return errors.New("no script info is provide")
+			msg := "no script record is provided"
+			return Error(err, NoDataErrorCode, msg, "dbs.insertParts")
 		}
 	}
 
 	// insert processing info
 	if rec.Processing == "" {
-		return errors.New("procesing part of provenance records is empty")
+		msg := "processing part of provenance record(s) is empty"
+		return Error(err, NoDataErrorCode, msg, "dbs.insertParts")
 	}
 	if Verbose > 0 {
 		log.Printf("insert/look-up record processing %+v", rec.Processing)
@@ -256,7 +262,8 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 		}
 		processingId, err = processing.Insert(tx)
 		if err != nil {
-			return fmt.Errorf("[DataBookkeeping.dbs.insertParts] processing.Insert error: %w", err)
+			msg := "unable to unsert processing record"
+			return Error(err, InsertErrorCode, msg, "dbs.insertParts")
 		}
 	}
 	record.PROCESSING_ID = processingId
@@ -271,7 +278,8 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 		record.PROCESSING_ID = processingId
 		datasetId, err = record.Insert(tx)
 		if err != nil {
-			return fmt.Errorf("[DataBookkeeping.dbs.insertParts] record.Insert error: %w", err)
+			msg := "unable to insert record"
+			return Error(err, InsertErrorCode, msg, "dbs.insertParts")
 		}
 	}
 	record.DATASET_ID = datasetId
@@ -280,14 +288,16 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 	for _, envId := range envIds {
 		err = InsertManyToMany(tx, "insert_dataset_environment", datasetId, envId)
 		if err != nil && !strings.Contains(err.Error(), "UNIQUE") {
-			return fmt.Errorf("[DataBookkeeping.dbs.insertParts] InsertManyToMany error: %w", err)
+			msg := "unable to insert dataset environment, UNIQUE constrain violation"
+			return Error(err, InsertErrorCode, msg, "dbs.insertParts")
 		}
 	}
 	// insert dataset-scripts relationships
 	for _, sid := range scriptIds {
 		err = InsertManyToMany(tx, "insert_dataset_script", datasetId, sid)
 		if err != nil && !strings.Contains(err.Error(), "UNIQUE") {
-			return fmt.Errorf("[DataBookkeeping.dbs.insertParts] InsertManyToMany error: %w", err)
+			msg := "unable to insert dataset script, UNIQUE constrain violation"
+			Error(err, InsertErrorCode, msg, "dbs.insertParts")
 		}
 	}
 	// insert dataset-configs relationships
@@ -295,7 +305,8 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 	configId, err = config.Insert(tx)
 	err = InsertManyToMany(tx, "insert_dataset_config", datasetId, configId)
 	if err != nil && !strings.Contains(err.Error(), "UNIQUE") {
-		return fmt.Errorf("[DataBookkeeping.dbs.insertParts] InsertManyToMany error: %w", err)
+		msg := "unable o insert dataset config, UNIQUE constrain violation"
+		return Error(err, InsertErrorCode, msg, "dbs.insertParts")
 	}
 	record.CONFIG_ID = configId
 
@@ -308,7 +319,8 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 			ds := Datasets{DID: rec.Parent}
 			parentId, err = ds.Insert(tx)
 			if err != nil {
-				return fmt.Errorf("[DataBookkeeping.dbs.insertParts] ds.Insert error: %w", err)
+				msg := "unable to insert dataset record with parent"
+				return Error(err, InsertErrorCode, msg, "dbs.insertParts")
 			}
 		}
 		if parentId == 0 {
@@ -319,7 +331,8 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 		parent := Parents{PARENT_ID: parentId, DATASET_ID: datasetId}
 		_, err = parent.Insert(tx)
 		if err != nil {
-			return fmt.Errorf("[DataBookkeeping.dbs.insertParts] parent.Insert error: %w", err)
+			msg := "unable to insert parents record"
+			return Error(err, InsertErrorCode, msg, "dbs.insertParts")
 		}
 	}
 
@@ -354,7 +367,8 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 		}
 		err = InsertManyToMany(tx, "insert_dataset_file", datasetId, fileId, "input")
 		if err != nil && !strings.Contains(err.Error(), "UNIQUE") {
-			return fmt.Errorf("[DataBookkeeping.dbs.insertParts] InsertManyToMany error: %w", err)
+			msg := "unable to insert dataset file, UNIQUE constrain violation"
+			return Error(err, InsertErrorCode, msg, "dbs.insertParts")
 		}
 	}
 
@@ -373,20 +387,26 @@ func insertParts(rec *DatasetRecord, record *Datasets) error {
 		}
 		err = InsertManyToMany(tx, "insert_dataset_file", datasetId, fileId, "output")
 		if err != nil && !strings.Contains(err.Error(), "UNIQUE") {
-			return fmt.Errorf("[DataBookkeeping.dbs.insertParts] InsertManyToMany error: %w", err)
+			msg := "unable to insert dataset file, UNIQUE constrain violation"
+			return Error(err, InsertErrorCode, msg, "dbs.insertParts")
 		}
 	}
 
 	// commit all transactions
 	err = tx.Commit()
-	return err
+	if err != nil {
+		msg := "unable to commit transaction"
+		return Error(err, CommitErrorCode, msg, "dbs.insertParts")
+	}
+	return nil
 }
 
 func (a *API) UpdateDataset() error {
 	// extract payload from API and initialize dataset attributes
 	data, err := io.ReadAll(a.Reader)
 	if err != nil {
-		return fmt.Errorf("[DataBookkeeping.dbs.API.UpdateDataset] io.ReadAll error: %w", err)
+		msg := "unable to read from API reader"
+		return Error(err, ReaderErrorCode, msg, "dbs.API.UpdateDataset")
 	}
 	rec := &Datasets{}
 	return DBOperation("update", rec, data, "dbs.UpdateDatset")
@@ -395,7 +415,8 @@ func (a *API) DeleteDataset() error {
 	// extract payload from API and initialize dataset attributes
 	data, err := io.ReadAll(a.Reader)
 	if err != nil {
-		return fmt.Errorf("[DataBookkeeping.dbs.API.DeleteDataset] io.ReadAll error: %w", err)
+		msg := "unable to read from API reader"
+		return Error(err, ReaderErrorCode, msg, "dbs.API.DeleteDataset")
 	}
 
 	rec := &Datasets{}

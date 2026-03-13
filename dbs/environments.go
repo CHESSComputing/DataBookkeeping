@@ -89,14 +89,15 @@ func (a *API) InsertEnvironment() error {
 	}
 	defer tx.Rollback()
 	if _, err := rec.Insert(tx); err != nil {
-		return fmt.Errorf("[DataBookkeeping.dbs.API.InsertEnvironment] rec.Insert error: %w", err)
+		msg := "unable to insert environment record"
+		return Error(err, InsertErrorCode, msg, "dbs.API.InsertEnvironment")
 	}
 
 	err = tx.Commit()
 	if err != nil {
 		return Error(err, CommitErrorCode, "", "dbs.InsertEnvironment")
 	}
-	return err
+	return nil
 }
 
 // UpdateEnvironment inserts environment record in DB
@@ -104,7 +105,8 @@ func (a *API) UpdateEnvironment() error {
 	// extract payload from API and initialize environment attributes
 	data, err := io.ReadAll(a.Reader)
 	if err != nil {
-		return fmt.Errorf("[DataBookkeeping.dbs.API.UpdateEnvironment] io.ReadAll error: %w", err)
+		msg := "unable to read from API reader"
+		return Error(err, ReaderErrorCode, msg, "dbs.API.UpdateEnvironment")
 	}
 	rec := &Environments{}
 	return DBOperation("update", rec, data, "dbs.UpdateEnvironment")
@@ -115,7 +117,8 @@ func (a *API) DeleteEnvironment() error {
 	// extract payload from API and initialize environment attributes
 	data, err := io.ReadAll(a.Reader)
 	if err != nil {
-		return fmt.Errorf("[DataBookkeeping.dbs.API.DeleteEnvironment] io.ReadAll error: %w", err)
+		msg := "unable to read from API reader"
+		return Error(err, ReaderErrorCode, msg, "dbs.API.DeleteEnvironment")
 	}
 	rec := &Environments{}
 	return DBOperation("delete", rec, data, "dbs.DeleteEnvironment")

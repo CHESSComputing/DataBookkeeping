@@ -22,7 +22,11 @@ func (o *OsInfoRecord) IsEmpty() bool {
 func (o *OsInfoRecord) Insert(tx *sql.Tx) (int64, error) {
 	r := OsInfo{NAME: o.Name, VERSION: o.Version, KERNEL: o.Kernel}
 	oid, err := r.Insert(tx)
-	return oid, err
+	if err != nil {
+		msg := "unable to insert osinfo record"
+		return oid, Error(err, OsInfoErrorCode, msg, "dbs.OsInfoRecord.Insert")
+	}
+	return oid, nil
 }
 
 // Validate implementation of OsInfoRecord

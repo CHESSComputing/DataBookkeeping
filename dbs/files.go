@@ -81,7 +81,8 @@ func (a *API) UpdateFile() error {
 	// extract payload from API and initialize file attributes
 	data, err := io.ReadAll(a.Reader)
 	if err != nil {
-		return fmt.Errorf("[DataBookkeeping.dbs.API.UpdateFile] io.ReadAll error: %w", err)
+		msg := "unable to read from API reader"
+		return Error(err, ReaderErrorCode, msg, "dbs.API.UpdateFile")
 	}
 	rec := &Files{}
 	return DBOperation("update", rec, data, "dbs.UpdateFile")
@@ -90,7 +91,8 @@ func (a *API) DeleteFile() error {
 	// extract payload from API and initialize file attributes
 	data, err := io.ReadAll(a.Reader)
 	if err != nil {
-		return fmt.Errorf("[DataBookkeeping.dbs.API.DeleteFile] io.ReadAll error: %w", err)
+		msg := "unable to reade from API reader"
+		return Error(err, ReaderErrorCode, msg, "dbs.API.DeleteFile")
 	}
 	rec := &Files{}
 	return DBOperation("delete", rec, data, "dbs.DeleteFile")

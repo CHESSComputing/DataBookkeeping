@@ -107,10 +107,15 @@ func (a *API) InsertParent() error {
 	}
 	_, err = record.Insert(tx)
 	if err != nil {
-		return fmt.Errorf("[DataBookkeeping.dbs.API.InsertParent] record.Insert error: %w", err)
+		msg := "unable to insert Parents record"
+		return Error(err, ParentsErrorCode, msg, "dbs.API.InsertParent")
 	}
 	err = tx.Commit()
-	return err
+	if err != nil {
+		msg := "unable to commit Parents record"
+		return Error(err, ParentsErrorCode, msg, "dbs.API.InsertParent")
+	}
+	return nil
 }
 
 // UpdateParent inserts parent record in DB

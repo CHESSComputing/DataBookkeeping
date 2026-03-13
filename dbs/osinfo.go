@@ -66,7 +66,8 @@ func (a *API) UpdateOsInfo() error {
 	// extract payload from API and initialize osinfo attributes
 	data, err := io.ReadAll(a.Reader)
 	if err != nil {
-		return fmt.Errorf("[DataBookkeeping.dbs.API.UpdateOsInfo] io.ReadAll error: %w", err)
+		msg := "unable to read data from API reader"
+		return Error(err, ReaderErrorCode, msg, "dbs.API.UpdateOsInfo")
 	}
 	rec := &OsInfo{}
 	return DBOperation("update", rec, data, "dbs.UpdateOsInfo")
@@ -77,7 +78,8 @@ func (a *API) DeleteOsInfo() error {
 	// extract payload from API and initialize osinfo attributes
 	data, err := io.ReadAll(a.Reader)
 	if err != nil {
-		return fmt.Errorf("[DataBookkeeping.dbs.API.DeleteOsInfo] io.ReadAll error: %w", err)
+		msg := "unable to read data from API reader"
+		return Error(err, ReaderErrorCode, msg, "dbs.API.DeleteOsInfo")
 	}
 	rec := &OsInfo{}
 	return DBOperation("delete", rec, data, "dbs.DeleteOsInfo")

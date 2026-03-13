@@ -22,7 +22,11 @@ func (b *BucketRecord) IsEmpty() bool {
 func (e *BucketRecord) Insert(tx *sql.Tx) (int64, error) {
 	r := Buckets{BUCKET: e.Name, UUID: e.UUID, META_DATA: e.MetaData}
 	bid, err := r.Insert(tx)
-	return bid, err
+	if err != nil {
+		msg := "unable to insert bucket record"
+		return bid, Error(err, BucketsErrorCode, msg, "dbs.BucketRecord.Insert")
+	}
+	return bid, nil
 }
 
 // Validate implementation of BucketRecord

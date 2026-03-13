@@ -2,7 +2,6 @@ package dbs
 
 import (
 	"database/sql"
-	"fmt"
 
 	lexicon "github.com/CHESSComputing/golib/lexicon"
 )
@@ -37,7 +36,8 @@ func (e *EnvironmentRecord) Insert(tx *sql.Tx) (int64, error) {
 				r.PARENT_ENVIRONMENT_ID = nil
 			}
 		} else {
-			return 0, err
+			msg := "unable to get parent environment id"
+			return 0, Error(err, EncodeErrorCode, msg, "dbs.EnvironmentRecord.Insert")
 		}
 	}
 
@@ -55,7 +55,8 @@ func (e *EnvironmentRecord) Insert(tx *sql.Tx) (int64, error) {
 			osRec := OsInfoRecord{Name: e.OSName, Version: "N/A", Kernel: "N/A"}
 			os_id, err := osRec.Insert(tx)
 			if err != nil {
-				return 0, fmt.Errorf("[DataBookkeeping.dbs.EnvironmentRecord.Insert] osRec.Insert error: %w", err)
+				msg := "fail to insert OsInfoRecord"
+				return 0, Error(err, OsInfoErrorCode, msg, "dbs.EnvironmentRecord.Insert")
 			}
 			if os_id != 0 {
 				r.OS_ID = &os_id
@@ -67,6 +68,10 @@ func (e *EnvironmentRecord) Insert(tx *sql.Tx) (int64, error) {
 
 	// insert env record
 	eid, err := r.Insert(tx)
+	if err != nil {
+		msg := "unable to insert environment record"
+		return 0, Error(err, EnvironmentsErrorCode, msg, "dbs.EnvironmentRecord.Insert")
+	}
 
 	// insert packages if they are provided
 	for _, pkg := range e.Packages {
@@ -82,7 +87,7 @@ func (e *EnvironmentRecord) Insert(tx *sql.Tx) (int64, error) {
 			return 0, Error(err, ManyToManyErrorCode, msg, "dbs.EnvironmentRecord.Insert")
 		}
 	}
-	return eid, err
+	return eid, nil
 }
 
 // Validate implementation of EnvironmentRecord

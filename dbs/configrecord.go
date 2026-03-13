@@ -19,7 +19,11 @@ func (c *ConfigRecord) IsEmpty() bool {
 func (o *ConfigRecord) Insert(tx *sql.Tx) (int64, error) {
 	r := Config{CONTENT: o.Content}
 	cid, err := r.Insert(tx)
-	return cid, err
+	if err != nil {
+		msg := "unable to insert config record"
+		return cid, Error(err, PackagesErrorCode, msg, "dbs.ConfigRecord.Insert")
+	}
+	return cid, nil
 }
 
 // Validate implementation of ConfigRecord

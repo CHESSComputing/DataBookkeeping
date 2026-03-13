@@ -79,6 +79,9 @@ const (
 	SitesErrorCode                             // 138 sites error code
 	ConfigsErrorCode                           // 139 configs error code
 	UnsupportedOperationErrorCode              // 140 unsupported operation error code
+	BucketsErrorCode                           // 141 bucket error code
+	ProvenanceErrorCode                        // 142 provenance error code
+	NoDataErrorCode                            // 143 no data error code
 	LastAvailableErrorCode                     // last available DBS error code
 )
 
@@ -164,7 +167,6 @@ func (e *DBSError) Explain() string {
 	default:
 		return "Not defined"
 	}
-	return "Not defined"
 }
 
 // helper function to create dbs error

@@ -90,7 +90,8 @@ func (a *API) GetParentDID(did string) (string, error) {
 	rows, err := tx.Query(stm, args...)
 
 	if err != nil {
-		return "", fmt.Errorf("[DataBookkeeping.dbs.API.GetParentDID] tx.Query error: %w", err)
+		msg := "unable to query database"
+		return "", Error(err, QueryErrorCode, msg, "dbs.API.GetParentDID")
 	}
 	defer rows.Close()
 
@@ -101,7 +102,8 @@ func (a *API) GetParentDID(did string) (string, error) {
 	for rows.Next() {
 		err := rows.Scan(&did, &parentDID, &cat, &cby, &mat, &mby)
 		if err != nil {
-			return "", fmt.Errorf("[DataBookkeeping.dbs.API.GetParentDID] rows.Scan error: %w", err)
+			msg := "unable to scan database rows"
+			return "", Error(err, RowsScanErrorCode, msg, "dbs.API.GetParentDID")
 		}
 		break
 	}
@@ -160,7 +162,8 @@ func (a *API) GetProvenance() error {
 	rows, err := tx.Query(stm, args...)
 
 	if err != nil {
-		return fmt.Errorf("[DataBookkeeping.dbs.API.GetProvenance] tx.Query error: %w", err)
+		msg := "unable to query database"
+		return Error(err, QueryErrorCode, msg, "dbs.API.GetProvenance")
 	}
 	defer rows.Close()
 
@@ -201,7 +204,8 @@ func (a *API) GetProvenance() error {
 		)
 		if err != nil {
 			log.Println("ERROR: unable to scan rows", err)
-			return err
+			msg := "unable to scan database rows"
+			return Error(err, ProvenanceErrorCode, msg, "dbs.API.GetProvenance")
 		}
 		if didSql.Valid {
 			did = didSql.String
@@ -323,8 +327,10 @@ func (a *API) GetProvenance() error {
 	jsonOutput, err := json.MarshalIndent(out, "", "  ")
 	if err == nil {
 		a.Writer.Write(jsonOutput)
+		return nil
 	}
-	return err
+	msg := "unable to marhsl output records"
+	return Error(err, ProvenanceErrorCode, msg, "dbs.API.GetProvenance")
 }
 
 // UniqueBucketRecords removes duplicates from a slice and returns a new slice with unique elements.
@@ -367,12 +373,14 @@ func (a *API) InsertProvenance() error {
 	// extract payload from API
 	data, err := io.ReadAll(a.Reader)
 	if err != nil {
-		return fmt.Errorf("[DataBookkeeping.dbs.API.InsertProvenance] io.ReadAll error: %w", err)
+		msg := "unable to read from API reader"
+		return Error(err, ReaderErrorCode, msg, "dbs.API.InsertProvenance")
 	}
 	var userRecord map[string]any
 	err = json.Unmarshal(data, &userRecord)
 	if err != nil {
-		return fmt.Errorf("[DataBookkeeping.dbs.API.InsertProvenance] json.Unmarshal error: %w", err)
+		msg := "unable to Unmarshal data"
+		return Error(err, MarshalErrorCode, msg, "dbs.API.InsertProvenance")
 	}
 
 	// parameters for provenance record
