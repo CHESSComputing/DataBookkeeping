@@ -3,10 +3,10 @@ module github.com/CHESSComputing/DataBookkeeping
 go 1.26.1
 
 require (
-	github.com/CHESSComputing/golib v1.1.4
+	github.com/CHESSComputing/golib v1.1.5
 	github.com/gin-gonic/gin v1.12.0
 	github.com/go-playground/validator/v10 v10.30.1
-	github.com/mattn/go-sqlite3 v1.14.34
+	github.com/mattn/go-sqlite3 v1.14.37
 )
 
 require (
