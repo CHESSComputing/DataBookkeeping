@@ -171,6 +171,7 @@ func (a *API) GetProvenance() error {
 
 	// Process results
 	var provenance DatasetRecord
+	provenance.Did = dataset_did
 
 	// keep map of unique packages
 	envMap := make(map[int]*EnvironmentRecord)  // Store environments by environment_id
