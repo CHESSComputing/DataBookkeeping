@@ -171,7 +171,6 @@ func (a *API) GetProvenance() error {
 
 	// Process results
 	var provenance DatasetRecord
-	provenance.Did = dataset_did
 
 	// keep map of unique packages
 	envMap := make(map[int]*EnvironmentRecord)  // Store environments by environment_id
@@ -321,6 +320,11 @@ func (a *API) GetProvenance() error {
 
 	// get rid of duplicates
 	provenance.Buckets = UniqueBucketRecords(provenance.Buckets)
+
+	// assign dataset did if provenance records were not found in DBS
+	if provenance.Did == "" {
+		provenance.Did = dataset_did
+	}
 
 	// Convert to JSON
 	var out []DatasetRecord
