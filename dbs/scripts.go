@@ -32,7 +32,7 @@ type Scripts struct {
 //
 //gocyclo:ignore
 func (a *API) GetScript() error {
-	var args []interface{}
+	var args []any
 	var conds []string
 	var err error
 

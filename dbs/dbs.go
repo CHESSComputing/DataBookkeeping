@@ -142,7 +142,7 @@ func DBOperation(op string, rec DBRecord, data []byte, msg string) error {
 
 // DecodeValidatorError provides uniform error representation
 // of DBRecord validation errors
-func DecodeValidatorError(r, err interface{}) error {
+func DecodeValidatorError(r, err any) error {
 	if err != nil {
 		msg := fmt.Sprintf("DBS structure")
 		d, e := json.MarshalIndent(r, "", "   ")
@@ -263,7 +263,7 @@ func LoadSQL(owner string) map[string]any {
 	}
 	dbsql := make(map[string]any)
 	for _, f := range ListFiles(sdir) {
-		k := strings.Split(f, ".")[0]
+		k, _, _ := strings.Cut(f, ".")
 		stm, err := ParseTmpl(sdir, f, tmplData)
 		if err != nil {
 			log.Fatal("unable to parse template", err)
@@ -282,7 +282,7 @@ func LoadSQL(owner string) map[string]any {
 func GetTestData() error {
 	tmpl := make(map[string]any)
 	tmpl["Owner"] = DBOWNER
-	var args []interface{}
+	var args []any
 	args = append(args, "VALID")
 	stm, err := LoadTemplateSQL("test_db", tmpl)
 	if err != nil {
@@ -338,12 +338,12 @@ func getValues(params map[string]any, key string) []string {
 			return v
 		case string:
 			return []string{v}
-		case []interface{}:
+		case []any:
 			for _, val := range v {
 				out = append(out, fmt.Sprintf("%v", val))
 			}
 			return out
-		case interface{}:
+		case any:
 			return []string{fmt.Sprintf("%v", v)}
 		}
 	}
@@ -395,7 +395,7 @@ func errorRecord(msg string) []map[string]any {
 // CleanStatement cleans the given SQL statement to remove empty strings, etc.
 func CleanStatement(stm string) string {
 	var out []string
-	for _, s := range strings.Split(stm, "\n") {
+	for s := range strings.SplitSeq(stm, "\n") {
 		//         s = strings.Trim(s, " ")
 		if s == "" || s == " " {
 			continue
@@ -414,7 +414,7 @@ func CleanStatement(stm string) string {
 // to writer)
 //
 //gocyclo:ignore
-func executeAll(w io.Writer, sep, stm string, args ...interface{}) error {
+func executeAll(w io.Writer, sep, stm string, args ...any) error {
 	stm = CleanStatement(stm)
 	if DRYRUN {
 		PrintSQL(stm, args, "")
@@ -446,8 +446,8 @@ func executeAll(w io.Writer, sep, stm string, args ...interface{}) error {
 	columns, _ := rows.Columns()
 	var cols []string
 	count := len(columns)
-	values := make([]interface{}, count)
-	valuePtrs := make([]interface{}, count)
+	values := make([]any, count)
+	valuePtrs := make([]any, count)
 	rowCount := 0
 	writtenResults := false
 	for rows.Next() {
@@ -529,7 +529,7 @@ func executeAll(w io.Writer, sep, stm string, args ...interface{}) error {
 }
 
 // QueryRow function fetches results from given table
-func QueryRow(table, id, attr string, val interface{}) (int64, error) {
+func QueryRow(table, id, attr string, val any) (int64, error) {
 	var stm string
 	if DBOWNER == "sqlite" || DBOWNER == "mysql" {
 		stm = fmt.Sprintf("SELECT %s FROM %s WHERE %s = ?", id, table, attr)
@@ -552,7 +552,7 @@ func QueryRow(table, id, attr string, val interface{}) (int64, error) {
 }
 
 // GetID function fetches table primary id for a given value
-func GetID(tx *sql.Tx, table, id, attr string, val ...interface{}) (int64, error) {
+func GetID(tx *sql.Tx, table, id, attr string, val ...any) (int64, error) {
 	var stm string
 	if DBOWNER == "sqlite" || DBOWNER == "mysql" {
 		stm = fmt.Sprintf("SELECT %s FROM %s WHERE %s = ?", id, table, attr)
@@ -575,7 +575,7 @@ func GetID(tx *sql.Tx, table, id, attr string, val ...interface{}) (int64, error
 }
 
 // GetRecID function fetches table primary id for a given value and insert it if necessary
-func GetRecID(tx *sql.Tx, rec DBRecord, table, id, attr string, val ...interface{}) (int64, error) {
+func GetRecID(tx *sql.Tx, rec DBRecord, table, id, attr string, val ...any) (int64, error) {
 	rid, err := GetID(tx, table, id, attr, val...)
 	if err != nil {
 		if Verbose > 1 {
@@ -604,7 +604,7 @@ func GetRecID(tx *sql.Tx, rec DBRecord, table, id, attr string, val ...interface
 }
 
 // IfExistMulti checks if given rid exists in given table for provided value conditions
-func IfExistMulti(tx *sql.Tx, table, rid string, args []string, vals ...interface{}) bool {
+func IfExistMulti(tx *sql.Tx, table, rid string, args []string, vals ...any) bool {
 	var stm string
 	var wheres []string
 	if DBOWNER == "sqlite" || DBOWNER == "mysql" {
@@ -634,7 +634,7 @@ func IfExistMulti(tx *sql.Tx, table, rid string, args []string, vals ...interfac
 }
 
 // IfExist check if given rid, attr exists in given table for provided value conditions
-func IfExist(tx *sql.Tx, table, rid, attr string, val ...interface{}) bool {
+func IfExist(tx *sql.Tx, table, rid, attr string, val ...any) bool {
 	// check if our data already exist in DB
 	fid, err := GetID(tx, table, rid, attr, val...)
 	if err == nil {
@@ -690,7 +690,7 @@ func ParseRuns(runs []string) ([]string, error) {
 		} else if strings.HasPrefix(v, "[") && strings.HasSuffix(v, "]") {
 			runs := strings.Replace(v, "[", "", -1)
 			runs = strings.Replace(runs, "]", "", -1)
-			for _, r := range strings.Split(runs, ",") {
+			for r := range strings.SplitSeq(runs, ",") {
 				run := strings.Trim(r, " ")
 				out = append(out, run)
 			}
@@ -835,7 +835,7 @@ func AddParam(
 	name, sqlName string,
 	params map[string]any,
 	conds []string,
-	args []interface{}) ([]string, []interface{}) {
+	args []any) ([]string, []any) {
 
 	vals := getValues(params, name)
 	if len(vals) == 1 {
@@ -860,13 +860,13 @@ func IncrementSequences(tx *sql.Tx, seq string, n int) ([]int64, error) {
 	var out []int64
 	if DBOWNER == "sqlite" || DBOWNER == "mysql" {
 		ts := time.Now().UnixNano()
-		for i := 0; i < n; i++ {
+		for i := range n {
 			out = append(out, ts+int64(i))
 		}
 		return out, nil
 	}
 	var pid float64
-	for i := 0; i < n; i++ {
+	for range n {
 		stm := fmt.Sprintf("select %s.%s.nextval as val from dual", DBOWNER, seq)
 		err := tx.QueryRow(stm).Scan(&pid)
 		if err != nil {
@@ -908,8 +908,8 @@ func LastInsertID(tx *sql.Tx, table, idName string) (int64, error) {
 }
 
 // RunsConditions function to handle runs conditions
-func RunsConditions(runs []string, table string) (string, []string, []interface{}, error) {
-	var args []interface{}
+func RunsConditions(runs []string, table string) (string, []string, []any, error) {
+	var args []any
 	var conds []string
 	var token string
 

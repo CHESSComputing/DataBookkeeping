@@ -30,7 +30,7 @@ type Packages struct {
 //
 //gocyclo:ignore
 func (a *API) GetPackage() error {
-	var args []interface{}
+	var args []any
 	var conds []string
 	var err error
 

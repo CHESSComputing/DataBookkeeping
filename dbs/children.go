@@ -9,7 +9,7 @@ package dbs
 //
 //gocyclo:ignore
 func (a *API) GetChild() error {
-	var args []interface{}
+	var args []any
 	var conds []string
 	var err error
 

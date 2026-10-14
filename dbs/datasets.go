@@ -37,7 +37,7 @@ func (a *API) GetDataset() error {
 	if Verbose > 1 {
 		log.Printf("datasets params %+v", a.Params)
 	}
-	var args []interface{}
+	var args []any
 	var conds []string
 	tmpl := make(map[string]any)
 	tmpl["Owner"] = DBOWNER

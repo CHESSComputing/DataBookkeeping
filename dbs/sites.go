@@ -27,7 +27,7 @@ type Sites struct {
 //
 //gocyclo:ignore
 func (a *API) GetSite() error {
-	var args []interface{}
+	var args []any
 	var conds []string
 	var err error
 

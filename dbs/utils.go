@@ -53,7 +53,7 @@ func ConvertFloat(val string) string {
 }
 
 // PrintSQL prints SQL/args
-func PrintSQL(stm string, args []interface{}, msg string) {
+func PrintSQL(stm string, args []any, msg string) {
 	if msg != "" {
 		log.Println(msg)
 	} else {
@@ -88,7 +88,7 @@ func ListFiles(dir string) []string {
 }
 
 // CastString function to check and cast interface{} to string data-type
-func CastString(val interface{}) (string, error) {
+func CastString(val any) (string, error) {
 	switch v := val.(type) {
 	case string:
 		return v, nil
@@ -98,7 +98,7 @@ func CastString(val interface{}) (string, error) {
 }
 
 // CastInt function to check and cast interface{} to int data-type
-func CastInt(val interface{}) (int, error) {
+func CastInt(val any) (int, error) {
 	switch v := val.(type) {
 	case int:
 		return v, nil
@@ -110,7 +110,7 @@ func CastInt(val interface{}) (int, error) {
 }
 
 // CastInt64 function to check and cast interface{} to int64 data-type
-func CastInt64(val interface{}) (int64, error) {
+func CastInt64(val any) (int64, error) {
 	switch v := val.(type) {
 	case int:
 		return int64(v), nil

@@ -29,7 +29,7 @@ type Config struct {
 //
 //gocyclo:ignore
 func (a *API) GetConfig() error {
-	var args []interface{}
+	var args []any
 	var conds []string
 	var err error
 

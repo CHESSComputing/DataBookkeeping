@@ -7,7 +7,7 @@ import (
 
 // InsertManyToMany provides function to insert many-to-many relationship from given
 // template name and set of parameters
-func InsertManyToMany(tx *sql.Tx, tmplName string, args ...interface{}) error {
+func InsertManyToMany(tx *sql.Tx, tmplName string, args ...any) error {
 	stm := getSQL(tmplName)
 	_, err := tx.Exec(stm, args...)
 	if err != nil {

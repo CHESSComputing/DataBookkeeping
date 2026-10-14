@@ -27,7 +27,7 @@ type Processing struct {
 //
 //gocyclo:ignore
 func (a *API) GetProcessing() error {
-	var args []interface{}
+	var args []any
 	var conds []string
 	var err error
 

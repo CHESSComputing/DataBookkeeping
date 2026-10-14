@@ -30,7 +30,7 @@ type OsInfo struct {
 //
 //gocyclo:ignore
 func (a *API) GetOsInfo() error {
-	var args []interface{}
+	var args []any
 	var conds []string
 	var err error
 

@@ -9,7 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
+
 	"log"
 	"net/http"
 	"strings"
@@ -161,7 +161,7 @@ func getApi(c *gin.Context, a string) (*dbs.API, error) {
 				responseMsg(w, r, e, http.StatusInternalServerError)
 				return nil, errors.New(msg)
 			}
-			body = ioutil.NopCloser(bytes.NewBuffer(data))
+			body = io.NopCloser(bytes.NewBuffer(data))
 		}
 		api = &dbs.API{
 			Reader:      body,

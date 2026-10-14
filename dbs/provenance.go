@@ -66,7 +66,7 @@ func (p *ProvenanceRecord) IsEmpty() bool {
 
 //gocyclo:ignore
 func (a *API) GetParentDID(did string) (string, error) {
-	var args []interface{}
+	var args []any
 	var conds []string
 	tmpl := make(map[string]any)
 	tmpl["Owner"] = DBOWNER
@@ -119,7 +119,7 @@ func (a *API) GetProvenance() error {
 	if Verbose > 1 {
 		log.Printf("provenance params %+v", a.Params)
 	}
-	var args []interface{}
+	var args []any
 	var conds []string
 	tmpl := make(map[string]any)
 	tmpl["Owner"] = DBOWNER
@@ -358,7 +358,7 @@ func userFiles(val any) []FileRecord {
 	var files []FileRecord
 	switch input := val.(type) {
 	case string:
-		for _, f := range strings.Split(input, " ") {
+		for f := range strings.SplitSeq(input, " ") {
 			files = append(files, FileRecord{Name: strings.Trim(f, " ")})
 		}
 	case []string:

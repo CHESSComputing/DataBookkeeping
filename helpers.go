@@ -72,8 +72,7 @@ func responseMsg(w http.ResponseWriter, r *http.Request, err error, code int) in
 		Message:   err.Error(), // for compatibility with Python server
 	}
 
-	var dbsError *dbs.DBSError
-	if errors.As(err, &dbsError) {
+	if dbsError, ok := errors.AsType[*dbs.DBSError](err); ok {
 		log.Println(dbsError.ErrorStacktrace())
 	} else {
 		log.Println(err.Error())
@@ -113,7 +112,7 @@ func parsePayload(r *http.Request) (map[string]any, error) {
 		s = strings.Replace(s, "[", "", -1)
 		s = strings.Replace(s, "]", "", -1)
 		var out []string
-		for _, vv := range strings.Split(s, " ") {
+		for vv := range strings.SplitSeq(s, " ") {
 			ss := strings.Trim(vv, " ")
 			if ss != "" {
 				out = append(out, ss)

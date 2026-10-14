@@ -31,7 +31,7 @@ type Files struct {
 //
 //gocyclo:ignore
 func (a *API) GetFile() error {
-	var args []interface{}
+	var args []any
 	var conds []string
 	var err error
 

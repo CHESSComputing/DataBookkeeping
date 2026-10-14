@@ -35,7 +35,7 @@ type ParentRecord struct {
 //
 //gocyclo:ignore
 func (a *API) GetParent() error {
-	var args []interface{}
+	var args []any
 	var conds []string
 	var err error
 

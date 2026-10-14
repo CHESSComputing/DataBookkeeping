@@ -30,7 +30,7 @@ type Buckets struct {
 //
 //gocyclo:ignore
 func (a *API) GetBucket() error {
-	var args []interface{}
+	var args []any
 	var conds []string
 	var err error
 
